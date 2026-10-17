@@ -1,0 +1,118 @@
+# ==============================================================================
+# HOC PHAN DU LIEU NOSQL (14DH) - KHOA CNTT - DH CONG THUONG TP.HCM (HUIT)
+# DE TAI: NEN TANG HOC TAP TRUC TUYEN (E-LEARNING) & LUYEN THI TRAC NGHIEM
+# NHOM 18 - DOCKER COMPOSE COI TIET KIEM TAI NGUYEN (MEMORY LIMITS CHO MAY LAPTOP)
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. MONGODB (Document Database) - Luu tru nghiep vu chinh
+  # Collections: users, courses, lessons, questions, exams, results
+  # ----------------------------------------------------------------------------
+  mongodb:
+    image: mongo:7.0
+    container_name: elearning_mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=elearning_nosql
+    volumes:
+      - ./data/mongodb:/data/db
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ----------------------------------------------------------------------------
+  # 2. REDIS (Key-Value Store) - Luu phien thi tam (TTL), Cache, Leaderboard (ZSET)
+  # ----------------------------------------------------------------------------
+  redis:
+    image: redis:7.2-alpine
+    container_name: elearning_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 128mb --maxmemory-policy allkeys-lru
+    volumes:
+      - ./data/redis:/data
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ----------------------------------------------------------------------------
+  # 3. NEO4J (Graph Database) - Do thi tri thuc (Knowledge Graph), Lo trinh hoc tap
+  # Nodes: Course, Lesson, Topic, Skill
+  # Relationships: CONTAINS, COVERS, REQUIRES, DEVELOPS, RELATED_TO
+  # ----------------------------------------------------------------------------
+  neo4j:
+    image: neo4j:5.20-community
+    container_name: elearning_neo4j
+    restart: unless-stopped
+    ports:
+      - "7474:7474"   # Neo4j Browser Web GUI (Lay diem thuc hanh GUI Tool)
+      - "7687:7687"   # Bolt Driver Port
+    environment:
+      - NEO4J_AUTH=neo4j/nosql_project_2026
+      - NEO4J_server_memory_pagecache_size=128M
+      - NEO4J_server_memory_heap_initial__size=256M
+      - NEO4J_server_memory_heap_max__size=384M
+    volumes:
+      - ./data/neo4j/data:/data
+      - ./data/neo4j/logs:/logs
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:7474 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # ----------------------------------------------------------------------------
+  # 4. APACHE CASSANDRA (Wide-Column Store) - Log tuong tac, lich su hoc tap theo thoi gian
+  # Keyspace: elearning_logs | Table: learning_events (Partition: student_id)
+  # ----------------------------------------------------------------------------
+  cassandra:
+    image: cassandra:4.1
+    container_name: elearning_cassandra
+    restart: unless-stopped
+    ports:
+      - "9042:9042"   # CQL Native Transport Port
+    environment:
+      - CASSANDRA_CLUSTER_NAME=ElearningCluster
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=128M
+    volumes:
+      - ./data/cassandra:/var/lib/cassandra
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 1024M
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'describe cluster' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+networks:
+  default:
+    name: elearning_nosql_network

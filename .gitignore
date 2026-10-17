@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment variables
+.env
+
+# Database data persistence & volumes
+data/
+backups/
+
+# System and logs
+*.log
+.DS_Store
+Thumbs.db

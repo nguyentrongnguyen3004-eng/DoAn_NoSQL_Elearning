@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="50%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#3b82f6" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#312e81" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <!-- Background Rounded Rect -->
+  <rect width="64" height="64" rx="16" fill="url(#grad)" filter="url(#shadow)"/>
+  
+  <!-- Graduation Cap Icon -->
+  <!-- Cap top / diamond -->
+  <polygon points="32,16 52,26 32,36 12,26" fill="#ffffff" />
+  
+  <!-- Cap underside / headband -->
+  <path d="M20,31.5 L20,41 C20,46 44,46 44,41 L44,31.5 C40.5,33.5 36.3,34.8 32,34.8 C27.7,34.8 23.5,33.5 20,31.5 Z" fill="#e0e7ff" />
+  
+  <!-- Tassel & string -->
+  <path d="M48,27.5 L50,38" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="50" cy="40" r="2.5" fill="#f59e0b" />
+</svg>
