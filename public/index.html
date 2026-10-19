@@ -842,7 +842,7 @@
   </div>
 
   <!-- ============================================================== -->
-  <!-- 10. MODAL ĐĂNG NHẬP & ĐĂNG KÝ CHUẨN THƯƠNG MẠI                   -->
+  <!-- 10. MODAL ĐĂNG NHẬP, ĐĂNG KÝ & QUÊN MẬT KHẨU (OTP GMAIL)         -->
   <!-- ============================================================== -->
   <div id="login-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto">
     <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 dark:border-slate-800 relative animate-in fade-in zoom-in-95 duration-200 my-8">
@@ -862,7 +862,7 @@
       </div>
 
       <!-- Segmented Tabs: Đăng nhập vs Đăng ký -->
-      <div class="flex p-1 bg-slate-100 dark:bg-slate-800/80 rounded-2xl mb-6">
+      <div id="auth-tabs-container" class="flex p-1 bg-slate-100 dark:bg-slate-800/80 rounded-2xl mb-6">
         <button id="tab-btn-login" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-xs sm:text-sm font-bold rounded-xl transition-all shadow-sm bg-white dark:bg-slate-900 text-brand-600 dark:text-indigo-400 flex items-center justify-center gap-2">
           <i class="fa-solid fa-right-to-bracket text-xs"></i> Đăng nhập
         </button>
@@ -888,7 +888,7 @@
           <div>
             <div class="flex items-center justify-between mb-1.5">
               <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">Mật khẩu</label>
-              <a href="javascript:void(0)" onclick="alert('Đối với các tài khoản Demo có sẵn, bạn có thể bấm trực tiếp các nút chọn nhanh bên dưới mà không cần mật khẩu!')" class="text-[11px] text-brand-600 dark:text-indigo-400 hover:underline">Quên mật khẩu?</a>
+              <button type="button" onclick="switchAuthTab('forgot')" class="text-[11px] text-brand-600 dark:text-indigo-400 hover:underline font-semibold">Quên mật khẩu?</button>
             </div>
             <div class="relative">
               <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
@@ -950,7 +950,7 @@
         </div>
       </div>
 
-      <!-- ================= TAB 2: FORM ĐĂNG KÝ ================= -->
+      <!-- ================= TAB 2: FORM ĐĂNG KÝ (CÓ OTP GMAIL) ================= -->
       <div id="auth-view-register" class="hidden space-y-4">
         <form onsubmit="handleFormRegister(event)" class="space-y-3">
           
@@ -972,11 +972,28 @@
             </div>
           </div>
 
+          <!-- Email + Nút gửi OTP -->
           <div>
             <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Địa chỉ Email <span class="text-rose-500">*</span></label>
+            <div class="flex gap-2">
+              <div class="relative flex-1">
+                <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="email" id="reg-email" required placeholder="Vd: nguyenvana@gmail.com" class="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm focus:bg-white dark:focus:bg-slate-900 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all dark:text-white placeholder:text-slate-400">
+              </div>
+              <button type="button" id="btn-send-reg-otp" onclick="requestRegisterOtp()" class="px-3.5 py-2 rounded-xl bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white font-bold text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-paper-plane text-[10px]"></i>
+                <span id="txt-reg-otp">Gửi mã OTP</span>
+              </button>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">Mã xác thực 6 số sẽ được gửi tự động qua Gmail của bạn</p>
+          </div>
+
+          <!-- Mã OTP nhập vào -->
+          <div id="box-reg-otp" class="p-3 bg-brand-50/50 dark:bg-slate-800/50 border border-brand-200 dark:border-slate-700 rounded-2xl">
+            <label class="block text-xs font-bold text-brand-700 dark:text-indigo-300 mb-1">Mã xác thực OTP (6 chữ số) <span class="text-rose-500">*</span></label>
             <div class="relative">
-              <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-              <input type="email" id="reg-email" required placeholder="Vd: nguyenvana@huit.edu.vn" class="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm focus:bg-white dark:focus:bg-slate-900 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all dark:text-white placeholder:text-slate-400">
+              <i class="fa-solid fa-key absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-500 text-xs"></i>
+              <input type="text" id="reg-otp" maxlength="6" required placeholder="Nhập mã 6 số từ email của bạn" class="w-full pl-9 pr-3 py-2 bg-white dark:bg-slate-900 border border-brand-300 dark:border-slate-600 rounded-xl text-sm font-mono tracking-widest font-bold focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 outline-none transition-all dark:text-white placeholder:tracking-normal placeholder:font-normal placeholder:text-xs">
             </div>
           </div>
 
@@ -1027,17 +1044,71 @@
           </div>
 
           <button type="submit" id="btn-submit-register" class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-600 via-indigo-600 to-purple-600 hover:opacity-95 text-white font-bold text-sm shadow-lg shadow-brand-500/25 transition-all flex items-center justify-center gap-2 mt-2">
-            <span>Hoàn Tất & Tạo Tài Khoản</span>
+            <span>Xác Thực OTP & Đăng Ký Tài Khoản</span>
             <i class="fa-solid fa-check text-xs"></i>
           </button>
         </form>
       </div>
 
+      <!-- ================= TAB 3: QUÊN MẬT KHẨU (GỬI OTP GMAIL & ĐẶT LẠI) ================= -->
+      <div id="auth-view-forgot" class="hidden space-y-4">
+        <form onsubmit="handleFormForgotPassword(event)" class="space-y-3.5">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Địa chỉ Email tài khoản <span class="text-rose-500">*</span></label>
+            <div class="flex gap-2">
+              <div class="relative flex-1">
+                <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="email" id="forgot-email" required placeholder="Nhập email đã đăng ký của bạn" class="w-full pl-9 pr-3 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm focus:bg-white dark:focus:bg-slate-900 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all dark:text-white placeholder:text-slate-400">
+              </div>
+              <button type="button" id="btn-send-forgot-otp" onclick="requestForgotOtp()" class="px-3.5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-paper-plane text-[10px]"></i>
+                <span id="txt-forgot-otp">Gửi mã OTP</span>
+              </button>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">Mã OTP khôi phục 6 số sẽ được gửi về hộp thư Gmail này</p>
+          </div>
+
+          <div class="p-3 bg-indigo-50/50 dark:bg-slate-800/50 border border-indigo-200 dark:border-slate-700 rounded-2xl space-y-3">
+            <div>
+              <label class="block text-xs font-bold text-indigo-900 dark:text-indigo-300 mb-1">Mã xác thực OTP (6 chữ số) <span class="text-rose-500">*</span></label>
+              <div class="relative">
+                <i class="fa-solid fa-shield-halved absolute left-3.5 top-1/2 -translate-y-1/2 text-indigo-500 text-xs"></i>
+                <input type="text" id="forgot-otp" maxlength="6" required placeholder="Nhập mã 6 số từ email" class="w-full pl-9 pr-3 py-2 bg-white dark:bg-slate-900 border border-indigo-200 dark:border-slate-600 rounded-xl text-sm font-mono tracking-widest font-bold focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition-all dark:text-white placeholder:tracking-normal placeholder:font-normal placeholder:text-xs">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-indigo-900 dark:text-indigo-300 mb-1">Mật khẩu mới <span class="text-rose-500">*</span></label>
+              <div class="relative">
+                <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-indigo-500 text-xs"></i>
+                <input type="password" id="forgot-new-password" required minlength="6" placeholder="Tối thiểu 6 ký tự" class="w-full pl-9 pr-8 py-2 bg-white dark:bg-slate-900 border border-indigo-200 dark:border-slate-600 rounded-xl text-xs sm:text-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition-all dark:text-white placeholder:text-slate-400">
+                <button type="button" onclick="togglePasswordVisibility('forgot-new-password', this)" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" id="btn-submit-forgot" class="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-brand-600 hover:from-indigo-700 hover:to-brand-700 text-white font-bold text-sm shadow-lg shadow-indigo-500/25 transition-all flex items-center justify-center gap-2">
+            <span>Xác Nhận Đổi Mật Khẩu</span>
+            <i class="fa-solid fa-check text-xs"></i>
+          </button>
+
+          <div class="text-center pt-2">
+            <button type="button" onclick="switchAuthTab('login')" class="text-xs text-slate-500 hover:text-brand-600 dark:hover:text-indigo-400 font-semibold transition-colors">
+              <i class="fa-solid fa-arrow-left mr-1"></i> Quay lại Đăng nhập
+            </button>
+          </div>
+        </form>
+      </div>
+
       <!-- Footer Info -->
       <div class="mt-5 text-center text-[11px] text-slate-400 dark:text-slate-500 border-t border-slate-100 dark:border-slate-800/80 pt-3 flex items-center justify-center gap-2">
-        <i class="fa-solid fa-lock text-[10px] text-emerald-500"></i>
-        <span>Mật khẩu được mã hóa an toàn bcrypt & JWT Authentication</span>
+        <i class="fa-solid fa-envelope-circle-check text-[11px] text-emerald-500"></i>
+        <span>Xác thực OTP qua Gmail tự động & bảo mật bcrypt</span>
       </div>
+    </div>
+  </div>
     </div>
   </div>
 
@@ -1190,27 +1261,40 @@
     function switchAuthTab(tab) {
       const loginTabBtn = document.getElementById('tab-btn-login');
       const regTabBtn = document.getElementById('tab-btn-register');
+      const tabsContainer = document.getElementById('auth-tabs-container');
       const loginView = document.getElementById('auth-view-login');
       const regView = document.getElementById('auth-view-register');
+      const forgotView = document.getElementById('auth-view-forgot');
       const modalTitle = document.getElementById('auth-modal-title');
       const modalSubtitle = document.getElementById('auth-modal-subtitle');
 
       hideAuthAlert();
 
       if (tab === 'login') {
+        tabsContainer.classList.remove('hidden');
         loginTabBtn.className = 'flex-1 py-2.5 text-xs sm:text-sm font-bold rounded-xl transition-all shadow-sm bg-white dark:bg-slate-900 text-brand-600 dark:text-indigo-400 flex items-center justify-center gap-2';
         regTabBtn.className = 'flex-1 py-2.5 text-xs sm:text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 flex items-center justify-center gap-2';
         loginView.classList.remove('hidden');
         regView.classList.add('hidden');
+        if (forgotView) forgotView.classList.add('hidden');
         modalTitle.textContent = 'Chào Mừng Trở Lại';
         modalSubtitle.textContent = 'Nền tảng Học trực tuyến & Đánh giá năng lực NoSQL Đa mô hình';
-      } else {
+      } else if (tab === 'register') {
+        tabsContainer.classList.remove('hidden');
         regTabBtn.className = 'flex-1 py-2.5 text-xs sm:text-sm font-bold rounded-xl transition-all shadow-sm bg-white dark:bg-slate-900 text-brand-600 dark:text-indigo-400 flex items-center justify-center gap-2';
         loginTabBtn.className = 'flex-1 py-2.5 text-xs sm:text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 flex items-center justify-center gap-2';
         regView.classList.remove('hidden');
         loginView.classList.add('hidden');
+        if (forgotView) forgotView.classList.add('hidden');
         modalTitle.textContent = 'Đăng Ký Tài Khoản';
-        modalSubtitle.textContent = 'Tạo hồ sơ học tập và tham gia làm bài khảo sát năng lực NoSQL';
+        modalSubtitle.textContent = 'Tạo hồ sơ học tập và xác thực kích hoạt qua Gmail OTP';
+      } else if (tab === 'forgot') {
+        tabsContainer.classList.add('hidden');
+        loginView.classList.add('hidden');
+        regView.classList.add('hidden');
+        if (forgotView) forgotView.classList.remove('hidden');
+        modalTitle.textContent = 'Khôi Phục Mật Khẩu';
+        modalSubtitle.textContent = 'Nhận mã OTP bảo mật qua Gmail để thiết lập lại mật khẩu mới';
       }
     }
 
@@ -1244,6 +1328,156 @@
     function hideAuthAlert() {
       const box = document.getElementById('auth-alert-box');
       if (box) box.classList.add('hidden');
+    }
+
+    // Gửi OTP xác thực Đăng ký qua Gmail
+    async function requestRegisterOtp() {
+      const username = document.getElementById('reg-username').value.trim();
+      const fullName = document.getElementById('reg-fullname').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const btn = document.getElementById('btn-send-reg-otp');
+      const txt = document.getElementById('txt-reg-otp');
+
+      if (!email) {
+        showAuthAlert('Vui lòng nhập địa chỉ Email trước khi gửi mã OTP');
+        return;
+      }
+      if (!username) {
+        showAuthAlert('Vui lòng nhập Tên đăng nhập trước');
+        return;
+      }
+
+      btn.disabled = true;
+      txt.textContent = 'Đang gửi...';
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/register/send-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, fullName, email })
+        });
+        const json = await res.json();
+        if (json.success) {
+          showAuthAlert(json.message, 'success');
+          // Đếm ngược 60s trước khi cho phép gửi lại
+          let countdown = 60;
+          txt.textContent = `${countdown}s`;
+          const timer = setInterval(() => {
+            countdown--;
+            if (countdown <= 0) {
+              clearInterval(timer);
+              btn.disabled = false;
+              txt.textContent = 'Gửi lại mã';
+            } else {
+              txt.textContent = `${countdown}s`;
+            }
+          }, 1000);
+          document.getElementById('reg-otp').focus();
+        } else {
+          showAuthAlert(json.message || 'Không thể gửi OTP');
+          btn.disabled = false;
+          txt.textContent = 'Gửi mã OTP';
+        }
+      } catch (err) {
+        showAuthAlert('Lỗi kết nối máy chủ khi gửi OTP: ' + err.message);
+        btn.disabled = false;
+        txt.textContent = 'Gửi mã OTP';
+      }
+    }
+
+    // Gửi OTP khôi phục Mật khẩu qua Gmail
+    async function requestForgotOtp() {
+      const email = document.getElementById('forgot-email').value.trim();
+      const btn = document.getElementById('btn-send-forgot-otp');
+      const txt = document.getElementById('txt-forgot-otp');
+
+      if (!email) {
+        showAuthAlert('Vui lòng nhập địa chỉ Email tài khoản của bạn');
+        return;
+      }
+
+      btn.disabled = true;
+      txt.textContent = 'Đang gửi...';
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/forgot-password/send-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const json = await res.json();
+        if (json.success) {
+          showAuthAlert(json.message, 'success');
+          let countdown = 60;
+          txt.textContent = `${countdown}s`;
+          const timer = setInterval(() => {
+            countdown--;
+            if (countdown <= 0) {
+              clearInterval(timer);
+              btn.disabled = false;
+              txt.textContent = 'Gửi lại mã';
+            } else {
+              txt.textContent = `${countdown}s`;
+            }
+          }, 1000);
+          document.getElementById('forgot-otp').focus();
+        } else {
+          showAuthAlert(json.message || 'Không thể gửi OTP');
+          btn.disabled = false;
+          txt.textContent = 'Gửi mã OTP';
+        }
+      } catch (err) {
+        showAuthAlert('Lỗi kết nối máy chủ: ' + err.message);
+        btn.disabled = false;
+        txt.textContent = 'Gửi mã OTP';
+      }
+    }
+
+    // Xử lý nộp form Khôi phục mật khẩu
+    async function handleFormForgotPassword(e) {
+      e.preventDefault();
+      const email = document.getElementById('forgot-email').value.trim();
+      const otp = document.getElementById('forgot-otp').value.trim();
+      const newPassword = document.getElementById('forgot-new-password').value;
+      const submitBtn = document.getElementById('btn-submit-forgot');
+
+      if (!email || !otp || !newPassword) {
+        showAuthAlert('Vui lòng nhập đầy đủ Email, OTP và Mật khẩu mới');
+        return;
+      }
+
+      if (newPassword.length < 6) {
+        showAuthAlert('Mật khẩu mới phải có tối thiểu 6 ký tự');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Đang cập nhật...</span>';
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/forgot-password/reset`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, otp, newPassword })
+        });
+        const json = await res.json();
+
+        if (json.success) {
+          showAuthAlert(json.message, 'success');
+          setTimeout(() => {
+            switchAuthTab('login');
+            document.getElementById('login-input-username').value = email;
+            document.getElementById('login-input-password').value = '';
+          }, 1500);
+        } else {
+          showAuthAlert(json.message || 'Đặt lại mật khẩu thất bại!');
+        }
+      } catch (err) {
+        showAuthAlert('Lỗi kết nối máy chủ: ' + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>Xác Nhận Đổi Mật Khẩu</span> <i class="fa-solid fa-check text-xs"></i>';
+      }
     }
 
     async function handleFormLogin(e) {
@@ -1296,6 +1530,7 @@
       const fullName = document.getElementById('reg-fullname').value.trim();
       const username = document.getElementById('reg-username').value.trim();
       const email = document.getElementById('reg-email').value.trim();
+      const otp = document.getElementById('reg-otp').value.trim();
       const password = document.getElementById('reg-password').value;
       const confirmPassword = document.getElementById('reg-confirm-password').value;
       const roleElem = document.querySelector('input[name="reg-role"]:checked');
@@ -1304,6 +1539,11 @@
 
       if (!fullName || !username || !email || !password) {
         showAuthAlert('Vui lòng điền đầy đủ các trường bắt buộc');
+        return;
+      }
+
+      if (!otp) {
+        showAuthAlert('Vui lòng bấm "Gửi mã OTP" và nhập mã OTP 6 số từ Gmail!');
         return;
       }
 
@@ -1318,18 +1558,18 @@
       }
 
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Đang tạo tài khoản...</span>';
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Đang xác thực OTP & tạo tài khoản...</span>';
 
       try {
         const res = await fetch(`${API_BASE}/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ fullName, username, email, password, role })
+          body: JSON.stringify({ fullName, username, email, password, role, otp })
         });
         const json = await res.json();
 
         if (json.success) {
-          showAuthAlert('Đăng ký tài khoản thành công! Đang đăng nhập...', 'success');
+          showAuthAlert('Xác thực OTP thành công! Đang tự động đăng nhập...', 'success');
           currentToken = json.data.token;
           currentUser = json.data.user;
           localStorage.setItem('edupro_token', currentToken);
@@ -1348,7 +1588,7 @@
         showAuthAlert('Lỗi kết nối máy chủ: ' + err.message);
       } finally {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span>Hoàn Tất & Tạo Tài Khoản</span> <i class="fa-solid fa-check text-xs"></i>';
+        submitBtn.innerHTML = '<span>Xác Thực OTP & Đăng Ký Tài Khoản</span> <i class="fa-solid fa-check text-xs"></i>';
       }
     }
 

@@ -26,6 +26,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^6.21.0",
     "neo4j-driver": "^5.28.3",
+    "nodemailer": "^10.1.7",
     "side-channel-list": "^1.0.1",
     "side-channel-map": "^1.0.1",
     "side-channel-weakmap": "^1.0.2"
