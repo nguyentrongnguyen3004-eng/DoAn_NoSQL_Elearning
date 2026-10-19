@@ -1,6 +1,6 @@
 // ==============================================================================
 // HOC PHAN DU LIEU NOSQL - HUIT (KHOA CNTT)
-// SCRIPT KHOI TAO SCHEMA & SEED DATA CHO MONGODB
+// SCRIPT KHOI TAO SCHEMA & SEED DATA ĐA DẠNG CHO MONGODB
 // NHOM 18: NEN TANG E-LEARNING & LUYEN THI TRAC NGHIEM
 // ==============================================================================
 
@@ -21,12 +21,13 @@ async function seedMongoDB() {
     await db.collection('users').createIndex({ email: 1 }, { unique: true });
     await db.collection('users').createIndex({ username: 1 }, { unique: true });
     await db.collection('courses').createIndex({ code: 1 }, { unique: true });
+    await db.collection('courses').createIndex({ title: 'text', description: 'text', tagline: 'text' });
     await db.collection('lessons').createIndex({ courseId: 1, order: 1 });
     await db.collection('questions').createIndex({ subject: 1, difficulty: 1 });
     await db.collection('exams').createIndex({ courseId: 1, status: 1 });
     await db.collection('results').createIndex({ examId: 1, studentId: 1 });
 
-    // 2. SEED USERS (3 ROLES THEO SRS: Sinh vien, Giang vien, Quan tri vien)
+    // 2. SEED USERS
     console.log('Seeding Users...');
     await db.collection('users').deleteMany({});
     const users = [
@@ -34,120 +35,282 @@ async function seedMongoDB() {
         _id: new ObjectId('670000000000000000000001'),
         username: 'admin',
         email: 'admin@huit.edu.vn',
-        passwordHash: '$2a$10$7EqJtq98hPqEX7fNZaFWoO.8H7D5p412XN930v21hWk0Q4eT8nI6S', // mật khẩu: admin123
-        fullName: 'Quan Tri Vien He Thong',
+        passwordHash: '$2a$10$7EqJtq98hPqEX7fNZaFWoO.8H7D5p412XN930v21hWk0Q4eT8nI6S', // admin123
+        fullName: 'Quản Trị Viên Hệ Thống',
         role: 'ADMIN',
         status: 'ACTIVE',
+        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80',
         createdAt: new Date()
       },
       {
         _id: new ObjectId('670000000000000000000002'),
         username: 'dinhnt',
         email: 'dinhnt@huit.edu.vn',
-        fullName: 'TS. Nguyen Thi Dinh',
+        fullName: 'TS. Nguyễn Thị Định',
         role: 'TEACHER',
-        department: 'He thong thong tin - Khoa CNTT',
+        department: 'Hệ thống thông tin - Khoa CNTT',
         status: 'ACTIVE',
+        avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80',
         createdAt: new Date()
       },
       {
         _id: new ObjectId('670000000000000000000003'),
         username: '2001230589',
         email: 'trongnguyen@student.huit.edu.vn',
-        fullName: 'Nguyen Trong Nguyen',
+        fullName: 'Nguyễn Trọng Nguyên',
         role: 'STUDENT',
         class: '14DH',
         status: 'ACTIVE',
+        avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80',
         createdAt: new Date()
       },
       {
         _id: new ObjectId('670000000000000000000004'),
         username: '2001230578',
         email: 'khoinguyen@student.huit.edu.vn',
-        fullName: 'Pham Nguyen Khoi Nguyen',
+        fullName: 'Phạm Nguyễn Khôi Nguyên',
         role: 'STUDENT',
         class: '14DH',
         status: 'ACTIVE',
+        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
         createdAt: new Date()
       },
       {
         _id: new ObjectId('670000000000000000000005'),
         username: '2001230303',
         email: 'giahuy@student.huit.edu.vn',
-        fullName: 'Vo Huynh Gia Huy',
+        fullName: 'Võ Huỳnh Gia Huy',
         role: 'STUDENT',
         class: '14DH',
         status: 'ACTIVE',
+        avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=150&q=80',
+        createdAt: new Date()
+      },
+      {
+        _id: new ObjectId('670000000000000000000006'),
+        username: 'instructor_alex',
+        email: 'alex.hoang@huit.edu.vn',
+        fullName: 'ThS. Hoàng Minh Đức',
+        role: 'TEACHER',
+        department: 'Khoa học Máy tính',
+        status: 'ACTIVE',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
         createdAt: new Date()
       }
     ];
     await db.collection('users').insertMany(users);
 
-    // 3. SEED COURSES
+    // 3. SEED COURSES (DANH MỤC KHÓA HỌC PHONG PHÚ: DATA ENG, FULLSTACK, DEVOPS & CLOUD)
     console.log('Seeding Courses...');
     await db.collection('courses').deleteMany({});
-    const courseId = new ObjectId('670000000000000000000010');
+    
+    const courseId1 = new ObjectId('670000000000000000000010');
+    const courseId2 = new ObjectId('670000000000000000000011');
+    const courseId3 = new ObjectId('670000000000000000000012');
+    const courseId4 = new ObjectId('670000000000000000000013');
+    const courseId5 = new ObjectId('670000000000000000000014');
+    const courseId6 = new ObjectId('670000000000000000000015');
+
     const courses = [
       {
-        _id: courseId,
+        _id: courseId1,
         code: '01201073',
-        title: 'Du lieu NoSQL',
+        title: 'Kiến Trúc Dữ Liệu NoSQL Enterprise',
+        tagline: 'Làm chủ 4 hệ quản trị NoSQL chuẩn công nghiệp: MongoDB, Redis, Cassandra & Neo4j.',
         instructorId: new ObjectId('670000000000000000000002'),
-        instructorName: 'TS. Nguyen Thi Dinh',
+        instructorName: 'TS. Nguyễn Thị Định',
+        category: 'Data Engineering',
+        credits: 3,
+        price: 1890000,
+        originalPrice: 2490000,
+        rating: 4.95,
+        reviewsCount: 1480,
+        durationHours: 36,
+        description: 'Môn học cốt lõi cung cấp kiến trúc chuyên sâu về Polyglot Persistence, thiết kế phân vùng Sharding, In-Memory Caching và đồ thị tri thức.',
+        thumbnail: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80',
+        totalLessons: 4,
+        status: 'PUBLISHED',
+        createdAt: new Date()
+      },
+      {
+        _id: courseId2,
+        code: 'DE-201',
+        title: 'Xây Dựng Data Pipeline & Real-Time Streaming',
+        tagline: 'Kỹ thuật xử lý luồng dữ liệu lớn với Apache Kafka, Spark Streaming và Cassandra Data Lake.',
+        instructorId: new ObjectId('670000000000000000000006'),
+        instructorName: 'ThS. Hoàng Minh Đức',
+        category: 'Data Engineering',
+        credits: 3,
+        price: 2190000,
+        originalPrice: 2990000,
+        rating: 4.9,
+        reviewsCount: 920,
+        durationHours: 42,
+        description: 'Học cách thiết kế pipeline dữ liệu triệu bản ghi mỗi giây, chuẩn hóa ETL/ELT và lưu trữ phân tán bền vững.',
+        thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
+        totalLessons: 3,
+        status: 'PUBLISHED',
+        createdAt: new Date()
+      },
+      {
+        _id: courseId3,
+        code: 'FS-301',
+        title: 'Fullstack Microservices với Node.js & React',
+        tagline: 'Phát triển hệ sinh thái ứng dụng quy mô lớn, Event-Driven Architecture và Docker Container.',
+        instructorId: new ObjectId('670000000000000000000006'),
+        instructorName: 'ThS. Hoàng Minh Đức',
+        category: 'Fullstack Development',
+        credits: 4,
+        price: 2450000,
+        originalPrice: 3200000,
+        rating: 4.88,
+        reviewsCount: 2150,
+        durationHours: 48,
+        description: 'Khóa học thực chiến giúp lập trình viên thành thạo xây dựng API Gateway, Microservices, xác thực JWT, Redis Session và UI hiện đại.',
+        thumbnail: 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?auto=format&fit=crop&w=800&q=80',
+        totalLessons: 3,
+        status: 'PUBLISHED',
+        createdAt: new Date()
+      },
+      {
+        _id: courseId4,
+        code: 'DEV-401',
+        title: 'DevOps & Triển Khai Kubernetes Trên Cloud',
+        tagline: 'Tự động hóa CI/CD, Container Orchestration với K8s, Docker Swarm và giám sát Prometheus.',
+        instructorId: new ObjectId('670000000000000000000001'),
+        instructorName: 'Quản Trị Viên Hệ Thống',
+        category: 'DevOps & Cloud',
+        credits: 3,
+        price: 2350000,
+        originalPrice: 3100000,
+        rating: 4.92,
+        reviewsCount: 840,
+        durationHours: 32,
+        description: 'Lộ trình chuyển đổi số toàn diện: Triển khai cụm Kubernetes, cấu hình Ingress, Helm chart, và quản trị cụm database đa đám mây.',
+        thumbnail: 'https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?auto=format&fit=crop&w=800&q=80',
+        totalLessons: 3,
+        status: 'PUBLISHED',
+        createdAt: new Date()
+      },
+      {
+        _id: courseId5,
+        code: 'GRAPH-501',
+        title: 'Neo4j & Đồ Thị Tri Thức Cho Mạng Xã Hội',
+        tagline: 'Phân tích mối quan hệ dữ liệu phức tạp, Graph AI, Fraud Detection và Gợi ý khóa học thông minh.',
+        instructorId: new ObjectId('670000000000000000000002'),
+        instructorName: 'TS. Nguyễn Thị Định',
+        category: 'Data Engineering',
         credits: 2,
-        description: 'Mon hoc cung cap kien thuc ve 4 he CSDL NoSQL: MongoDB, Redis, Cassandra va Neo4j.',
-        thumbnail: 'https://cdn.huit.edu.vn/courses/nosql.png',
-        totalLessons: 5,
+        price: 1750000,
+        originalPrice: 2200000,
+        rating: 4.96,
+        reviewsCount: 760,
+        durationHours: 28,
+        description: 'Làm chủ ngôn ngữ Cypher, tối ưu thuật toán tìm đường đi ngắn nhất Dijkstra, và xây dựng Knowledge Graph doanh nghiệp.',
+        thumbnail: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
+        totalLessons: 3,
+        status: 'PUBLISHED',
+        createdAt: new Date()
+      },
+      {
+        _id: courseId6,
+        code: 'FS-302',
+        title: 'Bảo Mật Ứng Dụng Web & An Toàn API Enterprise',
+        tagline: 'Phòng chống OWASP Top 10, phân quyền RBAC/ABAC, mã hóa end-to-end và Rate Limiting.',
+        instructorId: new ObjectId('670000000000000000000001'),
+        instructorName: 'Quản Trị Viên Hệ Thống',
+        category: 'Fullstack Development',
+        credits: 3,
+        price: 1950000,
+        originalPrice: 2600000,
+        rating: 4.87,
+        reviewsCount: 610,
+        durationHours: 30,
+        description: 'Kỹ thuật bảo mật toàn diện cho hệ thống: chống tấn công DDoS, SQL/NoSQL Injection, bảo vệ khóa JWT và kiểm thử thâm nhập an toàn.',
+        thumbnail: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80',
+        totalLessons: 3,
         status: 'PUBLISHED',
         createdAt: new Date()
       }
     ];
     await db.collection('courses').insertMany(courses);
 
-    // 4. SEED LESSONS
+    // 4. SEED LESSONS CHO CÁC KHÓA HỌC
     console.log('Seeding Lessons...');
     await db.collection('lessons').deleteMany({});
     const lessons = [
+      // Lessons cho Khóa 1 (NoSQL)
       {
         _id: new ObjectId('670000000000000000000021'),
-        courseId: courseId,
+        courseId: courseId1,
         order: 1,
-        title: 'Tong quan ve NoSQL va So sanh voi RDBMS',
-        content: 'NoSQL ra doi nham giai quyet bai toan du lieu lon (Big Data), do tre thap va kha nang mo rong ngang...',
-        video: {
-          url: 'https://video.huit.edu.vn/nosql-ch1.mp4',
-          durationSeconds: 1800
-        },
-        materials: ['slide_ch1.pdf', 'tailieu_thamkhao.docx']
+        title: 'Tổng quan về NoSQL và So sánh chuyên sâu với RDBMS',
+        content: 'NoSQL giải quyết bài toán Big Data, độ trễ mili-giây, tính nhất quán lỏng lẻo (BASE) và khả năng mở rộng ngang (Horizontal Scaling)...',
+        video: { url: 'https://video.huit.edu.vn/nosql-ch1.mp4', durationSeconds: 1800 },
+        materials: ['slide_tong_quan_nosql.pdf', 'bang_so_sanh_cap_theorem.docx']
       },
       {
         _id: new ObjectId('670000000000000000000022'),
-        courseId: courseId,
+        courseId: courseId1,
         order: 2,
-        title: 'He quan tri CSDL Document - MongoDB',
-        content: 'MongoDB luu tru du lieu duoi dang BSON/JSON, ho tro linh hoat mo hinh Embedded va Reference...',
-        video: {
-          url: 'https://video.huit.edu.vn/nosql-mongodb.mp4',
-          durationSeconds: 2400
-        },
-        materials: ['lab_mongodb.pdf']
+        title: 'Hệ Quản Trị CSDL Tài Liệu (Document Store) - MongoDB',
+        content: 'Cơ chế lưu trữ BSON, thiết kế Schema nhúng (Embedded) vs tham chiếu (Reference), Text Index và Aggregation Pipeline đa tầng...',
+        video: { url: 'https://video.huit.edu.vn/nosql-mongodb.mp4', durationSeconds: 2400 },
+        materials: ['huong_dan_thuc_hanh_mongodb.pdf']
       },
       {
         _id: new ObjectId('670000000000000000000023'),
-        courseId: courseId,
+        courseId: courseId1,
         order: 3,
-        title: 'He CSDL Key-Value - Redis va Ky thuat Cache',
-        content: 'Redis la In-memory datastore voi toc do doc/ghi vuot troi, ho tro TTL, ZSET va Pub/Sub...',
-        video: {
-          url: 'https://video.huit.edu.vn/nosql-redis.mp4',
-          durationSeconds: 2100
-        },
-        materials: ['lab_redis.pdf']
+        title: 'Hệ CSDL Khóa - Giá Trị (Key-Value) - Redis & Kỹ Thuật Cache',
+        content: 'Redis In-Memory Datastore: Cấu trúc Sorted Set (ZSET) cho bảng xếp hạng, TTL tự động hết hạn và cơ chế Redis Pub/Sub thời gian thực...',
+        video: { url: 'https://video.huit.edu.vn/nosql-redis.mp4', durationSeconds: 2100 },
+        materials: ['lab_redis_caching.pdf']
+      },
+      {
+        _id: new ObjectId('670000000000000000000024'),
+        courseId: courseId1,
+        order: 4,
+        title: 'Hệ Phân Tán Cassandra & Đồ Thị Neo4j',
+        content: 'Kiến trúc Masterless Peer-to-Peer của Apache Cassandra kết hợp ngôn ngữ đồ thị Cypher để xây dựng mạng lưới quan hệ đa chiều.',
+        video: { url: 'https://video.huit.edu.vn/nosql-cassandra-neo4j.mp4', durationSeconds: 2700 },
+        materials: ['lab_cassandra_keyspace.pdf', 'cypher_cheat_sheet.pdf']
+      },
+
+      // Lessons cho Khóa 2 (Data Pipeline)
+      {
+        _id: new ObjectId('670000000000000000000025'),
+        courseId: courseId2,
+        order: 1,
+        title: 'Kiến Trúc Lambda và Kappa trong Xử Lý Dữ Liệu Lớn',
+        content: 'Tìm hiểu 2 mô hình kinh điển để xử lý kết hợp cả Batch layer và Speed layer.',
+        video: { url: 'https://video.huit.edu.vn/data-arch.mp4', durationSeconds: 2000 },
+        materials: ['lambda_vs_kappa_architecture.pdf']
+      },
+      {
+        _id: new ObjectId('670000000000000000000026'),
+        courseId: courseId2,
+        order: 2,
+        title: 'Apache Kafka: Topic, Partition & Consumer Group',
+        content: 'Thiết kế thông điệp phân tán, đảm bảo thứ tự dữ liệu và cơ chế tái cân bằng (Rebalancing).',
+        video: { url: 'https://video.huit.edu.vn/kafka-deepdive.mp4', durationSeconds: 2500 },
+        materials: ['kafka_setup_cluster.pdf']
+      },
+
+      // Lessons cho Khóa 3 (Microservices)
+      {
+        _id: new ObjectId('670000000000000000000027'),
+        courseId: courseId3,
+        order: 1,
+        title: 'Thiết Kế RESTful & GraphQL API Gateway',
+        content: 'Nguyên lý định tuyến tập trung, xác thực JWT tập trung và xử lý CORS/Rate Limiting.',
+        video: { url: 'https://video.huit.edu.vn/api-gateway.mp4', durationSeconds: 2200 },
+        materials: ['microservice_design_pattern.pdf']
       }
     ];
     await db.collection('lessons').insertMany(lessons);
 
-    // 5. SEED QUESTIONS (Ngan hang cau hoi trac nghiem)
+    // 5. SEED QUESTIONS (NGÂN HÀNG CÂU HỎI TRẮC NGHIỆM ĐA DẠNG 10 CÂU HỎI)
     console.log('Seeding Questions...');
     await db.collection('questions').deleteMany({});
     const questions = [
@@ -156,7 +319,7 @@ async function seedMongoDB() {
         subject: 'NoSQL',
         topic: 'MongoDB',
         difficulty: 'EASY',
-        content: 'Dinh dang luu tru du lieu mac dinh ben trong cua MongoDB la gi?',
+        content: 'Định dạng lưu trữ dữ liệu mặc định bên trong của MongoDB là gì?',
         options: [
           { key: 'A', text: 'XML' },
           { key: 'B', text: 'BSON (Binary JSON)' },
@@ -164,14 +327,14 @@ async function seedMongoDB() {
           { key: 'D', text: 'YAML' }
         ],
         correctAnswer: 'B',
-        explanation: 'MongoDB su dung BSON de ma hoa va bieu dien cac document mot cach nho gon va ho tro them nhieu kieu du lieu.'
+        explanation: 'MongoDB sử dụng định dạng BSON để tuần tự hóa và lưu trữ văn bản linh hoạt với hiệu suất nén cao.'
       },
       {
         _id: new ObjectId('670000000000000000000032'),
         subject: 'NoSQL',
         topic: 'Redis',
         difficulty: 'MEDIUM',
-        content: 'Kieu du lieu nao trong Redis phu hop nhat de xay dung bang xep hang (Leaderboard) theo diem so?',
+        content: 'Kiểu dữ liệu nào trong Redis phù hợp nhất để xây dựng bảng xếp hạng (Leaderboard) theo điểm số?',
         options: [
           { key: 'A', text: 'String' },
           { key: 'B', text: 'List' },
@@ -179,14 +342,14 @@ async function seedMongoDB() {
           { key: 'D', text: 'Hash' }
         ],
         correctAnswer: 'C',
-        explanation: 'Sorted Set lien ket moi thanh vien voi mot diem so (score) va luon tu dong sap xep thu tu.'
+        explanation: 'Sorted Set liên kết mỗi thành viên với một trọng số (score) và tự động duy trì thứ tự xếp hạng với độ phức tạp O(log(N)).'
       },
       {
         _id: new ObjectId('670000000000000000000033'),
         subject: 'NoSQL',
         topic: 'Cassandra',
         difficulty: 'HARD',
-        content: 'Trong Apache Cassandra, thanh phan nao quyet dinh node nao se luu tru ban ghi tren cluster?',
+        content: 'Trong Apache Cassandra, thành phần nào quyết định node nào sẽ lưu trữ bản ghi trên vòng tròn phân tán (ring)?',
         options: [
           { key: 'A', text: 'Clustering Key' },
           { key: 'B', text: 'Partition Key' },
@@ -194,14 +357,14 @@ async function seedMongoDB() {
           { key: 'D', text: 'Foreign Key' }
         ],
         correctAnswer: 'B',
-        explanation: 'Partition key duoc dua vao ham băm (Murmur3Partitioner) de xac dinh vi tri phan vung du lieu tren vong cluster.'
+        explanation: 'Partition Key được đưa vào hàm băm (Murmur3Partitioner) để xác định node sở hữu token tương ứng trong cluster.'
       },
       {
         _id: new ObjectId('670000000000000000000034'),
         subject: 'NoSQL',
         topic: 'Neo4j',
         difficulty: 'EASY',
-        content: 'Ngon ngu truy van do thi chinh thuc duoc su dung trong Neo4j la gi?',
+        content: 'Ngôn ngữ truy vấn đồ thị chính thức được sử dụng trong Neo4j là gì?',
         options: [
           { key: 'A', text: 'SQL' },
           { key: 'B', text: 'GraphQL' },
@@ -209,36 +372,91 @@ async function seedMongoDB() {
           { key: 'D', text: 'SPARQL' }
         ],
         correctAnswer: 'C',
-        explanation: 'Cypher la ngon ngu truy van khai bao mau khop duong di trong do thi cua Neo4j.'
+        explanation: 'Cypher là ngôn ngữ truy vấn khai báo mạnh mẽ mô tả các mẫu hình đồ thị dạng node và quan hệ (relationship).'
+      },
+      {
+        _id: new ObjectId('670000000000000000000035'),
+        subject: 'NoSQL',
+        topic: 'MongoDB',
+        difficulty: 'MEDIUM',
+        content: 'Toán tử nào trong MongoDB Aggregation Pipeline dùng để gom nhóm và tính toán các đại lượng tổng hợp?',
+        options: [
+          { key: 'A', text: '$match' },
+          { key: 'B', text: '$project' },
+          { key: 'C', text: '$group' },
+          { key: 'D', text: '$sort' }
+        ],
+        correctAnswer: 'C',
+        explanation: '$group nhóm các tài liệu theo giá trị trường được chỉ định và tính toán tổng, trung bình, min, max,...'
+      },
+      {
+        _id: new ObjectId('670000000000000000000036'),
+        subject: 'NoSQL',
+        topic: 'Redis',
+        difficulty: 'EASY',
+        content: 'Lệnh nào trong Redis được sử dụng để thiết lập thời gian tự động hủy (TTL) cho một khóa?',
+        options: [
+          { key: 'A', text: 'EXPIRE' },
+          { key: 'B', text: 'TIMEOUT' },
+          { key: 'C', text: 'DESTROY' },
+          { key: 'D', text: 'DELETE_AFTER' }
+        ],
+        correctAnswer: 'A',
+        explanation: 'Lệnh EXPIRE key seconds gán thời gian sống tính bằng giây cho một khóa trong Redis.'
+      },
+      {
+        _id: new ObjectId('670000000000000000000037'),
+        subject: 'NoSQL',
+        topic: 'Cassandra',
+        difficulty: 'MEDIUM',
+        content: 'Kiến trúc của Apache Cassandra là dạng nào sau đây?',
+        options: [
+          { key: 'A', text: 'Master - Slave' },
+          { key: 'B', text: 'Leader - Follower' },
+          { key: 'C', text: 'Masterless (Peer-to-Peer)' },
+          { key: 'D', text: 'Single Node Centralized' }
+        ],
+        correctAnswer: 'C',
+        explanation: 'Cassandra có kiến trúc phi tập trung hoàn toàn (Masterless), mọi node đều có vai trò bình đẳng và không có Single Point of Failure.'
+      },
+      {
+        _id: new ObjectId('670000000000000000000038'),
+        subject: 'NoSQL',
+        topic: 'Neo4j',
+        difficulty: 'MEDIUM',
+        content: 'Trong Neo4j, mối quan hệ (Relationship) giữa hai nút (Node) bắt buộc phải có thuộc tính nào?',
+        options: [
+          { key: 'A', text: 'Bắt buộc phải có hướng (Direction) và Kiểu (Type)' },
+          { key: 'B', text: 'Không cần hướng, chỉ cần tên' },
+          { key: 'C', text: 'Bắt buộc phải có trọng số số học' },
+          { key: 'D', text: 'Bắt buộc phải là quan hệ hai chiều đối xứng' }
+        ],
+        correctAnswer: 'A',
+        explanation: 'Mọi quan hệ trong Property Graph của Neo4j đều có tên phân loại (Type), nút bắt đầu và nút kết thúc (Direction).'
       }
     ];
     await db.collection('questions').insertMany(questions);
 
-    // 6. SEED EXAMS (Ky thi trac nghiem)
+    // 6. SEED EXAMS (KỲ THI TRẮC NGHIỆM ĐẦY ĐỦ 8 CÂU HỎI)
     console.log('Seeding Exams...');
     await db.collection('exams').deleteMany({});
     const examId = new ObjectId('670000000000000000000040');
     const exams = [
       {
         _id: examId,
-        title: 'Kiem Tra Giua Ky - Mon Du Lieu NoSQL',
-        courseId: courseId,
+        title: 'Khảo Sát & Đánh Giá Năng Lực Kiến Trúc Dữ Liệu NoSQL Enterprise',
+        courseId: courseId1,
         durationMinutes: 30,
-        totalQuestions: 4,
-        questions: [
-          new ObjectId('670000000000000000000031'),
-          new ObjectId('670000000000000000000032'),
-          new ObjectId('670000000000000000000033'),
-          new ObjectId('670000000000000000000034')
-        ],
+        totalQuestions: questions.length,
+        questions: questions.map(q => q._id),
         startTime: new Date('2026-10-01T08:00:00Z'),
-        endTime: new Date('2026-10-30T17:00:00Z'),
+        endTime: new Date('2026-12-30T17:00:00Z'),
         status: 'PUBLISHED'
       }
     ];
     await db.collection('exams').insertMany(exams);
 
-    // 7. SEED RESULTS (Ket qua nop bai ben vung sau khi cham diem)
+    // 7. SEED RESULTS (KẾT QUẢ BẢNG XẾP HẠNG & LỊCH SỬ THI MẪU)
     console.log('Seeding Results...');
     await db.collection('results').deleteMany({});
     const results = [
@@ -246,38 +464,69 @@ async function seedMongoDB() {
         _id: new ObjectId('670000000000000000000051'),
         examId: examId,
         studentId: new ObjectId('670000000000000000000003'),
-        studentName: 'Nguyen Trong Nguyen',
-        submittedAt: new Date('2026-10-14T09:30:00Z'),
+        studentCode: '2001230589',
+        studentName: 'Nguyễn Trọng Nguyên',
+        submittedAt: new Date(Date.now() - 3600000 * 2), // 2 giờ trước
         score: 10.0,
-        correctCount: 4,
-        totalCount: 4,
+        correctCount: 8,
+        totalCount: 8,
         answers: [
           { questionId: new ObjectId('670000000000000000000031'), selected: 'B', isCorrect: true },
           { questionId: new ObjectId('670000000000000000000032'), selected: 'C', isCorrect: true },
           { questionId: new ObjectId('670000000000000000000033'), selected: 'B', isCorrect: true },
-          { questionId: new ObjectId('670000000000000000000034'), selected: 'C', isCorrect: true }
+          { questionId: new ObjectId('670000000000000000000034'), selected: 'C', isCorrect: true },
+          { questionId: new ObjectId('670000000000000000000035'), selected: 'C', isCorrect: true },
+          { questionId: new ObjectId('670000000000000000000036'), selected: 'A', isCorrect: true },
+          { questionId: new ObjectId('670000000000000000000037'), selected: 'C', isCorrect: true },
+          { questionId: new ObjectId('670000000000000000000038'), selected: 'A', isCorrect: true }
         ]
       },
       {
         _id: new ObjectId('670000000000000000000052'),
         examId: examId,
         studentId: new ObjectId('670000000000000000000004'),
-        studentName: 'Pham Nguyen Khoi Nguyen',
-        submittedAt: new Date('2026-10-14T09:45:00Z'),
+        studentCode: '2001230578',
+        studentName: 'Phạm Nguyễn Khôi Nguyên',
+        submittedAt: new Date(Date.now() - 3600000 * 4), // 4 giờ trước
+        score: 8.75,
+        correctCount: 7,
+        totalCount: 8,
+        answers: [
+          { questionId: new ObjectId('670000000000000000000031'), selected: 'B', isCorrect: true },
+          { questionId: new ObjectId('670000000000000000000032'), selected: 'C', isCorrect: true },
+          { questionId: new ObjectId('670000000000000000000033'), selected: 'B', isCorrect: true },
+          { questionId: new ObjectId('670000000000000000000034'), selected: 'C', isCorrect: true },
+          { questionId: new ObjectId('670000000000000000000035'), selected: 'C', isCorrect: true },
+          { questionId: new ObjectId('670000000000000000000036'), selected: 'A', isCorrect: true },
+          { questionId: new ObjectId('670000000000000000000037'), selected: 'A', isCorrect: false },
+          { questionId: new ObjectId('670000000000000000000038'), selected: 'A', isCorrect: true }
+        ]
+      },
+      {
+        _id: new ObjectId('670000000000000000000053'),
+        examId: examId,
+        studentId: new ObjectId('670000000000000000000005'),
+        studentCode: '2001230303',
+        studentName: 'Võ Huỳnh Gia Huy',
+        submittedAt: new Date(Date.now() - 3600000 * 6), // 6 giờ trước
         score: 7.5,
-        correctCount: 3,
-        totalCount: 4,
+        correctCount: 6,
+        totalCount: 8,
         answers: [
           { questionId: new ObjectId('670000000000000000000031'), selected: 'B', isCorrect: true },
           { questionId: new ObjectId('670000000000000000000032'), selected: 'C', isCorrect: true },
           { questionId: new ObjectId('670000000000000000000033'), selected: 'A', isCorrect: false },
-          { questionId: new ObjectId('670000000000000000000034'), selected: 'C', isCorrect: true }
+          { questionId: new ObjectId('670000000000000000000034'), selected: 'C', isCorrect: true },
+          { questionId: new ObjectId('670000000000000000000035'), selected: 'C', isCorrect: true },
+          { questionId: new ObjectId('670000000000000000000036'), selected: 'A', isCorrect: true },
+          { questionId: new ObjectId('670000000000000000000037'), selected: 'B', isCorrect: false },
+          { questionId: new ObjectId('670000000000000000000038'), selected: 'A', isCorrect: true }
         ]
       }
     ];
     await db.collection('results').insertMany(results);
 
-    console.log('=== HOAN THANH KHOI TAO DU LIEU MAU MONGODB ===');
+    console.log('=== HOAN THANH SEED DU LIEU MAU PHONG PHU CHO MONGODB ===');
   } catch (err) {
     console.error('Loi seed MongoDB:', err.message);
   } finally {
