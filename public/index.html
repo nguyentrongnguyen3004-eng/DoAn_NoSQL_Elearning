@@ -157,7 +157,7 @@
         </div>
 
         <!-- Thanh tìm kiếm nhanh & User Controls -->
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 sm:gap-3">
           
           <!-- Search input thời gian thực (Tính năng 3) -->
           <div class="hidden lg:flex items-center relative w-64">
@@ -166,37 +166,87 @@
           </div>
 
           <!-- Nút chuyển đổi Dark Mode (Tính năng 4) -->
-          <button onclick="toggleDarkMode()" id="theme-toggle-btn" title="Chuyển chế độ Giao diện" class="w-10 h-10 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center transition-all">
-            <i class="fa-solid fa-moon dark:hidden text-indigo-600"></i>
-            <i class="fa-solid fa-sun hidden dark:inline text-amber-400"></i>
+          <button onclick="toggleDarkMode()" id="theme-toggle-btn" title="Chuyển chế độ Giao diện" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center transition-all">
+            <i class="fa-solid fa-moon dark:hidden text-indigo-600 text-sm sm:text-base"></i>
+            <i class="fa-solid fa-sun hidden dark:inline text-amber-400 text-sm sm:text-base"></i>
           </button>
 
           <!-- User Widget -->
-          <div id="auth-unlogged" class="flex items-center gap-2">
-            <button onclick="openLoginModal('login')" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+          <div id="auth-unlogged" class="flex items-center gap-1.5 sm:gap-2">
+            <button onclick="openLoginModal('login')" class="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
               Đăng nhập
             </button>
-            <button onclick="openLoginModal('register')" class="px-4.5 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 shadow-md shadow-brand-500/20 transition-all">
-              <i class="fa-solid fa-user-plus mr-1.5 text-xs"></i> Đăng ký
+            <button onclick="openLoginModal('register')" class="px-3 sm:px-4.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 shadow-md shadow-brand-500/20 transition-all">
+              <i class="fa-solid fa-user-plus mr-1 text-[11px] sm:text-xs"></i> Đăng ký
             </button>
           </div>
 
-          <div id="auth-logged" class="hidden flex items-center gap-3">
-            <div class="flex items-center gap-3 pl-2 sm:border-l sm:border-slate-200 dark:border-slate-800">
-              <img id="nav-user-avatar" src="" alt="Avatar" class="w-9 h-9 rounded-full object-cover ring-2 ring-brand-500/20">
+          <div id="auth-logged" class="hidden flex items-center gap-2 sm:gap-3">
+            <div class="flex items-center gap-2 sm:gap-3 pl-1 sm:pl-2 sm:border-l sm:border-slate-200 dark:border-slate-800">
+              <img id="nav-user-avatar" src="" alt="Avatar" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover ring-2 ring-brand-500/20">
               <div class="hidden sm:block text-left">
                 <div class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight" id="nav-user-name">Người dùng</div>
                 <div class="text-[11px] text-slate-400 dark:text-slate-500 font-medium" id="nav-user-role">Học viên</div>
               </div>
             </div>
-            <button onclick="logout()" title="Đăng xuất" class="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600 hover:border-rose-200 text-slate-500 flex items-center justify-center text-sm transition-all">
+            <button onclick="logout()" title="Đăng xuất" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600 hover:border-rose-200 text-slate-500 flex items-center justify-center text-xs sm:text-sm transition-all">
               <i class="fa-solid fa-arrow-right-from-bracket"></i>
             </button>
           </div>
 
+          <!-- NÚT HAMBURGER MOBILE MENU -->
+          <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-900 text-slate-700 dark:text-slate-200 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-800 transition-all focus:outline-none" aria-label="Toggle menu">
+            <i id="mobile-menu-icon" class="fa-solid fa-bars text-base"></i>
+          </button>
+
         </div>
 
       </div>
+    </div>
+
+    <!-- MOBILE MENU DRAWER / PANEL -->
+    <div id="mobile-menu-drawer" class="hidden md:hidden border-t border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl px-4 py-4 space-y-2 shadow-2xl transition-all">
+      <!-- Search trên mobile -->
+      <div class="relative w-full mb-3">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+        <input type="text" oninput="handleInstantSearch(this.value)" placeholder="Tìm kiếm khóa học, kỹ năng..." class="w-full pl-10 pr-4 py-2.5 bg-slate-100/90 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-brand-500 text-slate-800 dark:text-slate-200">
+      </div>
+
+      <!-- Links điều hướng Mobile -->
+      <button onclick="showSection('courses'); toggleMobileMenu()" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600 transition-all text-left">
+        <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-brand-600 dark:text-indigo-400 flex items-center justify-center">
+          <i class="fa-solid fa-compass text-sm"></i>
+        </div>
+        <span>Khám phá Khóa học</span>
+      </button>
+
+      <button onclick="showSection('exam'); toggleMobileMenu()" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600 transition-all text-left">
+        <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+          <i class="fa-solid fa-award text-sm"></i>
+        </div>
+        <span>Khảo sát Năng lực</span>
+      </button>
+
+      <button onclick="showSection('graph'); toggleMobileMenu()" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600 transition-all text-left">
+        <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+          <i class="fa-solid fa-network-wired text-sm"></i>
+        </div>
+        <span>Bản đồ Tri thức & Lộ trình</span>
+      </button>
+
+      <button onclick="showSection('history'); toggleMobileMenu()" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600 transition-all text-left">
+        <div class="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+          <i class="fa-solid fa-clock-rotate-left text-sm"></i>
+        </div>
+        <span>Kết quả của tôi & Chứng chỉ</span>
+      </button>
+
+      <button onclick="showSection('analytics'); toggleMobileMenu()" id="mobile-nav-btn-analytics" class="hidden w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600 transition-all text-left">
+        <div class="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 flex items-center justify-center">
+          <i class="fa-solid fa-chart-pie text-sm"></i>
+        </div>
+        <span>Quản lý & Phân tích Cassandra</span>
+      </button>
     </div>
   </nav>
 
@@ -1263,6 +1313,27 @@
       if (visGraph) setTimeout(() => initKnowledgeGraph(), 100);
     }
 
+    // TOGGLE MOBILE MENU DRAWER
+    function toggleMobileMenu() {
+      const drawer = document.getElementById('mobile-menu-drawer');
+      const icon = document.getElementById('mobile-menu-icon');
+      if (!drawer) return;
+      const isClosed = drawer.classList.contains('hidden');
+      if (isClosed) {
+        drawer.classList.remove('hidden');
+        if (icon) {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-xmark');
+        }
+      } else {
+        drawer.classList.add('hidden');
+        if (icon) {
+          icon.classList.remove('fa-xmark');
+          icon.classList.add('fa-bars');
+        }
+      }
+    }
+
     // 2. CHUYỂN SECTION TAB
     function showSection(sectionId) {
       document.querySelectorAll('.main-section').forEach(s => s.classList.add('hidden'));
@@ -1692,6 +1763,7 @@
     }
 
     function syncUserUI() {
+      const mobileAnalyticsBtn = document.getElementById('mobile-nav-btn-analytics');
       if (currentUser && currentToken) {
         document.getElementById('auth-unlogged').classList.add('hidden');
         document.getElementById('auth-logged').classList.remove('hidden');
@@ -1702,13 +1774,16 @@
 
         if (currentUser.role === 'TEACHER' || currentUser.role === 'ADMIN') {
           document.getElementById('nav-btn-analytics').classList.remove('hidden');
+          if (mobileAnalyticsBtn) mobileAnalyticsBtn.classList.remove('hidden');
         } else {
           document.getElementById('nav-btn-analytics').classList.add('hidden');
+          if (mobileAnalyticsBtn) mobileAnalyticsBtn.classList.add('hidden');
         }
       } else {
         document.getElementById('auth-unlogged').classList.remove('hidden');
         document.getElementById('auth-logged').classList.add('hidden');
         document.getElementById('nav-btn-analytics').classList.add('hidden');
+        if (mobileAnalyticsBtn) mobileAnalyticsBtn.classList.add('hidden');
       }
     }
 
@@ -2289,6 +2364,11 @@
           };
 
           visGraph = new vis.Network(container, data, options);
+
+          // Tự động căn chỉnh vừa khung hình và ổn định đồ thị
+          setTimeout(() => {
+            if (visGraph) visGraph.fit({ animation: { duration: 600, easingFunction: 'easeInOutQuad' } });
+          }, 350);
 
           // Tương tác khi click vào node trên đồ thị (Tính năng 5)
           visGraph.on('click', function(params) {
