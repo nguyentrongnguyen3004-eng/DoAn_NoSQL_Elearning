@@ -154,11 +154,11 @@
 
           <!-- User Widget -->
           <div id="auth-unlogged" class="flex items-center gap-2">
-            <button onclick="openLoginModal()" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+            <button onclick="openLoginModal('login')" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
               Đăng nhập
             </button>
-            <button onclick="openLoginModal()" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 shadow-md shadow-brand-500/20 transition-all">
-              Dùng thử ngay
+            <button onclick="openLoginModal('register')" class="px-4.5 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 shadow-md shadow-brand-500/20 transition-all">
+              <i class="fa-solid fa-user-plus mr-1.5 text-xs"></i> Đăng ký
             </button>
           </div>
 
@@ -842,63 +842,201 @@
   </div>
 
   <!-- ============================================================== -->
-  <!-- 10. MODAL ĐĂNG NHẬP THƯƠNG MẠI                                  -->
+  <!-- 10. MODAL ĐĂNG NHẬP & ĐĂNG KÝ CHUẨN THƯƠNG MẠI                   -->
   <!-- ============================================================== -->
-  <div id="login-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-200 dark:border-slate-800 relative animate-in fade-in zoom-in-95 duration-200">
+  <div id="login-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 dark:border-slate-800 relative animate-in fade-in zoom-in-95 duration-200 my-8">
       
-      <button onclick="closeLoginModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 text-lg w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-all">
+      <!-- Close button -->
+      <button onclick="closeLoginModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-all z-10">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
+      <!-- Modal Header with Logo -->
       <div class="text-center mb-6">
-        <div class="w-12 h-12 rounded-2xl bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-indigo-400 flex items-center justify-center mx-auto text-xl mb-3">
-          <i class="fa-solid fa-user-shield"></i>
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-500 text-white flex items-center justify-center mx-auto text-xl mb-3 shadow-lg shadow-brand-500/25">
+          <i class="fa-solid fa-graduation-cap"></i>
         </div>
-        <h3 class="text-xl font-black text-slate-900 dark:text-white">Đăng Nhập Tài Khoản</h3>
-        <p class="text-xs text-slate-500 mt-1">Chọn tài khoản trải nghiệm theo vai trò hệ thống</p>
+        <h3 id="auth-modal-title" class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Chào Mừng Trở Lại</h3>
+        <p id="auth-modal-subtitle" class="text-xs text-slate-500 dark:text-slate-400 mt-1">Nền tảng Học trực tuyến & Đánh giá năng lực NoSQL Đa mô hình</p>
       </div>
 
-      <div class="space-y-3 mb-6">
-        <!-- Student 1 -->
-        <button onclick="execLogin('student_nguyen')" class="w-full p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-brand-500 hover:bg-brand-50/50 dark:hover:bg-slate-800 flex items-center justify-between transition-all group">
-          <div class="flex items-center gap-3">
-            <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=100&q=80" alt="" class="w-10 h-10 rounded-full object-cover">
-            <div class="text-left">
-              <div class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-indigo-400">Nguyễn Trọng Nguyên</div>
-              <div class="text-xs text-slate-400">Học viên tiêu biểu</div>
-            </div>
-          </div>
-          <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-brand-500 text-xs"></i>
+      <!-- Segmented Tabs: Đăng nhập vs Đăng ký -->
+      <div class="flex p-1 bg-slate-100 dark:bg-slate-800/80 rounded-2xl mb-6">
+        <button id="tab-btn-login" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-xs sm:text-sm font-bold rounded-xl transition-all shadow-sm bg-white dark:bg-slate-900 text-brand-600 dark:text-indigo-400 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-right-to-bracket text-xs"></i> Đăng nhập
         </button>
-
-        <!-- Student 2 -->
-        <button onclick="execLogin('student_khoi')" class="w-full p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-brand-500 hover:bg-brand-50/50 dark:hover:bg-slate-800 flex items-center justify-between transition-all group">
-          <div class="flex items-center gap-3">
-            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80" alt="" class="w-10 h-10 rounded-full object-cover">
-            <div class="text-left">
-              <div class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-indigo-400">Khôi Nguyên</div>
-              <div class="text-xs text-slate-400">Học viên</div>
-            </div>
-          </div>
-          <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-brand-500 text-xs"></i>
-        </button>
-
-        <!-- Instructor -->
-        <button onclick="execLogin('instructor_alex')" class="w-full p-3.5 rounded-2xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/30 dark:bg-emerald-950/20 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 flex items-center justify-between transition-all group">
-          <div class="flex items-center gap-3">
-            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" alt="" class="w-10 h-10 rounded-full object-cover">
-            <div class="text-left">
-              <div class="font-bold text-sm text-emerald-900 dark:text-emerald-300">ThS. Hoàng Minh Đức</div>
-              <div class="text-xs text-emerald-600 dark:text-emerald-400">Giảng viên / Chuyên gia đào tạo</div>
-            </div>
-          </div>
-          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-200 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-200">INSTRUCTOR</span>
+        <button id="tab-btn-register" onclick="switchAuthTab('register')" class="flex-1 py-2.5 text-xs sm:text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-user-plus text-xs"></i> Đăng ký tài khoản
         </button>
       </div>
 
-      <div class="text-center text-xs text-slate-400">
-        Nền tảng bảo mật tiêu chuẩn mã hóa JWT Token 24h
+      <!-- Alert Message Box -->
+      <div id="auth-alert-box" class="hidden mb-4 p-3.5 rounded-2xl text-xs font-semibold flex items-center gap-2.5 transition-all"></div>
+
+      <!-- ================= TAB 1: FORM ĐĂNG NHẬP ================= -->
+      <div id="auth-view-login" class="space-y-4">
+        <form onsubmit="handleFormLogin(event)" class="space-y-3.5">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Tên đăng nhập hoặc Email</label>
+            <div class="relative">
+              <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <input type="text" id="login-input-username" required placeholder="Nhập username (vd: dinhnt, 2001230589)" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:bg-white dark:focus:bg-slate-900 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all dark:text-white placeholder:text-slate-400">
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">Mật khẩu</label>
+              <a href="javascript:void(0)" onclick="alert('Đối với các tài khoản Demo có sẵn, bạn có thể bấm trực tiếp các nút chọn nhanh bên dưới mà không cần mật khẩu!')" class="text-[11px] text-brand-600 dark:text-indigo-400 hover:underline">Quên mật khẩu?</a>
+            </div>
+            <div class="relative">
+              <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <input type="password" id="login-input-password" placeholder="Nhập mật khẩu của bạn" class="w-full pl-10 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:bg-white dark:focus:bg-slate-900 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all dark:text-white placeholder:text-slate-400">
+              <button type="button" onclick="togglePasswordVisibility('login-input-password', this)" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" id="btn-submit-login" class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold text-sm shadow-lg shadow-brand-500/25 transition-all flex items-center justify-center gap-2">
+            <span>Đăng Nhập Hệ Thống</span>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
+        </form>
+
+        <!-- Demo Accounts Divider -->
+        <div class="relative my-4 text-center">
+          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200 dark:border-slate-800"></div></div>
+          <span class="relative px-3 bg-white dark:bg-slate-900 text-[11px] font-bold uppercase tracking-wider text-slate-400">Hoặc đăng nhập nhanh 1-Click (Demo chấm điểm)</span>
+        </div>
+
+        <div class="space-y-2.5">
+          <!-- Student 1 -->
+          <button type="button" onclick="execLogin('student_nguyen')" class="w-full p-2.5 sm:p-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-brand-500 hover:bg-brand-50/40 dark:hover:bg-slate-800/60 flex items-center justify-between transition-all group">
+            <div class="flex items-center gap-3">
+              <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=100&q=80" alt="" class="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700">
+              <div class="text-left">
+                <div class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-indigo-400">Nguyễn Trọng Nguyên <span class="text-[10px] text-slate-400 font-mono">(2001230589)</span></div>
+                <div class="text-[11px] text-slate-400">Học viên tiêu biểu - Khảo sát đạt 10/10</div>
+              </div>
+            </div>
+            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-brand-50 dark:bg-brand-950/50 text-brand-700 dark:text-indigo-300">STUDENT</span>
+          </button>
+
+          <!-- Student 2 -->
+          <button type="button" onclick="execLogin('student_khoi')" class="w-full p-2.5 sm:p-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-brand-500 hover:bg-brand-50/40 dark:hover:bg-slate-800/60 flex items-center justify-between transition-all group">
+            <div class="flex items-center gap-3">
+              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80" alt="" class="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700">
+              <div class="text-left">
+                <div class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-indigo-400">Khôi Nguyên</div>
+                <div class="text-[11px] text-slate-400">Học viên mới tham gia</div>
+              </div>
+            </div>
+            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">STUDENT</span>
+          </button>
+
+          <!-- Instructor TS. Nguyễn Thị Định -->
+          <button type="button" onclick="execLogin('instructor_alex')" class="w-full p-2.5 sm:p-3 rounded-2xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/30 dark:bg-emerald-950/20 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 flex items-center justify-between transition-all group">
+            <div class="flex items-center gap-3">
+              <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=100&q=80" alt="" class="w-9 h-9 rounded-full object-cover border border-emerald-300 dark:border-emerald-700">
+              <div class="text-left">
+                <div class="font-bold text-xs sm:text-sm text-emerald-900 dark:text-emerald-300">TS. Nguyễn Thị Định</div>
+                <div class="text-[11px] text-emerald-600 dark:text-emerald-400">Giảng viên hướng dẫn / Quyền Quản trị</div>
+              </div>
+            </div>
+            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-200 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-200">INSTRUCTOR</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= TAB 2: FORM ĐĂNG KÝ ================= -->
+      <div id="auth-view-register" class="hidden space-y-4">
+        <form onsubmit="handleFormRegister(event)" class="space-y-3">
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Họ và Tên <span class="text-rose-500">*</span></label>
+              <div class="relative">
+                <i class="fa-solid fa-id-card absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" id="reg-fullname" required placeholder="Vd: Nguyễn Văn A" class="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm focus:bg-white dark:focus:bg-slate-900 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all dark:text-white placeholder:text-slate-400">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Tên đăng nhập <span class="text-rose-500">*</span></label>
+              <div class="relative">
+                <i class="fa-solid fa-at absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" id="reg-username" required placeholder="Vd: nguyenvana" class="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm focus:bg-white dark:focus:bg-slate-900 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all dark:text-white placeholder:text-slate-400">
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Địa chỉ Email <span class="text-rose-500">*</span></label>
+            <div class="relative">
+              <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <input type="email" id="reg-email" required placeholder="Vd: nguyenvana@huit.edu.vn" class="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm focus:bg-white dark:focus:bg-slate-900 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all dark:text-white placeholder:text-slate-400">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Mật khẩu <span class="text-rose-500">*</span></label>
+              <div class="relative">
+                <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="password" id="reg-password" required minlength="6" placeholder="Tối thiểu 6 ký tự" class="w-full pl-9 pr-8 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm focus:bg-white dark:focus:bg-slate-900 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all dark:text-white placeholder:text-slate-400">
+                <button type="button" onclick="togglePasswordVisibility('reg-password', this)" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Xác nhận mật khẩu <span class="text-rose-500">*</span></label>
+              <div class="relative">
+                <i class="fa-solid fa-shield-check absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="password" id="reg-confirm-password" required minlength="6" placeholder="Nhập lại mật khẩu" class="w-full pl-9 pr-8 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm focus:bg-white dark:focus:bg-slate-900 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all dark:text-white placeholder:text-slate-400">
+                <button type="button" onclick="togglePasswordVisibility('reg-confirm-password', this)" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lựa chọn vai trò (Học viên vs Giảng viên) -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Bạn tham gia với tư cách</label>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="cursor-pointer flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50/50 dark:has-[:checked]:bg-brand-950/30 transition-all">
+                <input type="radio" name="reg-role" value="STUDENT" checked class="text-brand-600 focus:ring-brand-500 w-4 h-4">
+                <div class="text-left">
+                  <div class="text-xs font-bold text-slate-900 dark:text-white">Học Viên</div>
+                  <div class="text-[10px] text-slate-400">Luyện thi & nhận chứng chỉ</div>
+                </div>
+              </label>
+
+              <label class="cursor-pointer flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50/50 dark:has-[:checked]:bg-emerald-950/30 transition-all">
+                <input type="radio" name="reg-role" value="TEACHER" class="text-emerald-600 focus:ring-emerald-500 w-4 h-4">
+                <div class="text-left">
+                  <div class="text-xs font-bold text-slate-900 dark:text-white">Giảng Viên</div>
+                  <div class="text-[10px] text-slate-400">Phân tích & Quản lý điểm</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" id="btn-submit-register" class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-600 via-indigo-600 to-purple-600 hover:opacity-95 text-white font-bold text-sm shadow-lg shadow-brand-500/25 transition-all flex items-center justify-center gap-2 mt-2">
+            <span>Hoàn Tất & Tạo Tài Khoản</span>
+            <i class="fa-solid fa-check text-xs"></i>
+          </button>
+        </form>
+      </div>
+
+      <!-- Footer Info -->
+      <div class="mt-5 text-center text-[11px] text-slate-400 dark:text-slate-500 border-t border-slate-100 dark:border-slate-800/80 pt-3 flex items-center justify-center gap-2">
+        <i class="fa-solid fa-lock text-[10px] text-emerald-500"></i>
+        <span>Mật khẩu được mã hóa an toàn bcrypt & JWT Authentication</span>
       </div>
     </div>
   </div>
@@ -952,7 +1090,7 @@
   <!-- 12. JAVASCRIPT LOGIC CLIENT HOÀN CHỈNH                          -->
   <!-- ============================================================== -->
   <script>
-    const API_BASE = 'http://127.0.0.1:5050/api';
+    const API_BASE = window.location.origin + '/api';
     const EXAM_ID = '670000000000000000000040';
     let currentToken = localStorage.getItem('edupro_token') || null;
     let currentUser = JSON.parse(localStorage.getItem('edupro_user') || 'null');
@@ -1038,8 +1176,181 @@
     }
 
     // 4. AUTH VÀ SYNC USER
-    function openLoginModal() { document.getElementById('login-modal').classList.remove('hidden'); }
-    function closeLoginModal() { document.getElementById('login-modal').classList.add('hidden'); }
+    function openLoginModal(tab = 'login') {
+      document.getElementById('login-modal').classList.remove('hidden');
+      switchAuthTab(tab);
+      hideAuthAlert();
+    }
+
+    function closeLoginModal() {
+      document.getElementById('login-modal').classList.add('hidden');
+      hideAuthAlert();
+    }
+
+    function switchAuthTab(tab) {
+      const loginTabBtn = document.getElementById('tab-btn-login');
+      const regTabBtn = document.getElementById('tab-btn-register');
+      const loginView = document.getElementById('auth-view-login');
+      const regView = document.getElementById('auth-view-register');
+      const modalTitle = document.getElementById('auth-modal-title');
+      const modalSubtitle = document.getElementById('auth-modal-subtitle');
+
+      hideAuthAlert();
+
+      if (tab === 'login') {
+        loginTabBtn.className = 'flex-1 py-2.5 text-xs sm:text-sm font-bold rounded-xl transition-all shadow-sm bg-white dark:bg-slate-900 text-brand-600 dark:text-indigo-400 flex items-center justify-center gap-2';
+        regTabBtn.className = 'flex-1 py-2.5 text-xs sm:text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 flex items-center justify-center gap-2';
+        loginView.classList.remove('hidden');
+        regView.classList.add('hidden');
+        modalTitle.textContent = 'Chào Mừng Trở Lại';
+        modalSubtitle.textContent = 'Nền tảng Học trực tuyến & Đánh giá năng lực NoSQL Đa mô hình';
+      } else {
+        regTabBtn.className = 'flex-1 py-2.5 text-xs sm:text-sm font-bold rounded-xl transition-all shadow-sm bg-white dark:bg-slate-900 text-brand-600 dark:text-indigo-400 flex items-center justify-center gap-2';
+        loginTabBtn.className = 'flex-1 py-2.5 text-xs sm:text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 flex items-center justify-center gap-2';
+        regView.classList.remove('hidden');
+        loginView.classList.add('hidden');
+        modalTitle.textContent = 'Đăng Ký Tài Khoản';
+        modalSubtitle.textContent = 'Tạo hồ sơ học tập và tham gia làm bài khảo sát năng lực NoSQL';
+      }
+    }
+
+    function togglePasswordVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const icon = btn.querySelector('i');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+
+    function showAuthAlert(message, type = 'error') {
+      const box = document.getElementById('auth-alert-box');
+      box.classList.remove('hidden', 'bg-rose-50', 'text-rose-700', 'border-rose-200', 'dark:bg-rose-950/40', 'dark:text-rose-300', 'bg-emerald-50', 'text-emerald-700', 'border-emerald-200', 'dark:bg-emerald-950/40', 'dark:text-emerald-300');
+      
+      if (type === 'error') {
+        box.classList.add('bg-rose-50', 'text-rose-700', 'border', 'border-rose-200', 'dark:bg-rose-950/40', 'dark:text-rose-300');
+        box.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <span>${message}</span>`;
+      } else {
+        box.classList.add('bg-emerald-50', 'text-emerald-700', 'border', 'border-emerald-200', 'dark:bg-emerald-950/40', 'dark:text-emerald-300');
+        box.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>${message}</span>`;
+      }
+    }
+
+    function hideAuthAlert() {
+      const box = document.getElementById('auth-alert-box');
+      if (box) box.classList.add('hidden');
+    }
+
+    async function handleFormLogin(e) {
+      e.preventDefault();
+      const username = document.getElementById('login-input-username').value.trim();
+      const password = document.getElementById('login-input-password').value;
+      const submitBtn = document.getElementById('btn-submit-login');
+
+      if (!username) {
+        showAuthAlert('Vui lòng nhập tên đăng nhập hoặc email');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Đang xác thực...</span>';
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const json = await res.json();
+        if (json.success) {
+          showAuthAlert('Đăng nhập thành công! Đang tải dữ liệu...', 'success');
+          currentToken = json.data.token;
+          currentUser = json.data.user;
+          localStorage.setItem('edupro_token', currentToken);
+          localStorage.setItem('edupro_user', JSON.stringify(currentUser));
+
+          setTimeout(() => {
+            syncUserUI();
+            closeLoginModal();
+            loadUserHistory();
+            loadTelemetryLogs();
+          }, 600);
+        } else {
+          showAuthAlert(json.message || 'Đăng nhập thất bại!');
+        }
+      } catch (err) {
+        showAuthAlert('Lỗi kết nối máy chủ: ' + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>Đăng Nhập Hệ Thống</span> <i class="fa-solid fa-arrow-right text-xs"></i>';
+      }
+    }
+
+    async function handleFormRegister(e) {
+      e.preventDefault();
+      const fullName = document.getElementById('reg-fullname').value.trim();
+      const username = document.getElementById('reg-username').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const confirmPassword = document.getElementById('reg-confirm-password').value;
+      const roleElem = document.querySelector('input[name="reg-role"]:checked');
+      const role = roleElem ? roleElem.value : 'STUDENT';
+      const submitBtn = document.getElementById('btn-submit-register');
+
+      if (!fullName || !username || !email || !password) {
+        showAuthAlert('Vui lòng điền đầy đủ các trường bắt buộc');
+        return;
+      }
+
+      if (password.length < 6) {
+        showAuthAlert('Mật khẩu phải có tối thiểu 6 ký tự');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showAuthAlert('Mật khẩu xác nhận không trùng khớp!');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Đang tạo tài khoản...</span>';
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fullName, username, email, password, role })
+        });
+        const json = await res.json();
+
+        if (json.success) {
+          showAuthAlert('Đăng ký tài khoản thành công! Đang đăng nhập...', 'success');
+          currentToken = json.data.token;
+          currentUser = json.data.user;
+          localStorage.setItem('edupro_token', currentToken);
+          localStorage.setItem('edupro_user', JSON.stringify(currentUser));
+
+          setTimeout(() => {
+            syncUserUI();
+            closeLoginModal();
+            loadUserHistory();
+            loadTelemetryLogs();
+          }, 800);
+        } else {
+          showAuthAlert(json.message || 'Đăng ký không thành công!');
+        }
+      } catch (err) {
+        showAuthAlert('Lỗi kết nối máy chủ: ' + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>Hoàn Tất & Tạo Tài Khoản</span> <i class="fa-solid fa-check text-xs"></i>';
+      }
+    }
 
     async function execLogin(username) {
       try {
@@ -1746,6 +2057,11 @@
           eventSource.close();
           setTimeout(initLiveEventStream, 5000);
         };
+      } catch (err) {
+        console.error('Loi khoi tao Live Event Stream:', err);
+      }
+    }
+
     // 15. THUC THI LENH TRUC TIEP TREN NOSQL QUERY RUNNER
     async function executeLiveQuery() {
       const targetDb = document.getElementById('query-runner-target').value;
