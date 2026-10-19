@@ -450,6 +450,132 @@ async function seedMongoDB() {
         content: 'Nguyên lý định tuyến tập trung, xác thực JWT tập trung và xử lý CORS/Rate Limiting.',
         video: { url: 'https://video.huit.edu.vn/api-gateway.mp4', durationSeconds: 2200 },
         materials: ['microservice_design_pattern.pdf']
+      },
+      {
+        _id: new ObjectId('670000000000000000000028'),
+        courseId: courseId3,
+        order: 2,
+        title: 'Event-Driven Microservices với RabbitMQ & Redis Pub/Sub',
+        content: 'Mô hình phát tán thông điệp bất đồng bộ, Saga pattern và phân tán giao dịch.',
+        video: { url: 'https://video.huit.edu.vn/event-driven.mp4', durationSeconds: 2400 },
+        materials: ['event_driven_saga.pdf']
+      },
+
+      // Lessons cho Khóa 4 (DevOps & K8s)
+      {
+        _id: new ObjectId('670000000000000000000029'),
+        courseId: courseId4,
+        order: 1,
+        title: 'Containerization với Docker & Docker Compose Nâng Cao',
+        content: 'Tối ưu Multi-stage build, quản lý network và persistent volumes an toàn.',
+        video: { url: 'https://video.huit.edu.vn/docker-adv.mp4', durationSeconds: 2100 },
+        materials: ['docker_best_practices.pdf']
+      },
+      {
+        _id: new ObjectId('67000000000000000000002a'),
+        courseId: courseId4,
+        order: 2,
+        title: 'Triển Khai Cụm Kubernetes: Pod, Deployment & StatefulSet',
+        content: 'Triển khai NoSQL database trên K8s với StatefulSet, PersistentVolumeClaim và Ingress.',
+        video: { url: 'https://video.huit.edu.vn/k8s-statefulset.mp4', durationSeconds: 2700 },
+        materials: ['k8s_architecture.pdf']
+      },
+
+      // Lessons cho Khóa 5 (Neo4j Graph)
+      {
+        _id: new ObjectId('67000000000000000000002b'),
+        courseId: courseId5,
+        order: 1,
+        title: 'Cơ Sở Đồ Thị Thuộc Tính (Property Graph Model)',
+        content: 'Mô hình hóa Node, Label, Relationship và các thuộc tính liên kết ngữ nghĩa.',
+        video: { url: 'https://video.huit.edu.vn/graph-intro.mp4', durationSeconds: 1900 },
+        materials: ['property_graph_model.pdf']
+      },
+      {
+        _id: new ObjectId('67000000000000000000002c'),
+        courseId: courseId5,
+        order: 2,
+        title: 'Cypher Query Language: Pattern Matching & Thuật Toán Gợi Ý',
+        content: 'Tìm đường đi ngắn nhất (Shortest Path), PageRank và phân cụm cộng đồng.',
+        video: { url: 'https://video.huit.edu.vn/cypher-advanced.mp4', durationSeconds: 2400 },
+        materials: ['graph_algorithms_neo4j.pdf']
+      },
+
+      // Lessons cho Khóa 6 (Bảo mật Web)
+      {
+        _id: new ObjectId('67000000000000000000002d'),
+        courseId: courseId6,
+        order: 1,
+        title: 'Bảo Vệ API Khỏi Tấn Công NoSQL Injection & Broken Auth',
+        content: 'Kỹ thuật lọc query MongoDB, kiểm tra JWT expiration và phân quyền theo vai trò.',
+        video: { url: 'https://video.huit.edu.vn/security-api.mp4', durationSeconds: 2000 },
+        materials: ['owasp_top10_api.pdf']
+      },
+
+      // Lessons cho Khóa 7 (Spark & Big Data)
+      {
+        _id: new ObjectId('67000000000000000000002e'),
+        courseId: courseId7,
+        order: 1,
+        title: 'Khởi Tạo PySpark Cluster & Kiến Trúc Resilient Distributed Datasets',
+        content: 'Hiểu sâu về cơ chế tính toán lười (Lazy Evaluation) và DAG Scheduler trong Spark.',
+        video: { url: 'https://video.huit.edu.vn/spark-rdd.mp4', durationSeconds: 2300 },
+        materials: ['pyspark_handbook.pdf']
+      },
+
+      // Lessons cho Khóa 8 (Next.js 15)
+      {
+        _id: new ObjectId('67000000000000000000002f'),
+        courseId: courseId8,
+        order: 1,
+        title: 'Next.js 15 App Router & Server Components',
+        content: 'Xây dựng giao diện hiệu năng cao, streaming SSR và tối ưu hóa tải trang.',
+        video: { url: 'https://video.huit.edu.vn/nextjs15.mp4', durationSeconds: 2100 },
+        materials: ['nextjs_architecture.pdf']
+      },
+
+      // Lessons cho Khóa 9 (AWS Architect)
+      {
+        _id: new ObjectId('670000000000000000000030'),
+        courseId: courseId9,
+        order: 1,
+        title: 'Thiết Kế Mạng Đa Vùng VPC & Bảo Mật AWS Cloud',
+        content: 'Thiết lập Subnet công khai/riêng tư, NAT Gateway, Security Group và Route Table.',
+        video: { url: 'https://video.huit.edu.vn/aws-vpc.mp4', durationSeconds: 2500 },
+        materials: ['aws_solutions_architect.pdf']
+      },
+
+      // Lessons cho Khóa 10 (Generative AI & RAG)
+      {
+        _id: new ObjectId('670000000000000000000041'),
+        courseId: courseId10,
+        order: 1,
+        title: 'Xây Dựng Pipeline RAG Với Vector Database & LLM',
+        content: 'Kỹ thuật Chunking văn bản, Embeddings generation và truy vấn tương đồng Cosine.',
+        video: { url: 'https://video.huit.edu.vn/rag-ai.mp4', durationSeconds: 2600 },
+        materials: ['generative_ai_rag_blueprint.pdf']
+      },
+
+      // Lessons cho Khóa 11 (Machine Learning)
+      {
+        _id: new ObjectId('670000000000000000000042'),
+        courseId: courseId11,
+        order: 1,
+        title: 'Quy Trình Xây Dựng & Đánh Giá Mô Hình Học Máy',
+        content: 'Tiền xử lý dữ liệu, kiểm thử chéo K-Fold, Ma trận nhầm lẫn và chỉ số F1-Score.',
+        video: { url: 'https://video.huit.edu.vn/ml-pipeline.mp4', durationSeconds: 2400 },
+        materials: ['ml_evaluation_metrics.pdf']
+      },
+
+      // Lessons cho Khóa 12 (BigQuery Data Warehouse)
+      {
+        _id: new ObjectId('670000000000000000000043'),
+        courseId: courseId12,
+        order: 1,
+        title: 'Thiết Kế Kho Dữ Liệu Lớn Với Google BigQuery',
+        content: 'Phân vùng theo ngày (Partitioning), gom cụm (Clustering) và tối ưu hóa chi phí slot.',
+        video: { url: 'https://video.huit.edu.vn/bigquery-optimization.mp4', durationSeconds: 2200 },
+        materials: ['bigquery_best_practices.pdf']
       }
     ];
     await db.collection('lessons').insertMany(lessons);
