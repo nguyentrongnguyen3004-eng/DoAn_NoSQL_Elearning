@@ -1,6 +1,6 @@
 // ==============================================================================
 // HOC PHAN DU LIEU NOSQL - HUIT (KHOA CNTT)
-// SCRIPT KHOI TAO SCHEMA & SEED DATA ĐA DẠNG CHO MONGODB
+// SCRIPT KHOI TAO SCHEMA & SEED DATA ĐA DẠNG QUY MÔ LỚN CHO MONGODB
 // NHOM 18: NEN TANG E-LEARNING & LUYEN THI TRAC NGHIEM
 // ==============================================================================
 
@@ -96,11 +96,22 @@ async function seedMongoDB() {
         status: 'ACTIVE',
         avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
         createdAt: new Date()
+      },
+      {
+        _id: new ObjectId('670000000000000000000007'),
+        username: 'instructor_lan',
+        email: 'huonglan.do@huit.edu.vn',
+        fullName: 'TS. Đỗ Thị Hương Lan',
+        role: 'TEACHER',
+        department: 'Trí Tuệ Nhân Tạo & Dữ Liệu',
+        status: 'ACTIVE',
+        avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=150&q=80',
+        createdAt: new Date()
       }
     ];
     await db.collection('users').insertMany(users);
 
-    // 3. SEED COURSES (DANH MỤC KHÓA HỌC PHONG PHÚ: DATA ENG, FULLSTACK, DEVOPS & CLOUD)
+    // 3. SEED COURSES (DANH MỤC KHÓA HỌC PHONG PHÚ: 12 KHÓA HỌC CHUYÊN SÂU ĐỦ CÁC LĨNH VỰC)
     console.log('Seeding Courses...');
     await db.collection('courses').deleteMany({});
     
@@ -110,8 +121,15 @@ async function seedMongoDB() {
     const courseId4 = new ObjectId('670000000000000000000013');
     const courseId5 = new ObjectId('670000000000000000000014');
     const courseId6 = new ObjectId('670000000000000000000015');
+    const courseId7 = new ObjectId('670000000000000000000016');
+    const courseId8 = new ObjectId('670000000000000000000017');
+    const courseId9 = new ObjectId('670000000000000000000018');
+    const courseId10 = new ObjectId('670000000000000000000019');
+    const courseId11 = new ObjectId('67000000000000000000001a');
+    const courseId12 = new ObjectId('67000000000000000000001b');
 
     const courses = [
+      // 1. Data Engineering
       {
         _id: courseId1,
         code: '01201073',
@@ -153,6 +171,48 @@ async function seedMongoDB() {
         createdAt: new Date()
       },
       {
+        _id: courseId5,
+        code: 'GRAPH-501',
+        title: 'Neo4j & Đồ Thị Tri Thức Cho Mạng Xã Hội',
+        tagline: 'Phân tích mối quan hệ dữ liệu phức tạp, Graph AI, Fraud Detection và Gợi ý khóa học thông minh.',
+        instructorId: new ObjectId('670000000000000000000002'),
+        instructorName: 'TS. Nguyễn Thị Định',
+        category: 'Data Engineering',
+        credits: 2,
+        price: 1750000,
+        originalPrice: 2200000,
+        rating: 4.96,
+        reviewsCount: 760,
+        durationHours: 28,
+        description: 'Làm chủ ngôn ngữ Cypher, tối ưu thuật toán tìm đường đi ngắn nhất Dijkstra, và xây dựng Knowledge Graph doanh nghiệp.',
+        thumbnail: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
+        totalLessons: 3,
+        status: 'PUBLISHED',
+        createdAt: new Date()
+      },
+      {
+        _id: courseId7,
+        code: 'DE-202',
+        title: 'Apache Spark & Big Data Analytics với PySpark',
+        tagline: 'Xử lý dữ liệu phân tán quy mô Terabyte, tối ưu hóa RDD, DataFrame và kiến trúc Hadoop HDFS.',
+        instructorId: new ObjectId('670000000000000000000002'),
+        instructorName: 'TS. Nguyễn Thị Định',
+        category: 'Data Engineering',
+        credits: 3,
+        price: 2290000,
+        originalPrice: 2890000,
+        rating: 4.93,
+        reviewsCount: 1120,
+        durationHours: 40,
+        description: 'Thành thạo lập trình PySpark xử lý song song phân tán trên cluster, xây dựng mô hình trích xuất dữ liệu tự động.',
+        thumbnail: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=800&q=80',
+        totalLessons: 3,
+        status: 'PUBLISHED',
+        createdAt: new Date()
+      },
+
+      // 2. Fullstack Development
+      {
         _id: courseId3,
         code: 'FS-301',
         title: 'Fullstack Microservices với Node.js & React',
@@ -172,6 +232,48 @@ async function seedMongoDB() {
         status: 'PUBLISHED',
         createdAt: new Date()
       },
+      {
+        _id: courseId6,
+        code: 'FS-302',
+        title: 'Bảo Mật Ứng Dụng Web & An Toàn API Enterprise',
+        tagline: 'Phòng chống OWASP Top 10, phân quyền RBAC/ABAC, mã hóa end-to-end và Rate Limiting.',
+        instructorId: new ObjectId('670000000000000000000001'),
+        instructorName: 'Quản Trị Viên Hệ Thống',
+        category: 'Fullstack Development',
+        credits: 3,
+        price: 1950000,
+        originalPrice: 2600000,
+        rating: 4.87,
+        reviewsCount: 610,
+        durationHours: 30,
+        description: 'Kỹ thuật bảo mật toàn diện cho hệ thống: chống tấn công DDoS, SQL/NoSQL Injection, bảo vệ khóa JWT và kiểm thử thâm nhập an toàn.',
+        thumbnail: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80',
+        totalLessons: 3,
+        status: 'PUBLISHED',
+        createdAt: new Date()
+      },
+      {
+        _id: courseId8,
+        code: 'FS-303',
+        title: 'Next.js 15, TypeScript & Tailwind CSS Fullstack',
+        tagline: 'Xây dựng ứng dụng web hiện đại với Server Components, SSR/SSG và Server Actions chuẩn quốc tế.',
+        instructorId: new ObjectId('670000000000000000000006'),
+        instructorName: 'ThS. Hoàng Minh Đức',
+        category: 'Fullstack Development',
+        credits: 3,
+        price: 1990000,
+        originalPrice: 2790000,
+        rating: 4.94,
+        reviewsCount: 1850,
+        durationHours: 38,
+        description: 'Làm chủ framework web dẫn đầu thị trường với kiến trúc App Router, tối ưu SEO, Core Web Vitals và thiết kế Glassmorphism.',
+        thumbnail: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80',
+        totalLessons: 3,
+        status: 'PUBLISHED',
+        createdAt: new Date()
+      },
+
+      // 3. DevOps & Cloud
       {
         _id: courseId4,
         code: 'DEV-401',
@@ -193,41 +295,83 @@ async function seedMongoDB() {
         createdAt: new Date()
       },
       {
-        _id: courseId5,
-        code: 'GRAPH-501',
-        title: 'Neo4j & Đồ Thị Tri Thức Cho Mạng Xã Hội',
-        tagline: 'Phân tích mối quan hệ dữ liệu phức tạp, Graph AI, Fraud Detection và Gợi ý khóa học thông minh.',
-        instructorId: new ObjectId('670000000000000000000002'),
-        instructorName: 'TS. Nguyễn Thị Định',
-        category: 'Data Engineering',
-        credits: 2,
-        price: 1750000,
-        originalPrice: 2200000,
-        rating: 4.96,
-        reviewsCount: 760,
-        durationHours: 28,
-        description: 'Làm chủ ngôn ngữ Cypher, tối ưu thuật toán tìm đường đi ngắn nhất Dijkstra, và xây dựng Knowledge Graph doanh nghiệp.',
-        thumbnail: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
+        _id: courseId9,
+        code: 'DEV-402',
+        title: 'AWS Certified Solutions Architect & Terraform IaC',
+        tagline: 'Thiết kế hạ tầng chịu tải cao trên Amazon Web Services, tự động hóa với Terraform Code.',
+        instructorId: new ObjectId('670000000000000000000001'),
+        instructorName: 'Quản Trị Viên Hệ Thống',
+        category: 'DevOps & Cloud',
+        credits: 4,
+        price: 2690000,
+        originalPrice: 3500000,
+        rating: 4.97,
+        reviewsCount: 1420,
+        durationHours: 46,
+        description: 'Luyện thi chứng chỉ AWS SAA-C03 và thành thạo hạ tầng code hóa: VPC đa vùng, Auto Scaling, RDS Multi-AZ, S3 và CloudFront.',
+        thumbnail: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80',
+        totalLessons: 3,
+        status: 'PUBLISHED',
+        createdAt: new Date()
+      },
+
+      // 4. Trí Tuệ Nhân Tạo & AI Engineering
+      {
+        _id: courseId10,
+        code: 'AI-601',
+        title: 'Xây Dựng Ứng Dụng Generative AI & RAG Chuyên Sâu',
+        tagline: 'Tích hợp Large Language Models (LLMs), Vector Database Milvus/Pinecone và LangChain Framework.',
+        instructorId: new ObjectId('670000000000000000000007'),
+        instructorName: 'TS. Đỗ Thị Hương Lan',
+        category: 'AI & Data Science',
+        credits: 3,
+        price: 2890000,
+        originalPrice: 3800000,
+        rating: 4.98,
+        reviewsCount: 2310,
+        durationHours: 44,
+        description: 'Kỹ thuật tiên tiến nhất về Retrieval-Augmented Generation (RAG), Fine-tuning mô hình ngôn ngữ và xây dựng AI Agent doanh nghiệp.',
+        thumbnail: 'https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=800&q=80',
         totalLessons: 3,
         status: 'PUBLISHED',
         createdAt: new Date()
       },
       {
-        _id: courseId6,
-        code: 'FS-302',
-        title: 'Bảo Mật Ứng Dụng Web & An Toàn API Enterprise',
-        tagline: 'Phòng chống OWASP Top 10, phân quyền RBAC/ABAC, mã hóa end-to-end và Rate Limiting.',
-        instructorId: new ObjectId('670000000000000000000001'),
-        instructorName: 'Quản Trị Viên Hệ Thống',
-        category: 'Fullstack Development',
+        _id: courseId11,
+        code: 'AI-602',
+        title: 'Machine Learning & Deep Learning Với Python',
+        tagline: 'Nắm vững toán đại số tuyến tính, giải thuật Scikit-Learn, PyTorch và mạng nơ-ron tích chập (CNN).',
+        instructorId: new ObjectId('670000000000000000000007'),
+        instructorName: 'TS. Đỗ Thị Hương Lan',
+        category: 'AI & Data Science',
+        credits: 4,
+        price: 2490000,
+        originalPrice: 3290000,
+        rating: 4.91,
+        reviewsCount: 1670,
+        durationHours: 50,
+        description: 'Từ cơ bản đến chuyên sâu: Huấn luyện mô hình phân loại, dự đoán chuỗi thời gian, Computer Vision và xử lý ngôn ngữ tự nhiên (NLP).',
+        thumbnail: 'https://images.unsplash.com/photo-1527474305487-b87b222841cc?auto=format&fit=crop&w=800&q=80',
+        totalLessons: 3,
+        status: 'PUBLISHED',
+        createdAt: new Date()
+      },
+      {
+        _id: courseId12,
+        code: 'DE-203',
+        title: 'Data Warehouse Hiện Đại Với Google BigQuery & dbt',
+        tagline: 'Mô hình hóa dữ liệu sao/tuyết, tối ưu hóa chi phí truy vấn phân tích SQL Petabyte quy mô lớn.',
+        instructorId: new ObjectId('670000000000000000000002'),
+        instructorName: 'TS. Nguyễn Thị Định',
+        category: 'Data Engineering',
         credits: 3,
-        price: 1950000,
-        originalPrice: 2600000,
-        rating: 4.87,
-        reviewsCount: 610,
-        durationHours: 30,
-        description: 'Kỹ thuật bảo mật toàn diện cho hệ thống: chống tấn công DDoS, SQL/NoSQL Injection, bảo vệ khóa JWT và kiểm thử thâm nhập an toàn.',
-        thumbnail: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80',
+        price: 1990000,
+        originalPrice: 2590000,
+        rating: 4.89,
+        reviewsCount: 890,
+        durationHours: 34,
+        description: 'Chiến lược xây dựng kho dữ liệu đám mây doanh nghiệp: Partitioning, Clustering, kiểm thử tự động với data build tool (dbt).',
+        thumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80',
         totalLessons: 3,
         status: 'PUBLISHED',
         createdAt: new Date()
@@ -526,7 +670,7 @@ async function seedMongoDB() {
     ];
     await db.collection('results').insertMany(results);
 
-    console.log('=== HOAN THANH SEED DU LIEU MAU PHONG PHU CHO MONGODB ===');
+    console.log('=== HOAN THANH SEED DU LIEU MAU QUY MO LON CHO MONGODB ===');
   } catch (err) {
     console.error('Loi seed MongoDB:', err.message);
   } finally {
