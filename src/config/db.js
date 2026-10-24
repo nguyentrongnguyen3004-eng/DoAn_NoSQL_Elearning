@@ -24,7 +24,13 @@ async function connectMongoDB() {
 const redisClient = new Redis({
   host: process.env.REDIS_HOST || '127.0.0.1',
   port: parseInt(process.env.REDIS_PORT || '6379'),
-  lazyConnect: true
+  lazyConnect: true,
+  enableOfflineQueue: false,
+  maxRetriesPerRequest: 1,
+  retryStrategy(times) {
+    if (times > 5) return null;
+    return Math.min(times * 150, 1500);
+  }
 });
 
 redisClient.on('connect', () => console.log('[Redis]     Da ket noi thanh cong'));

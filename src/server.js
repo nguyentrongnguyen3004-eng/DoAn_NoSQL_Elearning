@@ -34,7 +34,13 @@ app.use('/api/graph', graphRoutes);
 const redisSubscriber = new Redis({
   host: process.env.REDIS_HOST || '127.0.0.1',
   port: parseInt(process.env.REDIS_PORT || '6379'),
-  lazyConnect: true
+  lazyConnect: true,
+  enableOfflineQueue: false,
+  maxRetriesPerRequest: 1,
+  retryStrategy(times) {
+    if (times > 5) return null;
+    return Math.min(times * 150, 1500);
+  }
 });
 
 redisSubscriber.connect().then(() => {
@@ -188,6 +194,14 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Helper timeout cho kiem tra ket noi nhanh tranh treo request
+function withTimeout(promise, ms = 1200) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms))
+  ]);
+}
+
 // API Tra cuu trang thai ket noi thuc te toi 4 CSDL
 app.get('/api/databases/status', async (req, res) => {
   const status = {
@@ -200,13 +214,13 @@ app.get('/api/databases/status', async (req, res) => {
   try {
     const db = getMongoDb();
     if (db) {
-      await db.command({ ping: 1 });
+      await withTimeout(db.command({ ping: 1 }), 1000);
       status.mongodb = true;
     }
   } catch (e) {}
 
   try {
-    const pong = await redisClient.ping();
+    const pong = await withTimeout(redisClient.ping(), 1000);
     if (pong === 'PONG') status.redis = true;
   } catch (e) {}
 
@@ -217,7 +231,7 @@ app.get('/api/databases/status', async (req, res) => {
   } catch (e) {}
 
   try {
-    await neo4jDriver.verifyConnectivity();
+    await withTimeout(neo4jDriver.verifyConnectivity(), 1200);
     status.neo4j = true;
   } catch (e) {}
 
