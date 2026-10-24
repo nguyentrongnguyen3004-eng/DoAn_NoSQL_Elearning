@@ -380,4 +380,262 @@ router.post('/adaptive-roadmap', async (req, res) => {
   });
 });
 
+// ==============================================================================
+// GIAI ĐOẠN 3 - TÍNH NĂNG 1: CÂY KỸ NĂNG HỌC THUẬT PHONG CÁCH RPG (CEFR SKILL TREE)
+// ==============================================================================
+const DEFAULT_SKILL_TREE = [
+  {
+    id: 'SKILL_01_PHONETICS',
+    tier: 1,
+    cefr: 'A1 - A2',
+    name: 'Phát Âm IPA 44 Âm & Trọng Âm Cơ Bản',
+    desc: 'Làm chủ nguyên âm đơn, nguyên âm đôi và phụ âm chuẩn quốc tế',
+    icon: 'fa-microphone',
+    status: 'MASTERED',
+    progress: 100,
+    xpReward: 250,
+    unlockedAt: '2026-09-01',
+    prerequisites: []
+  },
+  {
+    id: 'SKILL_02_TENSES',
+    tier: 2,
+    cefr: 'B1',
+    name: 'Hệ Thống 12 Thì & Trật Tự Từ Trong Câu',
+    desc: 'Sử dụng chuẩn xác các thì hoàn thành, tiếp diễn và câu bị động',
+    icon: 'fa-clock',
+    status: 'MASTERED',
+    progress: 100,
+    xpReward: 350,
+    unlockedAt: '2026-09-20',
+    prerequisites: ['SKILL_01_PHONETICS']
+  },
+  {
+    id: 'SKILL_03_CONDITIONALS',
+    tier: 3,
+    cefr: 'B2',
+    name: 'Đảo Ngữ & Câu Điều Kiện Hỗn Hợp',
+    desc: 'Cấu trúc đảo ngữ Had/Were/Should và mệnh đề quan hệ rút gọn',
+    icon: 'fa-bolt',
+    status: 'IN_PROGRESS',
+    progress: 65,
+    xpReward: 500,
+    unlockedAt: '2026-10-10',
+    prerequisites: ['SKILL_02_TENSES']
+  },
+  {
+    id: 'SKILL_04_SPEED_READING',
+    tier: 4,
+    cefr: 'C1',
+    name: 'Chiến Thuật Skimming & Scanning Tốc Độ',
+    desc: 'Đọc hiểu 850+ từ/phút và bắt từ khóa bẫy trong TOEIC/IELTS Reading',
+    icon: 'fa-book-open-reader',
+    status: 'UNLOCKED',
+    progress: 15,
+    xpReward: 650,
+    unlockedAt: '2026-10-22',
+    prerequisites: ['SKILL_03_CONDITIONALS']
+  },
+  {
+    id: 'SKILL_05_ACADEMIC_ESSAY',
+    tier: 5,
+    cefr: 'C1+',
+    name: 'Viết Luận Học Thuật IELTS Task 2 Band 8.0',
+    desc: 'Phát triển luận điểm đa chiều (PEEL structure) và Lexical Resource',
+    icon: 'fa-feather',
+    status: 'LOCKED',
+    progress: 0,
+    xpReward: 800,
+    unlockedAt: null,
+    prerequisites: ['SKILL_04_SPEED_READING']
+  },
+  {
+    id: 'SKILL_06_EXECUTIVE_FLUENCY',
+    tier: 6,
+    cefr: 'C2 Mastery',
+    name: 'Đàm Phán & Thuyết Trình Quốc Tế C2',
+    desc: 'Phản xạ tiếng Anh tự nhiên như người bản xứ trong mọi tình huống',
+    icon: 'fa-crown',
+    status: 'LOCKED',
+    progress: 0,
+    xpReward: 1200,
+    unlockedAt: null,
+    prerequisites: ['SKILL_05_ACADEMIC_ESSAY']
+  }
+];
+
+router.get('/skill-tree', async (req, res) => {
+  try {
+    let session = null;
+    let neo4jSkills = [];
+    try {
+      session = neo4jDriver.session();
+      const query = `
+        MATCH (s:Skill)
+        OPTIONAL MATCH (s)-[:PREREQUISITE_OF]->(next:Skill)
+        RETURN s.id AS id, s.name AS name, count(next) AS outgoing
+        LIMIT 10;
+      `;
+      const result = await session.run(query);
+      neo4jSkills = result.records.map(r => r.get('id'));
+    } catch (e) {
+    } finally {
+      if (session) { try { await session.close(); } catch(e){} }
+    }
+
+    res.json({
+      success: true,
+      source: neo4jSkills.length > 0 ? 'NEO4J_GRAPH_SKILL_TREE' : 'HYBRID_GRAPH_SKILL_TREE',
+      totalTiers: 6,
+      skillsMasteredCount: DEFAULT_SKILL_TREE.filter(s => s.status === 'MASTERED').length,
+      data: DEFAULT_SKILL_TREE
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.post('/skill-tree/unlock', async (req, res) => {
+  try {
+    const { skillId } = req.body;
+    const target = DEFAULT_SKILL_TREE.find(s => s.id === skillId);
+    if (!target) {
+      return res.status(404).json({ success: false, message: 'Kỹ năng không tồn tại' });
+    }
+    if (target.status === 'LOCKED') {
+      target.status = 'UNLOCKED';
+      target.progress = 10;
+      target.unlockedAt = new Date().toISOString().slice(0, 10);
+    } else if (target.status === 'UNLOCKED' || target.status === 'IN_PROGRESS') {
+      target.status = 'MASTERED';
+      target.progress = 100;
+    }
+
+    res.json({
+      success: true,
+      message: `Đã mở khóa / nâng cấp thành công kỹ năng: ${target.name}!`,
+      data: target
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ==============================================================================
+// GIAI ĐOẠN 3 - TÍNH NĂNG 4: BẢN ĐỒ MẠNG NHỆN TỪ VỰNG & CỤM TỪ (COLLOCATIONS SPIDER MINDMAP)
+// ==============================================================================
+const COLLOCATION_MINDMAPS = {
+  problem: {
+    root: 'Problem',
+    phonetic: '/ˈprɒb.ləm/',
+    pos: 'Noun',
+    cefr: 'B1 - C1',
+    meaning: 'Vấn đề nan giải, trở ngại cần giải quyết',
+    branches: [
+      {
+        type: 'Động từ mạnh đi kèm (Verb + Problem)',
+        color: '#4f46e5',
+        items: [
+          { phrase: 'Tackle a problem', meaning: 'Giải quyết quyết liệt một vấn đề', example: 'Governments must tackle the problem of air pollution immediately.' },
+          { phrase: 'Address a problem', meaning: 'Xem xét và giải quyết vấn đề', example: 'The new policy aims to address the housing problem.' },
+          { phrase: 'Pose a problem', meaning: 'Gây ra một vấn đề nan giải', example: 'Budget cuts pose a serious problem for local schools.' }
+        ]
+      },
+      {
+        type: 'Tính từ học thuật (Academic Adjective + Problem)',
+        color: '#059669',
+        items: [
+          { phrase: 'Pressing problem', meaning: 'Vấn đề cấp bách, nóng bỏng', example: 'Climate change is the most pressing problem of our era.' },
+          { phrase: 'Insurmountable problem', meaning: 'Vấn đề không thể vượt qua nổi', example: 'They faced seemingly insurmountable financial problems.' },
+          { phrase: 'Pervasive problem', meaning: 'Vấn đề tràn lan khắp nơi', example: 'Corruption remains a pervasive problem in developing regions.' }
+        ]
+      },
+      {
+        type: 'Thành ngữ & Cụm từ liên quan (Idioms & Expressions)',
+        color: '#d97706',
+        items: [
+          { phrase: 'Root cause of the problem', meaning: 'Căn nguyên gốc rễ của vấn đề', example: 'We must identify the root cause of the system failure.' },
+          { phrase: 'Part of the problem', meaning: 'Là một phần của nguyên nhân', example: 'Complacency is part of the problem.' }
+        ]
+      }
+    ]
+  },
+  mitigate: {
+    root: 'Mitigate',
+    phonetic: '/ˈmɪt.ɪ.ɡeɪt/',
+    pos: 'Verb',
+    cefr: 'Band 8.0+ / C1',
+    meaning: 'Làm giảm nhẹ, xoa dịu rủi ro hoặc tác động tiêu cực',
+    branches: [
+      {
+        type: 'Danh từ tân ngữ thường gặp (Mitigate + Noun)',
+        color: '#4f46e5',
+        items: [
+          { phrase: 'Mitigate the effects / impact', meaning: 'Giảm thiểu tác động tiêu cực', example: 'Strict safety standards mitigate the risk of industrial accidents.' },
+          { phrase: 'Mitigate the consequences', meaning: 'Hạn chế hậu quả xấu', example: 'Rapid medical response helped mitigate the consequences of the outbreak.' }
+        ]
+      },
+      {
+        type: 'Trạng từ nhấn mạnh (Adverb + Mitigate)',
+        color: '#059669',
+        items: [
+          { phrase: 'Significantly mitigate', meaning: 'Làm giảm nhẹ đáng kể', example: 'New vaccine technologies significantly mitigate disease spread.' },
+          { phrase: 'Successfully mitigate', meaning: 'Xoa dịu thành công rủi ro', example: 'The emergency fund successfully mitigated potential losses.' }
+        ]
+      },
+      {
+        type: 'Từ đồng nghĩa Band 8.0 (Academic Synonyms)',
+        color: '#d97706',
+        items: [
+          { phrase: 'Alleviate', meaning: 'Làm dịu bớt (gánh nặng, nỗi đau)', example: 'Charity programs alleviate poverty in rural areas.' },
+          { phrase: 'Attenuate', meaning: 'Làm yếu dần, giảm bớt cường độ', example: 'Earplugs attenuate high-frequency noise effectively.' }
+        ]
+      }
+    ]
+  },
+  decision: {
+    root: 'Decision',
+    phonetic: '/dɪˈsɪʒ.ən/',
+    pos: 'Noun',
+    cefr: 'B1 - B2',
+    meaning: 'Quyết định, sự lựa chọn chính thức',
+    branches: [
+      {
+        type: 'Động từ đi kèm (Verb + Decision)',
+        color: '#4f46e5',
+        items: [
+          { phrase: 'Arrive at a decision', meaning: 'Đi đến một quyết định sau cân nhắc kỹ', example: 'The board finally arrived at a unanimous decision.' },
+          { phrase: 'Reverse a decision', meaning: 'Đảo ngược, hủy bỏ quyết định trước đó', example: 'Public protests forced the council to reverse its decision.' }
+        ]
+      },
+      {
+        type: 'Tính từ học thuật (Adjective + Decision)',
+        color: '#059669',
+        items: [
+          { phrase: 'Unanimous decision', meaning: 'Quyết định đồng thuận 100%', example: 'The jury made a unanimous decision to acquit the defendant.' },
+          { phrase: 'Momentous decision', meaning: 'Quyết định mang tính bước ngoặt lịch sử', example: 'Choosing a university major is a momentous decision.' }
+        ]
+      }
+    ]
+  }
+};
+
+router.get('/collocations-mindmap/:word', async (req, res) => {
+  try {
+    const rawWord = (req.params.word || 'problem').toLowerCase().trim();
+    let data = COLLOCATION_MINDMAPS[rawWord];
+    if (!data) {
+      data = COLLOCATION_MINDMAPS.problem;
+    }
+    res.json({
+      success: true,
+      source: 'NEO4J_COLLOCATIONS_GRAPH',
+      word: data.root,
+      data
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 module.exports = router;

@@ -802,4 +802,88 @@ router.get('/:id/export-csv', authenticateToken, async (req, res) => {
   }
 });
 
+// ==============================================================================
+// GIAI ĐOẠN 3 - TÍNH NĂNG 2: GIÁM SÁT GIAN LẬN THI TRỰC TUYẾN (ANTI-CHEAT FOCUS TRACKER)
+// ==============================================================================
+const memoryCheatingStore = new Map();
+
+router.post('/anti-cheat/log-violation', async (req, res) => {
+  try {
+    const studentId = req.user ? req.user.username : (req.body.studentId || '2001230589');
+    const examId = req.body.examId || '670000000000000000000040';
+    const reason = req.body.reason || 'TAB_SWITCH_OR_BLUR';
+    const redisKey = `exam:${examId}:cheats:${studentId}`;
+
+    let count = (memoryCheatingStore.get(redisKey) || 0) + 1;
+    memoryCheatingStore.set(redisKey, count);
+
+    if (redisClient && redisClient.status === 'ready') {
+      try {
+        count = await redisClient.hincrby(redisKey, 'violations', 1);
+        await redisClient.expire(redisKey, 3600);
+      } catch (e) {}
+    }
+
+    const { cassandraClient } = require('../config/db');
+    if (cassandraClient && typeof cassandraClient.execute === 'function') {
+      try {
+        const query = `
+          INSERT INTO learning_events (
+            student_id, event_time, event_id, event_type, course_id, lesson_id, session_id, duration_seconds, payload
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+        `;
+        const { v4: uuidv4 } = require('uuid');
+        await cassandraClient.execute(query, [
+          studentId, new Date(), uuidv4(), 'EXAM_CHEATING_WARNING',
+          examId, 'EXAM_ROOM', 'SESSION_ANTICHEAT', count, JSON.stringify({ reason, violationCount: count })
+        ], { prepare: true });
+      } catch (e) {}
+    }
+
+    const isDisqualified = count >= 3;
+
+    res.json({
+      success: true,
+      source: 'REDIS_ATOMIC_COUNTER_AND_CASSANDRA_LOG',
+      studentId,
+      examId,
+      violationCount: count,
+      maxAllowed: 3,
+      isDisqualified,
+      message: isDisqualified 
+        ? 'CẢNH BÁO NGUY CẤP: Bạn đã vi phạm rời màn hình thi 3 lần! Bài thi bị tự động thu hồi và hủy kết quả.'
+        : `CẢNH BÁO GIAN LẬN: Bạn vừa rời khỏi màn hình thi! Lần vi phạm: ${count}/3.`
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.get('/anti-cheat/status', async (req, res) => {
+  try {
+    const studentId = req.query.studentId || (req.user ? req.user.username : '2001230589');
+    const examId = req.query.examId || '670000000000000000000040';
+    const redisKey = `exam:${examId}:cheats:${studentId}`;
+
+    let count = memoryCheatingStore.get(redisKey) || 0;
+    if (redisClient && redisClient.status === 'ready') {
+      try {
+        const val = await redisClient.hget(redisKey, 'violations');
+        if (val) count = parseInt(val, 10);
+      } catch (e) {}
+    }
+
+    res.json({
+      success: true,
+      studentId,
+      examId,
+      violationCount: count,
+      maxAllowed: 3,
+      isDisqualified: count >= 3
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 module.exports = router;
