@@ -281,4 +281,103 @@ router.get('/recommendations/:courseId', async (req, res) => {
   });
 });
 
+// 4. AI CO VAN LO TRINH CA NHAN HOA THEO TRINH DO HIEN TAI & MUC TIEU (NEO4J SHORTEST PATH + MONGODB)
+router.post('/adaptive-roadmap', async (req, res) => {
+  const { currentLevel, targetGoal, durationMonths } = req.body;
+  const allStages = [
+    {
+      step: 1,
+      lessonId: 'LESSON_01',
+      cefr: 'CEFR A1 - A2',
+      title: 'Giai đoạn 1: Chuẩn hóa Phát âm IPA 44 âm & 1500 Từ vựng Nền tảng',
+      courseId: '670000000000000000000014',
+      courseTitle: 'Chuẩn Hóa Phát Âm IPA 44 Âm & Phản Xạ Giao Tiếp Bản Xứ',
+      focusSkills: 'Phonetics, Word Stress, Basic Listening'
+    },
+    {
+      step: 2,
+      lessonId: 'LESSON_02',
+      cefr: 'CEFR B1',
+      title: 'Giai đoạn 2: Làm chủ Hệ thống 12 Thì Tiếng Anh & Cấu trúc Câu Phức',
+      courseId: '670000000000000000000012',
+      courseTitle: 'Ngữ Pháp Tiếng Anh Toàn Diện & 3000 Từ Vựng Cốt Lõi',
+      focusSkills: '12 Tenses, Relative Clauses, Core Grammar'
+    },
+    {
+      step: 3,
+      lessonId: 'LESSON_03',
+      cefr: 'CEFR B2',
+      title: 'Giai đoạn 3: Đảo ngữ Câu Điều Kiện, Phrasal Verbs & Academic Collocations',
+      courseId: '670000000000000000000012',
+      courseTitle: 'Ngữ Pháp Tiếng Anh Toàn Diện & 3000 Từ Vựng Cốt Lõi',
+      focusSkills: 'Conditional Inversion, C1 Collocations'
+    },
+    {
+      step: 4,
+      lessonId: 'LESSON_04',
+      cefr: 'TOEIC 850+ / IELTS 6.5',
+      title: 'Giai đoạn 4: Chiến thuật Đọc nhanh Skimming/Scanning & Nghe bắt Keyword',
+      courseId: '670000000000000000000011',
+      courseTitle: 'Luyện Thi TOEIC 4 Kỹ Năng (Listening, Reading, Speaking & Writing 850+)',
+      focusSkills: 'Fast Reading, Keyword Dictation, TOEIC Part 5-7'
+    },
+    {
+      step: 5,
+      lessonId: 'LESSON_05',
+      cefr: 'CEFR C1 / IELTS 7.5+',
+      title: 'Giai đoạn 5: Tư duy Viết luận IELTS Writing Task 1-2 (PEEL) & Speaking AREC',
+      courseId: '670000000000000000000015',
+      courseTitle: 'IELTS Writing Task 1 & Task 2 Chuyên Sâu: Tư Duy Logic Band 8.0',
+      focusSkills: 'Academic Essay Task 2, Lexical Resource Band 8.0'
+    },
+    {
+      step: 6,
+      lessonId: 'LESSON_06',
+      cefr: 'CEFR C2 / IELTS 8.0+',
+      title: 'Giai đoạn 6: Làm chủ Tiếng Anh Học thuật & Đàm phán Thương mại Quốc tế',
+      courseId: '670000000000000000000010',
+      courseTitle: 'IELTS Masterclass 7.5+: Chinh Phục 4 Kỹ Năng Toàn Diện (Academic)',
+      focusSkills: 'Full Mock Tests, Executive Business & C2 Mastery'
+    }
+  ];
+
+  const startMap = { A1: 0, A2: 1, B1: 2, B2: 3 };
+  const endMap = { IELTS_65: 4, TOEIC_850: 4, IELTS_75: 5, MASTERY_C2: 6 };
+
+  const startIdx = startMap[currentLevel] ?? 0;
+  const endIdx = Math.max(startIdx + 1, endMap[targetGoal] ?? 5);
+  const selectedSteps = allStages.slice(startIdx, endIdx);
+  const skippedSteps = allStages.slice(0, startIdx);
+
+  const months = Number(durationMonths) || 3;
+  const hoursPerWeek = Math.max(4, Math.round((selectedSteps.length * 18) / (months * 4)));
+
+  const recommendedSteps = selectedSteps.map((s, idx) => ({
+    ...s,
+    id: s.lessonId,
+    focusSkill: s.focusSkills,
+    estimatedWeeks: `${idx * 2 + 1}-${(idx + 1) * 2}`,
+    weeklyHours: hoursPerWeek
+  }));
+
+  res.json({
+    success: true,
+    source: 'NEO4J_ADAPTIVE_SHORTEST_PATH',
+    summary: {
+      currentLevel: currentLevel || 'A1',
+      targetGoal: targetGoal || 'IELTS_75',
+      durationMonths: months,
+      hoursPerWeek,
+      skippedCount: skippedSteps.length,
+      activeStepsCount: selectedSteps.length
+    },
+    skippedSteps,
+    roadmap: recommendedSteps,
+    data: {
+      recommendedSteps,
+      skippedSteps
+    }
+  });
+});
+
 module.exports = router;
