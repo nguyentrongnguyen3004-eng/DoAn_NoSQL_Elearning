@@ -222,9 +222,12 @@ router.get('/recommendations/:courseId', async (req, res) => {
     `;
 
     const result = await session.run(query, { courseId });
-    const recommendations = result.records.map(r => ({
+    const recommendations = result.records.map((r, idx) => ({
       id: r.get('id'),
+      courseId: ['670000000000000000000015', '670000000000000000000011', '670000000000000000000012'][idx % 3],
       title: r.get('title'),
+      targetBand: ['IELTS 8.0+', 'TOEIC 850+', 'CEFR B2'][idx % 3],
+      reason: 'Liên kết qua Đồ thị Kỹ năng Neo4j (Cùng nhánh từ vựng & ngữ pháp học thuật)',
       sharedConnections: r.get('sharedConnections').toInt ? r.get('sharedConnections').toInt() : r.get('sharedConnections')
     }));
 
@@ -250,9 +253,30 @@ router.get('/recommendations/:courseId', async (req, res) => {
     source: 'FALLBACK_GRAPH_RECOMMENDATION',
     targetCourse: courseId,
     data: [
-      { id: 'COURSE_06', title: 'IELTS Writing Task 1 & Task 2 Chuyên Sâu: Tư Duy Logic Band 8.0', sharedConnections: 5 },
-      { id: 'COURSE_02', title: 'Luyện Thi TOEIC 4 Kỹ Năng (Listening, Reading, Speaking & Writing 850+)', sharedConnections: 4 },
-      { id: 'COURSE_03', title: 'Ngữ Pháp Tiếng Anh Toàn Diện & 3000 Từ Vựng Cốt Lõi (CEFR A2 - B2)', sharedConnections: 3 }
+      {
+        id: 'COURSE_06',
+        courseId: '670000000000000000000015',
+        title: 'IELTS Writing Task 1 & Task 2 Chuyên Sâu: Tư Duy Logic Band 8.0',
+        targetBand: 'IELTS 8.0+',
+        reason: 'Cùng phát triển kỹ năng Academic Writing & Lexical Resource trên đồ thị Neo4j',
+        sharedConnections: 5
+      },
+      {
+        id: 'COURSE_02',
+        courseId: '670000000000000000000011',
+        title: 'Luyện Thi TOEIC 4 Kỹ Năng (Listening, Reading, Speaking & Writing 850+)',
+        targetBand: 'TOEIC 850+',
+        reason: 'Bổ trợ chiến thuật Skimming/Scanning & Nghe bắt Keyword tốc độ cao',
+        sharedConnections: 4
+      },
+      {
+        id: 'COURSE_03',
+        courseId: '670000000000000000000012',
+        title: 'Ngữ Pháp Tiếng Anh Toàn Diện & 3000 Từ Vựng Cốt Lõi (CEFR A2 - B2)',
+        targetBand: 'CEFR B2',
+        reason: 'Củng cố nền tảng 12 Thì Tiếng Anh, Đảo ngữ & Academic Collocations',
+        sharedConnections: 3
+      }
     ]
   });
 });

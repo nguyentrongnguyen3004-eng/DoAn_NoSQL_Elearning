@@ -138,20 +138,26 @@
 
           <!-- Menu Danh mục (Desktop) -->
           <div class="hidden md:flex items-center gap-1">
-            <button onclick="showSection('courses')" id="nav-btn-courses" class="nav-item-btn px-4 py-2 rounded-xl text-sm font-semibold text-brand-600 dark:text-indigo-400 bg-brand-50 dark:bg-brand-900/30 transition-all">
-              <i class="fa-solid fa-compass mr-2"></i> Khám phá Khóa học
+            <button onclick="showSection('courses')" id="nav-btn-courses" class="nav-item-btn px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-brand-600 dark:text-indigo-400 bg-brand-50 dark:bg-brand-900/30 transition-all">
+              <i class="fa-solid fa-compass mr-1.5"></i> Khóa học
             </button>
-            <button onclick="showSection('exam')" id="nav-btn-exam" class="nav-item-btn px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
-              <i class="fa-solid fa-award mr-2"></i> Khảo sát Năng lực
+            <button onclick="showSection('vocab')" id="nav-btn-vocab" class="nav-item-btn px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+              <i class="fa-solid fa-layer-group mr-1.5 text-amber-500"></i> Từ vựng & Nghe
             </button>
-            <button onclick="showSection('graph')" id="nav-btn-graph" class="nav-item-btn px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
-              <i class="fa-solid fa-network-wired mr-2"></i> Bản đồ Tri thức
+            <button onclick="showSection('writing')" id="nav-btn-writing" class="nav-item-btn px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+              <i class="fa-solid fa-pen-nib mr-1.5 text-purple-500"></i> Writing & Speaking AI
             </button>
-            <button onclick="showSection('history')" id="nav-btn-history" class="nav-item-btn px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
-              <i class="fa-solid fa-clock-rotate-left mr-2"></i> Kết quả của tôi
+            <button onclick="showSection('exam')" id="nav-btn-exam" class="nav-item-btn px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+              <i class="fa-solid fa-award mr-1.5 text-rose-500"></i> Phòng thi
             </button>
-            <button onclick="showSection('analytics')" id="nav-btn-analytics" class="nav-item-btn hidden px-4 py-2 rounded-xl text-sm font-semibold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-all">
-              <i class="fa-solid fa-chart-pie mr-2"></i> Quản lý & Phân tích
+            <button onclick="showSection('graph')" id="nav-btn-graph" class="nav-item-btn px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+              <i class="fa-solid fa-network-wired mr-1.5 text-emerald-500"></i> Bản đồ CEFR
+            </button>
+            <button onclick="showSection('history')" id="nav-btn-history" class="nav-item-btn px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+              <i class="fa-solid fa-fire mr-1.5 text-orange-500"></i> Hồ sơ & Chứng chỉ
+            </button>
+            <button onclick="showSection('analytics')" id="nav-btn-analytics" class="nav-item-btn hidden px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-all">
+              <i class="fa-solid fa-sliders mr-1.5"></i> Quản trị & CMS
             </button>
           </div>
         </div>
@@ -217,35 +223,49 @@
         <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-brand-600 dark:text-indigo-400 flex items-center justify-center">
           <i class="fa-solid fa-compass text-sm"></i>
         </div>
-        <span>Khám phá Khóa học</span>
+        <span>Khám phá Khóa học Tiếng Anh</span>
+      </button>
+
+      <button onclick="showSection('vocab'); toggleMobileMenu()" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600 transition-all text-left">
+        <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+          <i class="fa-solid fa-layer-group text-sm"></i>
+        </div>
+        <span>Kho Từ Vựng Flashcard 3D & Luyện Nghe</span>
+      </button>
+
+      <button onclick="showSection('writing'); toggleMobileMenu()" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600 transition-all text-left">
+        <div class="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+          <i class="fa-solid fa-pen-nib text-sm"></i>
+        </div>
+        <span>Chấm IELTS Writing & Luyện Phát Âm AI</span>
       </button>
 
       <button onclick="showSection('exam'); toggleMobileMenu()" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600 transition-all text-left">
-        <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+        <div class="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 flex items-center justify-center">
           <i class="fa-solid fa-award text-sm"></i>
         </div>
-        <span>Khảo sát Năng lực</span>
+        <span>Phòng Thi Thử IELTS / TOEIC</span>
       </button>
 
       <button onclick="showSection('graph'); toggleMobileMenu()" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600 transition-all text-left">
         <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
           <i class="fa-solid fa-network-wired text-sm"></i>
         </div>
-        <span>Bản đồ Tri thức & Lộ trình</span>
+        <span>Bản đồ Tri thức CEFR A1 ➔ C2</span>
       </button>
 
       <button onclick="showSection('history'); toggleMobileMenu()" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600 transition-all text-left">
-        <div class="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-          <i class="fa-solid fa-clock-rotate-left text-sm"></i>
+        <div class="w-8 h-8 rounded-lg bg-orange-50 dark:bg-orange-950/50 text-orange-600 dark:text-orange-400 flex items-center justify-center">
+          <i class="fa-solid fa-fire text-sm"></i>
         </div>
-        <span>Kết quả của tôi & Chứng chỉ</span>
+        <span>Hồ sơ Gamification & Chứng chỉ</span>
       </button>
 
       <button onclick="showSection('analytics'); toggleMobileMenu()" id="mobile-nav-btn-analytics" class="hidden w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600 transition-all text-left">
-        <div class="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 flex items-center justify-center">
-          <i class="fa-solid fa-chart-pie text-sm"></i>
+        <div class="w-8 h-8 rounded-lg bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 flex items-center justify-center">
+          <i class="fa-solid fa-sliders text-sm"></i>
         </div>
-        <span>Quản lý & Phân tích Cassandra</span>
+        <span>Quản trị Giảng viên & CMS 4-NoSQL</span>
       </button>
     </div>
   </nav>
@@ -365,10 +385,268 @@
   </section>
 
   <!-- ============================================================== -->
+  <!-- 2B. PHÂN HỆ MỚI: KHO TỪ VỰNG FLASHCARD 3D & LUYỆN NGHE CHÉP     -->
+  <!-- ============================================================== -->
+  <section id="section-vocab" class="main-section hidden flex-grow py-8 sm:py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+
+      <!-- Header & Tiến độ từ vựng (Redis Set) -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <div>
+            <span class="text-xs font-bold text-amber-500 uppercase tracking-widest"><i class="fa-solid fa-bolt mr-1"></i> Spaced Repetition & IPA Audio (MongoDB + Redis Set)</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-1">Kho Từ Vựng Flashcard 3D & Luyện Nghe Chép Chính Tả</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Click vào thẻ từ để xem ví dụ học thuật, bấm nút Loa để nghe phát âm chuẩn UK/US và đánh dấu từ đã thuộc lưu vào Redis Set.</p>
+          </div>
+          <div class="flex items-center gap-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 px-5 py-3 rounded-2xl">
+            <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center text-lg font-black shrink-0">
+              <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div>
+              <div class="text-[11px] font-bold uppercase text-amber-600 dark:text-amber-400">Tiến độ ghi nhớ (Redis Set)</div>
+              <div class="text-lg font-black text-slate-900 dark:text-white" id="vocab-mastered-counter">Đã thuộc: 2 / 12 từ</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bộ lọc chủ đề từ vựng -->
+        <div class="flex flex-wrap gap-2 mb-6">
+          <button onclick="filterFlashcards('ALL', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white shadow-sm transition-all">Tất cả (12)</button>
+          <button onclick="filterFlashcards('IELTS Band 8.0', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-all">IELTS Band 8.0</button>
+          <button onclick="filterFlashcards('TOEIC Business', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-all">TOEIC Business</button>
+          <button onclick="filterFlashcards('Phrasal Verbs & Idioms', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-all">Phrasal Verbs & Idioms</button>
+        </div>
+
+        <!-- Lưới thẻ từ vựng Flashcards -->
+        <div id="flashcards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="col-span-3 text-center py-8 text-slate-400">Đang tải bộ thẻ từ vựng...</div>
+        </div>
+      </div>
+
+      <!-- PHÒNG LUYỆN NGHE CHÉP CHÍNH TẢ (AUDIO DICTATION LAB - CASSANDRA LOGGED) -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <div>
+            <span class="text-xs font-bold text-sky-500 uppercase tracking-widest"><i class="fa-solid fa-headphones mr-1"></i> Active Listening Lab (Cassandra Telemetry)</span>
+            <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">Luyện Nghe Chép Chính Tả (Audio Dictation)</h3>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Bấm nút "Nghe câu mẫu", gõ lại chính xác câu tiếng Anh bạn nghe được để hệ thống chấm điểm từng từ.</p>
+          </div>
+          <select id="dictation-selector" onchange="selectDictationItem(this.value)" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 outline-none focus:border-brand-500">
+            <option value="0">Bài nghe 1: TOEIC Business Meeting (CEFR B1)</option>
+            <option value="1">Bài nghe 2: IELTS Environmental Science (CEFR B2)</option>
+            <option value="2">Bài nghe 3: Academic Higher Education (CEFR C1)</option>
+            <option value="3">Bài nghe 4: International Logistics (CEFR B2)</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div class="lg:col-span-7 space-y-4">
+            <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <div class="text-xs font-bold text-brand-600 dark:text-indigo-400" id="dictation-level-badge">CEFR B1 - TOEIC Listening</div>
+                <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5" id="dictation-hint-text">Gợi ý nghĩa: Báo cáo tài chính hàng quý phải được nộp cho hội đồng quản trị trước chiều thứ Sáu.</div>
+              </div>
+              <div class="flex gap-2">
+                <button onclick="playDictationAudio(1.0)" class="px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-brand-500/20 transition-all">
+                  <i class="fa-solid fa-volume-high"></i> Nghe chuẩn (1.0x)
+                </button>
+                <button onclick="playDictationAudio(0.75)" class="px-3.5 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-800 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 transition-all">
+                  <i class="fa-solid fa-gauge-simple-low"></i> Nghe chậm (0.75x)
+                </button>
+              </div>
+            </div>
+
+            <textarea id="dictation-user-input" rows="3" placeholder="Gõ lại câu tiếng Anh bạn nghe được vào đây..." class="w-full p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none dark:text-white"></textarea>
+
+            <div class="flex flex-wrap gap-3">
+              <button onclick="checkDictationAnswer()" class="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-lg shadow-emerald-600/20 flex items-center gap-2 transition-all">
+                <i class="fa-solid fa-spell-check"></i> Kiểm tra & Chấm điểm
+              </button>
+              <button onclick="fillSampleDictation()" class="px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-300 transition-all">
+                <i class="fa-solid fa-wand-magic-sparkles mr-1 text-amber-500"></i> Điền thử đáp án mẫu
+              </button>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700">
+            <h4 class="font-extrabold text-sm text-slate-900 dark:text-white mb-3 flex items-center justify-between">
+              <span>Kết quả phân tích từng từ</span>
+              <span id="dictation-score-badge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">Chưa chấm</span>
+            </h4>
+            <div id="dictation-result-box" class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed space-y-2">
+              Hãy bấm "Nghe chuẩn (1.0x)" và nhập câu trả lời của bạn để hệ thống đối chiếu từng từ (Từ đúng tô màu xanh, từ thiếu tô màu đỏ).
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- 2C. PHÂN HỆ MỚI: CHẤM ĐIỂM IELTS WRITING & LUYỆN PHÁT ÂM AI     -->
+  <!-- ============================================================== -->
+  <section id="section-writing" class="main-section hidden flex-grow py-8 sm:py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+
+      <!-- Khối 1: Phòng Chấm Điểm IELTS Writing Task 2 Tự Động (MongoDB) -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <div>
+            <span class="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-widest"><i class="fa-solid fa-pen-fancy mr-1"></i> AI IELTS Writing Examiner (MongoDB Essay Storage)</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-1">Phòng Luyện Viết & Chấm Điểm IELTS Writing Task 2</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Phân tích tự động 4 tiêu chí chấm thi IDP/BC, đếm từ trực tiếp, gợi ý nâng cấp từ vựng Band 8.0 và lưu lịch sử bài luận vào MongoDB.</p>
+          </div>
+          <button onclick="insertSampleBand8Essay()" class="px-4 py-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-bold hover:bg-purple-100 transition-all shrink-0">
+            <i class="fa-solid fa-sparkles mr-1.5"></i> Chèn bài luận mẫu Band 8.0
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Cột soạn thảo Essay -->
+          <div class="lg:col-span-7 space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Chọn chủ đề IELTS Writing Task 2:</label>
+              <select id="writing-topic-select" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 outline-none focus:border-brand-500">
+                <option value="Some people believe that artificial intelligence and online platforms will replace traditional classrooms in the near future. To what extent do you agree or disagree?">Chủ đề 1 (Education & AI): Online platforms & AI replacing traditional classrooms — Agree or Disagree?</option>
+                <option value="Governments worldwide should prioritize economic growth even if it leads to environmental damage. Discuss both views and give your opinion.">Chủ đề 2 (Environment & Economy): Economic growth vs. Environmental protection — Discuss both views.</option>
+                <option value="Many multinational corporations require employees to possess certified English proficiency. Why is this happening, and is it a positive or negative development?">Chủ đề 3 (Globalization & Work): English proficiency in multinational corporations — Positive or Negative?</option>
+              </select>
+            </div>
+
+            <div class="relative">
+              <textarea id="writing-essay-input" oninput="updateEssayWordCount()" rows="10" placeholder="Nhập bài viết IELTS Writing Task 2 của bạn tại đây (hoặc bấm nút 'Chèn bài luận mẫu Band 8.0' ở góc phải để thử nghiệm)..." class="w-full p-4 rounded-2xl bg-slate-50/70 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm leading-relaxed focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none dark:text-slate-100"></textarea>
+              <div class="flex items-center justify-between mt-2 text-xs text-slate-500">
+                <span id="writing-word-count" class="font-mono font-bold text-brand-600 dark:text-indigo-400">Số từ: 0 words</span>
+                <span>Khuyến nghị: Tối thiểu 250 words cho Task 2</span>
+              </div>
+            </div>
+
+            <button onclick="evaluateIeltsWriting()" id="btn-evaluate-writing" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-sm shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2 transition-all">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+              <span>Chấm Điểm 4 Tiêu Chí IELTS & Lưu Vào MongoDB</span>
+            </button>
+          </div>
+
+          <!-- Cột kết quả chấm điểm 4 tiêu chí -->
+          <div class="lg:col-span-5 space-y-4">
+            <div class="p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <div class="text-xs font-bold uppercase text-slate-400">Điểm Overall Dự Kiến</div>
+                  <div class="text-3xl font-black text-purple-600 dark:text-purple-400 mt-0.5" id="writing-overall-band">Band --</div>
+                </div>
+                <span class="px-3 py-1 rounded-full text-[11px] font-bold bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300">IDP / BC Standard</span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3 mb-5">
+                <div class="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800">
+                  <div class="text-[11px] text-slate-400 font-semibold">Task Response</div>
+                  <div class="text-lg font-black text-slate-900 dark:text-white" id="crit-tr">--</div>
+                </div>
+                <div class="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800">
+                  <div class="text-[11px] text-slate-400 font-semibold">Coherence & Cohesion</div>
+                  <div class="text-lg font-black text-slate-900 dark:text-white" id="crit-cc">--</div>
+                </div>
+                <div class="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800">
+                  <div class="text-[11px] text-slate-400 font-semibold">Lexical Resource</div>
+                  <div class="text-lg font-black text-slate-900 dark:text-white" id="crit-lr">--</div>
+                </div>
+                <div class="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800">
+                  <div class="text-[11px] text-slate-400 font-semibold">Grammar Range</div>
+                  <div class="text-lg font-black text-slate-900 dark:text-white" id="crit-gra">--</div>
+                </div>
+              </div>
+
+              <div id="writing-feedback-box" class="space-y-2 text-xs text-slate-600 dark:text-slate-300">
+                <p class="text-slate-400 italic">Bấm "Chấm Điểm 4 Tiêu Chí IELTS" để nhận phân tích chi tiết và gợi ý từ vựng Band 8.0+.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Khối 2: Phòng Luyện Phát Âm & Nói AI (Speaking Pronunciation Checker) -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <div>
+            <span class="text-xs font-bold text-rose-500 uppercase tracking-widest"><i class="fa-solid fa-microphone-lines mr-1"></i> AI Speaking & Pronunciation Coach</span>
+            <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">Luyện Phát Âm Chuẩn IPA & Phản Xạ Nói IELTS Speaking</h3>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Luyện đọc các câu mẫu học thuật, thu âm trực tiếp qua Microphone trình duyệt hoặc mô phỏng chấm điểm phát âm từng từ.</p>
+          </div>
+          <select id="speaking-sentence-select" onchange="changeSpeakingSentence(this.value)" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 outline-none">
+            <option value="0">Câu mẫu 1: IELTS Speaking Part 3 (Technology & Education)</option>
+            <option value="1">Câu mẫu 2: Business English Pitching (Corporate Strategy)</option>
+            <option value="2">Câu mẫu 3: IELTS Speaking Part 2 (Memorable Achievement)</option>
+          </select>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700 space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+              <div class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white" id="speaking-target-text">
+                "Interactive online platforms help bridge the gap between theoretical knowledge and practical skills."
+              </div>
+              <div class="text-xs font-mono text-brand-600 dark:text-indigo-400 mt-1" id="speaking-target-ipa">
+                /ˌɪn.təˈræk.tɪv ˈɒn.laɪn ˈplæt.fɔːmz help brɪdʒ ðə ɡæp bɪˈtwiːn θɪəˈret.ɪ.kəl ˈnɒl.ɪdʒ ænd ˈpræk.tɪ.kəl skɪlz/
+              </div>
+            </div>
+            <button onclick="speakText(document.getElementById('speaking-target-text').innerText, 'en-GB')" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold flex items-center gap-1.5 shrink-0">
+              <i class="fa-solid fa-volume-high"></i> Nghe giọng mẫu
+            </button>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-3 pt-2">
+            <button onclick="startSpeechRecognition()" id="btn-record-speech" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-rose-600/20 transition-all">
+              <i class="fa-solid fa-microphone"></i> <span>Thu âm giọng nói (Microphone)</span>
+            </button>
+            <button onclick="simulateSpeakingCheck()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 transition-all">
+              <i class="fa-solid fa-wave-square"></i> <span>Chấm điểm phát âm mẫu (Demo nhanh)</span>
+            </button>
+            <span id="speaking-status-text" class="text-xs text-slate-400">Sẵn sàng thu âm hoặc bấm Demo nhanh để xem phân tích âm tiết.</span>
+          </div>
+
+          <div id="speaking-eval-result" class="hidden pt-4 border-t border-slate-200 dark:border-slate-700"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
   <!-- 3. PHÂN HỆ 2: PHÒNG THI / KHẢO SÁT NĂNG LỰC TRỰC TUYẾN         -->
   <!-- ============================================================== -->
   <section id="section-exam" class="main-section hidden flex-grow py-8 sm:py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <!-- Bộ chọn 4 Đề thi Tiếng Anh theo cấp độ + Chế độ Luyện tập -->
+      <div class="mb-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-600 dark:text-indigo-400"><i class="fa-solid fa-folder-open mr-1"></i> Ngân hàng 4 Bộ đề thi Tiếng Anh chuẩn quốc tế</span>
+          <label class="inline-flex items-center gap-2 cursor-pointer bg-white dark:bg-slate-900 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300">
+            <input type="checkbox" id="toggle-practice-mode" onchange="togglePracticeMode(this.checked)" class="rounded text-brand-600 focus:ring-brand-500">
+            <span>Chế độ Luyện tập (Hiện đáp án & giải thích ngay khi chọn)</span>
+          </label>
+        </div>
+        <div id="exam-catalog-selector" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <button onclick="selectExamFromCatalog('670000000000000000000040', this)" class="exam-cat-card p-3.5 rounded-2xl border-2 border-brand-600 bg-brand-50/50 dark:bg-brand-950/30 text-left transition-all">
+            <div class="text-[10px] font-extrabold uppercase text-brand-600 dark:text-indigo-400">Đề số 1 • Placement Test</div>
+            <div class="text-xs font-bold text-slate-900 dark:text-white mt-0.5 line-clamp-1">Đánh Giá Năng Lực Quốc Tế (A1-C2)</div>
+          </button>
+          <button onclick="selectExamFromCatalog('67000000000000000000004a', this)" class="exam-cat-card p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-brand-500 text-left transition-all">
+            <div class="text-[10px] font-extrabold uppercase text-amber-600">Đề số 2 • ETS TOEIC 850+</div>
+            <div class="text-xs font-bold text-slate-900 dark:text-white mt-0.5 line-clamp-1">TOEIC Part 5 Ngữ Pháp & Từ Vựng</div>
+          </button>
+          <button onclick="selectExamFromCatalog('67000000000000000000004b', this)" class="exam-cat-card p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-brand-500 text-left transition-all">
+            <div class="text-[10px] font-extrabold uppercase text-emerald-600">Đề số 3 • IELTS Academic</div>
+            <div class="text-xs font-bold text-slate-900 dark:text-white mt-0.5 line-clamp-1">IELTS Reading & Lexical Band 7.5+</div>
+          </button>
+          <button onclick="selectExamFromCatalog('67000000000000000000004c', this)" class="exam-cat-card p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-brand-500 text-left transition-all">
+            <div class="text-[10px] font-extrabold uppercase text-purple-600">Đề số 4 • Core Grammar</div>
+            <div class="text-xs font-bold text-slate-900 dark:text-white mt-0.5 line-clamp-1">Chuyên Đề 12 Thì & Câu Điều Kiện</div>
+          </button>
+        </div>
+      </div>
       
       <!-- Exam Header Bar -->
       <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -448,7 +726,7 @@
           </div>
         </div>
 
-        <!-- Cột phụ: Bảng xếp hạng & Danh sách câu hỏi -->
+        <!-- Cột phụ: Bảng xếp hạng & Sổ tay câu hỏi khó -->
         <div class="lg:col-span-4 space-y-6">
           <!-- Bảng xếp hạng trực tiếp -->
           <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
@@ -457,7 +735,7 @@
                 <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-500 flex items-center justify-center">
                   <i class="fa-solid fa-trophy"></i>
                 </div>
-                <h4 class="font-extrabold text-slate-900 dark:text-white">Bảng Xếp Hạng</h4>
+                <h4 class="font-extrabold text-slate-900 dark:text-white">Bảng Xếp Hạng (Redis ZSET)</h4>
               </div>
               <span class="text-[11px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-1 rounded-full flex items-center gap-1.5">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Trực tiếp
@@ -469,12 +747,29 @@
             </div>
           </div>
 
+          <!-- Sổ tay câu hỏi đánh dấu (Mistake & Bookmark Notebook - Redis Set) -->
+          <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-500 flex items-center justify-center">
+                  <i class="fa-solid fa-bookmark"></i>
+                </div>
+                <h4 class="font-extrabold text-slate-900 dark:text-white text-sm">Sổ Tay Câu Hỏi Khó (Redis Set)</h4>
+              </div>
+              <span id="bookmark-count-badge" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950 text-rose-600">0 câu</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">Bấm nút <i class="fa-regular fa-bookmark"></i> ở góc mỗi câu hỏi để lưu vào sổ tay ôn tập nhanh:</p>
+            <div id="bookmarked-questions-list" class="space-y-2.5 max-h-64 overflow-y-auto pr-1">
+              <div class="text-center py-4 text-slate-400 text-xs">Chưa có câu hỏi nào được lưu.</div>
+            </div>
+          </div>
+
           <!-- Thông tin hỗ trợ bài thi -->
           <div class="bg-indigo-900 dark:bg-indigo-950 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
             <div class="relative z-10">
-              <h4 class="font-bold text-sm mb-2"><i class="fa-solid fa-shield-halved mr-2 text-indigo-300"></i> Cơ chế an toàn dữ liệu</h4>
+              <h4 class="font-bold text-sm mb-2"><i class="fa-solid fa-shield-halved mr-2 text-indigo-300"></i> Cơ chế an toàn dữ liệu Redis</h4>
               <p class="text-xs text-indigo-200 leading-relaxed mb-4">
-                Hệ thống tự động lưu từng câu trả lời theo thời gian thực. Trường hợp mất mạng hoặc tải lại trang, bài làm của bạn sẽ được bảo toàn tuyệt đối.
+                Hệ thống tự động lưu từng câu trả lời theo thời gian thực vào Redis Hash. Trường hợp mất mạng hoặc tải lại trang, bài làm của bạn sẽ được bảo toàn tuyệt đối.
               </p>
               <button onclick="startExam(true)" class="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-semibold transition-all">
                 <i class="fa-solid fa-arrows-rotate mr-1"></i> Đồng bộ lại trạng thái
@@ -493,23 +788,28 @@
   <section id="section-classroom" class="main-section hidden flex-grow py-8 sm:py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       
-      <div class="mb-6 flex items-center justify-between">
+      <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
         <button onclick="showSection('courses')" class="text-sm font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-2">
           <i class="fa-solid fa-arrow-left"></i> Quay lại danh mục
         </button>
-        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" id="classroom-course-header-title">Trình phát bài giảng trực tuyến</span>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" id="classroom-course-header-title">Trình phát bài giảng trực tuyến</span>
+          <button onclick="enrollCurrentCourse()" id="btn-enroll-course" class="px-4 py-1.5 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5">
+            <i class="fa-solid fa-bookmark"></i> <span>Đăng ký khóa học này</span>
+          </button>
+        </div>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        <!-- Video Player Chính -->
+        <!-- Video Player Chính + Ghi chú Timestamp + Đánh giá 5 sao -->
         <div class="lg:col-span-8 space-y-6">
           <div class="bg-black rounded-3xl overflow-hidden shadow-2xl aspect-video relative group">
             <iframe id="classroom-video-frame" class="w-full h-full" src="https://www.youtube.com/embed/0buKQHokLK8" title="Video Bài Học" allowfullscreen></iframe>
           </div>
 
           <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm">
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
               <span class="text-xs font-bold text-brand-600 dark:text-indigo-400 uppercase tracking-wider" id="lesson-module-tag">Module 1 • Nền tảng</span>
               <div class="flex items-center gap-2">
                 <button onclick="sendTelemetry('VIDEO_PROGRESS', 300)" class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
@@ -527,9 +827,48 @@
               Phân tích chi tiết 4 kỹ năng Listening, Reading, Writing, Speaking và chiến thuật tối ưu điểm số theo chuẩn khảo thí quốc tế.
             </p>
           </div>
+
+          <!-- TÍNH NĂNG MỚI: GHI CHÚ BÀI GIẢNG THEO MỐC THỜI GIAN VIDEO (MONGODB) -->
+          <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <h4 class="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
+                <i class="fa-solid fa-note-sticky text-amber-500"></i>
+                <span>Sổ Tay Ghi Chú Theo Mốc Thời Gian Video (MongoDB)</span>
+              </h4>
+              <span class="text-[11px] text-slate-400">Lưu trực tiếp vào Collection lesson_notes</span>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-2 mb-4">
+              <input type="text" id="note-timestamp-input" value="05:20" class="w-full sm:w-24 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-mono font-bold text-center text-brand-600 dark:text-indigo-400 outline-none" placeholder="05:20">
+              <input type="text" id="note-content-input" placeholder="Nhập ghi chú công thức ngữ pháp / từ vựng quan trọng tại mốc giờ này..." class="flex-grow px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs outline-none focus:border-brand-500 dark:text-white">
+              <button onclick="saveLessonNote()" class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shrink-0 transition-all">
+                <i class="fa-solid fa-plus mr-1"></i> Lưu ghi chú
+              </button>
+            </div>
+            <div id="classroom-notes-list" class="space-y-2 max-h-48 overflow-y-auto"></div>
+          </div>
+
+          <!-- TÍNH NĂNG MỚI: ĐÁNH GIÁ 5 SAO & BÌNH LUẬN KHÓA HỌC (MONGODB EMBEDDED REVIEWS) -->
+          <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+            <h4 class="font-extrabold text-slate-900 dark:text-white text-base mb-4 flex items-center gap-2">
+              <i class="fa-solid fa-star text-amber-400"></i>
+              <span>Đánh Giá & Thảo Luận Khóa Học (MongoDB Embedded Reviews)</span>
+            </h4>
+            <div class="flex flex-col sm:flex-row gap-2 mb-4">
+              <select id="review-rating-select" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-amber-600 outline-none">
+                <option value="5">⭐⭐⭐⭐⭐ (5/5 Xuất sắc)</option>
+                <option value="4">⭐⭐⭐⭐ (4/5 Rất tốt)</option>
+                <option value="3">⭐⭐⭐ (3/5 Khá)</option>
+              </select>
+              <input type="text" id="review-comment-input" placeholder="Chia sẻ cảm nhận của bạn về khóa học Tiếng Anh này..." class="flex-grow px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs outline-none focus:border-brand-500 dark:text-white">
+              <button onclick="submitCourseReview()" class="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shrink-0 transition-all">
+                Gửi đánh giá
+              </button>
+            </div>
+            <div id="classroom-reviews-list" class="space-y-3 max-h-60 overflow-y-auto"></div>
+          </div>
         </div>
 
-        <!-- Cột Danh mục bài giảng & Dòng sự kiện học tập -->
+        <!-- Cột Danh mục bài giảng & Dòng sự kiện học tập + Gợi ý Neo4j -->
         <div class="lg:col-span-4 space-y-6">
           <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
             <h4 class="font-extrabold text-slate-900 dark:text-white mb-4 flex items-center justify-between">
@@ -542,12 +881,22 @@
           <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
             <h4 class="font-extrabold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
               <i class="fa-solid fa-timeline text-sky-500"></i>
-              <span>Nhật Ký Học Tập</span>
+              <span>Nhật Ký Học Tập (Cassandra)</span>
             </h4>
             <p class="text-xs text-slate-400 mb-4">Ghi nhận tiến trình học tập cá nhân theo thời gian thực:</p>
             <div id="telemetry-log-stream" class="space-y-2 max-h-60 overflow-y-auto pr-1">
               <div class="text-center py-4 text-slate-400 text-xs">Đang tải nhật ký...</div>
             </div>
+          </div>
+
+          <!-- TÍNH NĂNG MỚI: KHÓA HỌC BỔ TRỢ ĐỀ XUẤT BỞI ĐỒ THỊ NEO4J -->
+          <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+            <h4 class="font-extrabold text-slate-900 dark:text-white mb-2 flex items-center gap-2 text-sm">
+              <i class="fa-solid fa-diagram-project text-emerald-500"></i>
+              <span>Khóa Học Bổ Trợ Đề Xuất (Neo4j Graph)</span>
+            </h4>
+            <p class="text-xs text-slate-400 mb-3">Truy vấn Cypher tìm khóa học có chung kỹ năng đầu ra:</p>
+            <div id="neo4j-course-recommendations" class="space-y-2"></div>
           </div>
         </div>
 
@@ -635,19 +984,96 @@
   </section>
 
   <!-- ============================================================== -->
-  <!-- 6. PHÂN HỆ 5: LỊCH SỬ KẾT QUẢ & CHỨNG CHỈ                      -->
+  <!-- 6. PHÂN HỆ 5: GAMIFICATION, TIẾN ĐỘ KHÓA HỌC & CHỨNG CHỈ        -->
   <!-- ============================================================== -->
   <section id="section-history" class="main-section hidden flex-grow py-8 sm:py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
       
+      <!-- GAMIFICATION BANNER: STREAK, XP, LEVEL & BADGES -->
+      <div class="bg-gradient-to-r from-brand-600 via-indigo-600 to-purple-600 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          <div class="lg:col-span-5">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur text-xs font-bold mb-3">
+              <i class="fa-solid fa-fire text-amber-300"></i>
+              <span id="gamification-streak-badge">Chuỗi học liên tiếp: 7 ngày 🔥</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight" id="gamification-level-title">Cấp độ: Upper-Intermediate (CEFR B2)</h2>
+            <p class="text-xs sm:text-sm text-indigo-100 mt-1.5">Tích lũy điểm XP qua mỗi từ vựng thuộc lòng, bài chép chính tả, bài viết IELTS và đề thi hoàn thành.</p>
+            <div class="mt-4 flex items-center gap-4">
+              <div class="px-4 py-2 rounded-2xl bg-white/15 backdrop-blur">
+                <div class="text-[10px] uppercase text-indigo-200 font-bold">Tổng điểm kinh nghiệm</div>
+                <div class="text-xl font-black text-amber-300" id="gamification-xp-value">1,450 XP</div>
+              </div>
+              <div class="px-4 py-2 rounded-2xl bg-white/15 backdrop-blur">
+                <div class="text-[10px] uppercase text-indigo-200 font-bold">Từ vựng đã thuộc</div>
+                <div class="text-xl font-black text-emerald-300" id="gamification-mastered-words">5 Từ</div>
+              </div>
+              <div class="px-4 py-2 rounded-2xl bg-white/15 backdrop-blur">
+                <div class="text-[10px] uppercase text-indigo-200 font-bold">Bài luận IELTS</div>
+                <div class="text-xl font-black text-white" id="gamification-essays-count">1 Bài</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4 Huy hiệu thành tích (Badges) -->
+          <div class="lg:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-3" id="gamification-badges-grid">
+            <div class="p-3.5 rounded-2xl bg-white/15 backdrop-blur border border-white/20 text-center">
+              <div class="w-10 h-10 rounded-xl bg-amber-400/20 text-amber-300 flex items-center justify-center mx-auto mb-2 text-lg">
+                <i class="fa-solid fa-fire"></i>
+              </div>
+              <div class="font-bold text-xs">7-Day Streak</div>
+              <div class="text-[10px] text-indigo-200 mt-0.5">Học 7 ngày liên tục</div>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-white/15 backdrop-blur border border-white/20 text-center">
+              <div class="w-10 h-10 rounded-xl bg-emerald-400/20 text-emerald-300 flex items-center justify-center mx-auto mb-2 text-lg">
+                <i class="fa-solid fa-book-bookmark"></i>
+              </div>
+              <div class="font-bold text-xs">Vocab Master</div>
+              <div class="text-[10px] text-indigo-200 mt-0.5">Thuộc bộ từ IELTS</div>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-white/15 backdrop-blur border border-white/20 text-center">
+              <div class="w-10 h-10 rounded-xl bg-purple-400/20 text-purple-200 flex items-center justify-center mx-auto mb-2 text-lg">
+                <i class="fa-solid fa-pen-nib"></i>
+              </div>
+              <div class="font-bold text-xs">IELTS Writer</div>
+              <div class="text-[10px] text-indigo-200 mt-0.5">Luyện Writing Task 2</div>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-white/15 backdrop-blur border border-white/20 text-center">
+              <div class="w-10 h-10 rounded-xl bg-sky-400/20 text-sky-300 flex items-center justify-center mx-auto mb-2 text-lg">
+                <i class="fa-solid fa-award"></i>
+              </div>
+              <div class="font-bold text-xs">Exam Champion</div>
+              <div class="text-[10px] text-indigo-200 mt-0.5">Đạt chuẩn Quốc tế</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TỦ KHÓA HỌC ĐÃ ĐĂNG KÝ & TIẾN ĐỘ % -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">My Learning Dashboard</span>
+            <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5">Khóa Học Tiếng Anh Đang Theo Học & Tiến Độ</h3>
+          </div>
+          <button onclick="showSection('courses')" class="px-4 py-2 rounded-xl text-xs font-bold bg-brand-50 dark:bg-slate-800 text-brand-600 dark:text-indigo-400 hover:bg-brand-100 transition-all">
+            <i class="fa-solid fa-plus mr-1"></i> Đăng ký thêm khóa mới
+          </button>
+        </div>
+        <div id="enrolled-courses-progress-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="col-span-3 text-center py-6 text-slate-400 text-xs">Đang tải tiến độ khóa học...</div>
+        </div>
+      </div>
+
+      <!-- BẢNG LỊCH SỬ THI & CHỨNG CHỈ -->
       <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>
             <span class="text-xs font-bold text-brand-600 dark:text-indigo-400 uppercase tracking-widest">Hồ sơ cá nhân</span>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-1">Lịch Sử Khảo Sát & Chứng Chỉ Của Tôi</h2>
           </div>
-          <button onclick="loadUserHistory()" class="px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-all">
-            <i class="fa-solid fa-rotate-right mr-1.5"></i> Cập nhật
+          <button onclick="loadUserHistory(); loadGamificationProfile();" class="px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-all">
+            <i class="fa-solid fa-rotate-right mr-1.5"></i> Cập nhật hồ sơ
           </button>
         </div>
 
@@ -674,11 +1100,120 @@
   </section>
 
   <!-- ============================================================== -->
-  <!-- 7. PHÂN HỆ 6: QUẢN TRỊ & THỐNG KÊ (INSTRUCTOR PORTAL)           -->
+  <!-- 7. PHÂN HỆ 6: QUẢN TRỊ, CMS GIẢNG VIÊN & 4-NOSQL MONITOR       -->
   <!-- ============================================================== -->
   <section id="section-analytics" class="main-section hidden flex-grow py-8 sm:py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
       
+      <!-- BẢNG GIÁM SÁT TRẠNG THÁI 4 HỆ QUẢN TRỊ CSDL NOSQL (POLYGLOT PERSISTENCE HEALTH) -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div>
+            <span class="text-xs font-bold text-brand-600 dark:text-indigo-400 uppercase tracking-widest">Polyglot Persistence Architecture</span>
+            <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5">Trạng Thái Kết Nối & Vận Hành 4 Hệ CSDL NoSQL</h3>
+          </div>
+          <button onclick="check4DatabasesHealth()" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-brand-600 hover:text-white text-slate-700 dark:text-slate-300 transition-all flex items-center gap-1.5">
+            <i class="fa-solid fa-heart-pulse"></i> Kiểm tra 4 Database
+          </button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="nosql-4db-health-cards">
+          <div class="p-4 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-extrabold text-xs text-emerald-800 dark:text-emerald-300">1. MongoDB (Document)</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-200 dark:bg-emerald-800 text-emerald-900 dark:text-emerald-100" id="health-badge-mongo">ONLINE</span>
+            </div>
+            <p class="text-[11px] text-slate-600 dark:text-slate-400">Lưu trữ Users, 12 Khóa học, 19 Bài giảng, Câu hỏi, Bài luận IELTS, Sổ ghi chú & Đánh giá.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-extrabold text-xs text-rose-800 dark:text-rose-300">2. Redis (Key-Value)</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-200 dark:bg-rose-800 text-rose-900 dark:text-rose-100" id="health-badge-redis">ACTIVE</span>
+            </div>
+            <p class="text-[11px] text-slate-600 dark:text-slate-400">Cache khóa học, Phiên thi TTL 30p, Leaderboard ZSET, Flashcards Set & Bookmark Set.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-extrabold text-xs text-amber-800 dark:text-amber-300">3. Cassandra (Wide-Column)</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-200 dark:bg-amber-800 text-amber-900 dark:text-amber-100" id="health-badge-cassandra">ACTIVE</span>
+            </div>
+            <p class="text-[11px] text-slate-600 dark:text-slate-400">Ghi nhật ký Time-Series Telemetry: Xem video, Chép chính tả, Thuộc từ vựng & Ghi chú.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-800">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-extrabold text-xs text-indigo-800 dark:text-indigo-300">4. Neo4j (Graph DB)</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-200 dark:bg-indigo-800 text-indigo-900 dark:text-indigo-100" id="health-badge-neo4j">ACTIVE</span>
+            </div>
+            <p class="text-[11px] text-slate-600 dark:text-slate-400">Đồ thị lộ trình học CEFR A1➔C2 (21 Nodes, 36 Edges) & Gợi ý khóa học liên quan.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- INSTRUCTOR CMS: TẠO KHÓA HỌC MỚI & THÊM CÂU HỎI TRẮC NGHIỆM MỚI -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Form 1: Tạo khóa học Tiếng Anh mới -->
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+          <div class="flex items-center gap-2.5 mb-4">
+            <div class="w-9 h-9 rounded-xl bg-brand-50 dark:bg-slate-800 text-brand-600 dark:text-indigo-400 flex items-center justify-center">
+              <i class="fa-solid fa-folder-plus"></i>
+            </div>
+            <div>
+              <h4 class="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">CMS: Tạo Khóa Học Tiếng Anh Mới</h4>
+              <p class="text-[11px] text-slate-400">Lưu vào MongoDB `courses` & Tự động xóa Cache Redis</p>
+            </div>
+          </div>
+          <form onsubmit="handleCreateCourseCMS(event)" class="space-y-3">
+            <input type="text" id="cms-course-title" required placeholder="Tên khóa học (Vd: IELTS Speaking Band 8.0 Intensive)" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs outline-none focus:border-brand-500">
+            <div class="grid grid-cols-2 gap-3">
+              <select id="cms-course-category" class="px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs outline-none">
+                <option value="IELTS Academic">IELTS Academic</option>
+                <option value="TOEIC Quốc Tế">TOEIC Quốc Tế</option>
+                <option value="Ngữ Pháp & Từ Vựng">Ngữ Pháp & Từ Vựng</option>
+                <option value="Giao Tiếp & Doanh Nghiệp">Giao Tiếp & Doanh Nghiệp</option>
+              </select>
+              <input type="number" id="cms-course-price" value="1590000" placeholder="Học phí (VNĐ)" class="px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs outline-none">
+            </div>
+            <input type="text" id="cms-course-tagline" required placeholder="Mô tả ngắn gọn về lợi ích của khóa học..." class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs outline-none focus:border-brand-500">
+            <button type="submit" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md shadow-brand-500/20 transition-all">
+              <i class="fa-solid fa-plus mr-1"></i> Xuất Bản Khóa Học Mới
+            </button>
+          </form>
+        </div>
+
+        <!-- Form 2: Thêm câu hỏi trắc nghiệm mới vào Ngân hàng đề -->
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+          <div class="flex items-center gap-2.5 mb-4">
+            <div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+              <i class="fa-solid fa-file-circle-plus"></i>
+            </div>
+            <div>
+              <h4 class="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">CMS: Thêm Câu Hỏi Vào Ngân Hàng Đề Thi</h4>
+              <p class="text-[11px] text-slate-400">Lưu trực tiếp vào MongoDB `questions` cho kỳ thi hiện tại</p>
+            </div>
+          </div>
+          <form onsubmit="handleCreateQuestionCMS(event)" class="space-y-2.5">
+            <input type="text" id="cms-q-content" required placeholder="Nội dung câu hỏi (Vd: [TOEIC Part 5] If she ___ earlier, she wouldn't have missed the flight.)" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs outline-none focus:border-emerald-500">
+            <div class="grid grid-cols-2 gap-2">
+              <input type="text" id="cms-q-optA" required placeholder="Đáp án A" class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs outline-none">
+              <input type="text" id="cms-q-optB" required placeholder="Đáp án B" class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs outline-none">
+              <input type="text" id="cms-q-optC" required placeholder="Đáp án C" class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs outline-none">
+              <input type="text" id="cms-q-optD" required placeholder="Đáp án D" class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs outline-none">
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+              <select id="cms-q-correct" class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none">
+                <option value="A">Đáp án đúng: A</option>
+                <option value="B">Đáp án đúng: B</option>
+                <option value="C">Đáp án đúng: C</option>
+                <option value="D">Đáp án đúng: D</option>
+              </select>
+              <input type="text" id="cms-q-explanation" placeholder="Giải thích ngữ pháp / từ vựng..." class="col-span-2 px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs outline-none">
+            </div>
+            <button type="submit" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-500/20 transition-all">
+              <i class="fa-solid fa-check mr-1"></i> Thêm Câu Hỏi Vào Đề Thi
+            </button>
+          </form>
+        </div>
+      </div>
+
       <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
@@ -1288,15 +1823,21 @@
   <!-- ============================================================== -->
   <script>
     const API_BASE = window.location.origin + '/api';
-    const EXAM_ID = '670000000000000000000040';
+    let EXAM_ID = '670000000000000000000040';
     let currentToken = localStorage.getItem('edupro_token') || null;
     let currentUser = JSON.parse(localStorage.getItem('edupro_user') || 'null');
     let examCountdown = null;
     let loadedQuestions = [];
     let userAnswers = {};
+    let isPracticeMode = false;
+    let bookmarkedQuestionIds = [];
     let visGraph = null;
     let rawCoursesData = [];
     let lastExamResult = null;
+    let allFlashcards = [];
+    let currentFlashcardFilter = 'ALL';
+    let allDictations = [];
+    let currentDictationItem = null;
 
     // 1. CHUYỂN ĐỔI DARK MODE (TÍNH NĂNG 4)
     function initTheme() {
@@ -1355,10 +1896,12 @@
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      if (sectionId === 'exam') startExam();
+      if (sectionId === 'vocab') { loadFlashcards(); loadDictations(); }
+      if (sectionId === 'writing') { updateEssayWordCount(); }
+      if (sectionId === 'exam') { startExam(); loadBookmarkedQuestions(); }
       if (sectionId === 'graph') initKnowledgeGraph();
-      if (sectionId === 'history') loadUserHistory();
-      if (sectionId === 'analytics') loadAnalyticsData();
+      if (sectionId === 'history') { loadUserHistory(); loadGamificationProfile(); }
+      if (sectionId === 'analytics') { loadAnalyticsData(); check4DatabasesHealth(); }
     }
 
     function scrollToCoursesList() {
@@ -1880,7 +2423,7 @@
         const res = await fetch(`${API_BASE}/courses/${courseId}`);
         const json = await res.json();
         if (json.success && json.data) {
-          const { lessons, title } = json.data;
+          const { lessons, title, reviews, rating } = json.data;
           document.getElementById('classroom-course-header-title').textContent = title || 'Lớp Học Trực Tuyến';
           if (lessons && lessons.length > 0) {
             renderClassroomPlaylist(lessons);
@@ -1888,6 +2431,9 @@
           } else {
             document.getElementById('classroom-playlist').innerHTML = '<div class="text-xs text-slate-400 p-4">Khóa học này đang cập nhật bài giảng.</div>';
           }
+          renderCourseReviews(reviews || [], rating || 4.9);
+          loadCourseNotes(courseId);
+          loadNeo4jCourseRecommendations(courseId);
           showSection('classroom');
           loadTelemetryLogs();
         }
@@ -2029,15 +2575,28 @@
       let html = '';
       loadedQuestions.forEach((q, idx) => {
         const selected = userAnswers[q._id];
+        const isBookmarked = bookmarkedQuestionIds.includes(String(q._id));
+        const safeSpeechText = String(q.content || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
         html += `
           <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm">
-            <div class="flex items-center gap-3 mb-4">
-              <span class="w-8 h-8 rounded-xl bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-indigo-400 font-extrabold text-sm flex items-center justify-center shrink-0">
-                ${idx + 1}
-              </span>
-              <h3 class="font-extrabold text-slate-900 dark:text-white text-base sm:text-lg leading-snug">
-                ${q.content}
-              </h3>
+            <div class="flex items-start justify-between gap-3 mb-4">
+              <div class="flex items-start gap-3">
+                <span class="w-8 h-8 rounded-xl bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-indigo-400 font-extrabold text-sm flex items-center justify-center shrink-0 mt-0.5">
+                  ${idx + 1}
+                </span>
+                <h3 class="font-extrabold text-slate-900 dark:text-white text-base sm:text-lg leading-snug">
+                  ${q.content}
+                </h3>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button onclick="speakText('${safeSpeechText}', 'en-US')" title="Nghe phát âm câu hỏi" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-brand-50 text-slate-600 dark:text-slate-300 hover:text-brand-600 flex items-center justify-center text-xs transition-all">
+                  <i class="fa-solid fa-volume-high"></i>
+                </button>
+                <button onclick="toggleQuestionBookmark('${q._id}')" title="Lưu câu hỏi vào Sổ tay Redis" class="px-2.5 h-8 rounded-xl border text-xs font-bold flex items-center gap-1 transition-all ${isBookmarked ? 'bg-rose-50 dark:bg-rose-950/40 border-rose-300 text-rose-600 dark:text-rose-400' : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 hover:text-rose-600'}">
+                  <i class="fa-${isBookmarked ? 'solid' : 'regular'} fa-bookmark"></i>
+                  <span class="hidden sm:inline">${isBookmarked ? 'Đã lưu' : 'Lưu'}</span>
+                </button>
+              </div>
             </div>
             <div class="space-y-3">
         `;
@@ -2056,6 +2615,17 @@
             </div>
           `;
         });
+
+        if (isPracticeMode && selected) {
+          html += `
+            <div class="mt-4 p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 text-xs text-indigo-950 dark:text-indigo-200 flex items-start gap-2.5">
+              <i class="fa-solid fa-lightbulb text-amber-500 mt-0.5"></i>
+              <div>
+                <strong>Chế độ Luyện tập (Practice Mode):</strong> Bạn đã chọn đáp án <strong>${selected}</strong>. Bấm <em>"Nộp Bài"</em> bất kỳ lúc nào để xem đáp án chuẩn và giải thích ngữ pháp chi tiết, hoặc bấm <em>"Lưu"</em> để đưa câu hỏi vào sổ tay ôn tập Redis!
+              </div>
+            </div>
+          `;
+        }
 
         html += `</div></div>`;
       });
@@ -2677,11 +3247,754 @@
       }
     }
 
+    // ==============================================================
+    // 16. CỤM TÍNH NĂNG BỔ SUNG 1: FLASHCARDS 3D & AUDIO DICTATION LAB
+    // ==============================================================
+    function speakText(text, lang = 'en-US', rate = 0.95) {
+      if (!('speechSynthesis' in window)) {
+        alert('Trình duyệt của bạn không hỗ trợ Web Speech API');
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = lang;
+      utter.rate = rate;
+      window.speechSynthesis.speak(utter);
+    }
+
+    async function loadFlashcards() {
+      try {
+        const headers = currentToken ? { 'Authorization': 'Bearer ' + currentToken } : {};
+        const res = await fetch(`${API_BASE}/courses/flashcards/list`, { headers });
+        const json = await res.json();
+        if (json.success && json.data) {
+          allFlashcards = json.data;
+          updateFlashcardProgress(json.masteredCount || 0, json.totalCount || allFlashcards.length);
+          renderFlashcardsGrid();
+        }
+      } catch (err) {
+        console.error('Lỗi tải Flashcards:', err);
+      }
+    }
+
+    function updateFlashcardProgress(masteredCount, totalCount) {
+      const countEl = document.getElementById('vocab-mastered-count');
+      const barEl = document.getElementById('vocab-mastered-bar');
+      if (countEl) countEl.textContent = `${masteredCount} / ${totalCount} từ`;
+      if (barEl) {
+        const pct = totalCount > 0 ? Math.round((masteredCount / totalCount) * 100) : 0;
+        barEl.style.width = `${pct}%`;
+      }
+    }
+
+    function filterFlashcards(category) {
+      currentFlashcardFilter = category;
+      document.querySelectorAll('.vocab-cat-btn').forEach(btn => {
+        btn.className = 'vocab-cat-btn px-4 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300';
+      });
+      if (event && event.target) {
+        event.target.className = 'vocab-cat-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white shadow-sm';
+      }
+      renderFlashcardsGrid();
+    }
+
+    function renderFlashcardsGrid() {
+      const grid = document.getElementById('flashcards-grid');
+      if (!grid) return;
+      const list = currentFlashcardFilter === 'ALL'
+        ? allFlashcards
+        : allFlashcards.filter(c => c.category === currentFlashcardFilter);
+
+      let html = '';
+      list.forEach(card => {
+        const isMastered = Boolean(card.mastered || card.isMastered);
+        const phonetic = card.phonetic || card.ipa || '';
+        const pos = card.pos || card.type || 'Word';
+        const meaning = card.meaning || card.meaningVi || '';
+        const collocation = card.collocation || card.synonyms || '';
+        const safeWord = (card.word || '').replace(/'/g, "\\'");
+        const safeEx = (card.example || '').replace(/'/g, "\\'");
+        html += `
+          <div class="p-5 rounded-3xl border transition-all flex flex-col justify-between ${isMastered ? 'bg-emerald-50/40 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800' : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-brand-400 shadow-sm hover:shadow-lg'}">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-brand-50 dark:bg-slate-800 text-brand-600 dark:text-indigo-400">${card.category}</span>
+                <div class="flex items-center gap-1">
+                  <button onclick="speakText('${safeWord}', 'en-GB')" title="Phát âm chuẩn Anh-Anh (UK)" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-brand-600 hover:text-white text-[10px] font-bold transition-all">
+                    🔊 UK
+                  </button>
+                  <button onclick="speakText('${safeWord}', 'en-US')" title="Phát âm chuẩn Anh-Mỹ (US)" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white text-[10px] font-bold transition-all">
+                    🔊 US
+                  </button>
+                </div>
+              </div>
+
+              <div class="mb-2">
+                <h4 class="text-xl font-black text-slate-900 dark:text-white tracking-tight">${card.word}</h4>
+                <div class="text-xs font-mono text-brand-600 dark:text-indigo-400">${phonetic} <span class="text-slate-400">(${pos})</span></div>
+              </div>
+
+              <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 mb-3">
+                <div class="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">🇻🇳 ${meaning}</div>
+                <div class="text-[11px] text-slate-500 dark:text-slate-400 italic">"${card.example}"</div>
+                <button onclick="speakText('${safeEx}', 'en-US')" class="mt-1.5 text-[10px] font-bold text-brand-600 dark:text-indigo-400 hover:underline flex items-center gap-1">
+                  <i class="fa-solid fa-volume-low"></i> Nghe câu ví dụ
+                </button>
+              </div>
+
+              <div class="text-[11px] text-slate-500 dark:text-slate-400 mb-4">
+                <strong>Collocation:</strong> <span class="font-mono text-slate-700 dark:text-slate-300">${collocation}</span>
+              </div>
+            </div>
+
+            <button onclick="toggleFlashcardMaster('${card.id}')" class="w-full py-2.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${isMastered ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 hover:bg-emerald-600 hover:text-white text-slate-700 dark:text-slate-300'}">
+              <i class="fa-solid ${isMastered ? 'fa-circle-check' : 'fa-check'}"></i>
+              <span>${isMastered ? 'Đã thuộc lòng (Redis Set)' : 'Đánh dấu Đã thuộc'}</span>
+            </button>
+          </div>
+        `;
+      });
+      grid.innerHTML = html;
+    }
+
+    async function toggleFlashcardMaster(cardId) {
+      if (!currentToken) { openLoginModal(); return; }
+      try {
+        const cardObj = allFlashcards.find(c => c.id === cardId);
+        const res = await fetch(`${API_BASE}/courses/flashcards/master`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
+          body: JSON.stringify({ cardId, word: cardObj ? cardObj.word : cardId })
+        });
+        const json = await res.json();
+        if (json.success) {
+          allFlashcards = allFlashcards.map(c =>
+            c.id === cardId ? { ...c, mastered: json.mastered, isMastered: json.mastered } : c
+          );
+          updateFlashcardProgress(json.masteredCount, json.totalCount || allFlashcards.length);
+          renderFlashcardsGrid();
+        }
+      } catch (err) {
+        alert('Lỗi lưu từ vựng: ' + err.message);
+      }
+    }
+
+    // AUDIO DICTATION LAB
+    async function loadDictations() {
+      try {
+        const res = await fetch(`${API_BASE}/courses/dictation/list`);
+        const json = await res.json();
+        if (json.success && json.data) {
+          allDictations = json.data;
+          const select = document.getElementById('dictation-selector');
+          if (select) {
+            select.innerHTML = allDictations.map((d, idx) =>
+              `<option value="${d.id}">Bài ${idx + 1}: ${d.topic || d.title} (${d.level})</option>`
+            ).join('');
+          }
+          currentDictationItem = allDictations[0];
+          updateDictationHintUI();
+        }
+      } catch (err) {
+        console.error('Lỗi tải Dictation:', err);
+      }
+    }
+
+    function selectDictationItem(dictId) {
+      currentDictationItem = allDictations.find(d => d.id === dictId) || allDictations[0];
+      document.getElementById('dictation-user-input').value = '';
+      document.getElementById('dictation-result-box').classList.add('hidden');
+      updateDictationHintUI();
+    }
+
+    function updateDictationHintUI() {
+      if (!currentDictationItem) return;
+      const hintEl = document.getElementById('dictation-hint-text');
+      if (hintEl) hintEl.textContent = `💡 Gợi ý nghĩa Tiếng Việt: ${currentDictationItem.hint} • Cấp độ: ${currentDictationItem.level}`;
+    }
+
+    function playDictationAudio(rate = 1.0) {
+      if (!currentDictationItem) return;
+      speakText(currentDictationItem.sentence || currentDictationItem.transcript, 'en-US', rate);
+    }
+
+    function fillSampleDictation() {
+      if (!currentDictationItem) return;
+      document.getElementById('dictation-user-input').value = currentDictationItem.sentence || currentDictationItem.transcript;
+    }
+
+    async function checkDictationAnswer() {
+      if (!currentDictationItem) return;
+      if (!currentToken) { openLoginModal(); return; }
+      const userText = document.getElementById('dictation-user-input').value.trim();
+      if (!userText) {
+        alert('Vui lòng nghe câu Tiếng Anh và gõ lại nội dung bạn nghe được (hoặc bấm Điền mẫu thử nghiệm)!');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/courses/dictation/check`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
+          body: JSON.stringify({ dictationId: currentDictationItem.id, userTranscript: userText, userText })
+        });
+        const json = await res.json();
+        if (json.success) {
+          const d = json.data || json;
+          const words = d.wordComparison || d.wordDiff || [];
+          document.getElementById('dictation-accuracy-badge').textContent = `Độ chính xác: ${d.accuracy}% (${d.matchedWords ?? d.matchedCount}/${d.totalWords} từ)`;
+          document.getElementById('dictation-diff-words').innerHTML = words.map(w => {
+            const ok = w.correct ?? w.isCorrect;
+            const label = w.word || w.expectedWord;
+            return `<span class="px-2.5 py-1 rounded-lg text-xs font-bold ${ok ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300' : 'bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 underline decoration-wavy'}">${label}</span>`;
+          }).join('');
+          document.getElementById('dictation-vi-translation').textContent = `🇻🇳 Dịch nghĩa: ${d.hint || d.vietnamese || currentDictationItem.hint}`;
+          document.getElementById('dictation-result-box').classList.remove('hidden');
+          loadTelemetryLogs();
+        }
+      } catch (err) {
+        alert('Lỗi chấm bài Dictation: ' + err.message);
+      }
+    }
+
+    // ==============================================================
+    // 17. CỤM TÍNH NĂNG BỔ SUNG 2: AI IELTS WRITING & SPEAKING COACH
+    // ==============================================================
+    function updateEssayWordCount() {
+      const textarea = document.getElementById('writing-essay-input');
+      const badge = document.getElementById('writing-word-count');
+      if (!textarea || !badge) return;
+      const text = textarea.value.trim();
+      const count = text ? text.split(/\s+/).length : 0;
+      badge.textContent = `${count} words`;
+      badge.className = count >= 150
+        ? 'px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 text-xs font-mono font-bold'
+        : 'px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-mono font-bold';
+    }
+
+    function insertSampleBand8Essay() {
+      const sample = `In the contemporary era, artificial intelligence and automated translation systems have revolutionized cross-border communication. While some people think that machine translation will render foreign language acquisition obsolete, I firmly believe that mastering a second language remains indispensable for cognitive development and deep cultural empathy.\n\nOn the one hand, it is undeniable that AI-powered translation tools offer unprecedented convenience. Travelers and international corporations can instantaneously decipher documents or hold basic conversations without spending years studying grammar and vocabulary. Nevertheless, relying solely on algorithms often strips communication of its subtle nuances, idioms, and emotional resonance.\n\nOn the other hand, learning a foreign language such as English cultivates critical thinking and executive brain function. Furthermore, in high-stakes diplomatic negotiations and academic leadership, speaking directly to counterparts fosters authentic trust that no electronic device can replicate. From a socioeconomic perspective, bilingual professionals consistently enjoy broader career prospects in the globalized workforce.\n\nIn conclusion, although translation technology serves as a valuable auxiliary tool, it cannot substitute the intellectual and interpersonal rewards of mastering a foreign language. Therefore, educational institutions should continue to prioritize comprehensive language curricula alongside digital literacy.`;
+      document.getElementById('writing-essay-input').value = sample;
+      updateEssayWordCount();
+    }
+
+    async function evaluateIeltsWriting() {
+      if (!currentToken) { openLoginModal(); return; }
+      const topic = document.getElementById('writing-prompt-select').value;
+      const essayText = document.getElementById('writing-essay-input').value.trim();
+      const btn = document.getElementById('btn-evaluate-writing');
+
+      if (!essayText) {
+        alert('Vui lòng nhập bài luận Tiếng Anh hoặc bấm nút "Chèn bài mẫu Band 8.0" để chấm thử!');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>AI đang phân tích 4 tiêu chí IELTS...</span>';
+
+      try {
+        const res = await fetch(`${API_BASE}/exams/writing/evaluate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
+          body: JSON.stringify({ topic, promptTopic: topic, essayText })
+        });
+        const json = await res.json();
+        if (json.success && json.data) {
+          const r = json.data;
+          const tr = r.criteria.taskResponse || 7.5;
+          const cc = r.criteria.coherence ?? r.criteria.coherenceCohesion ?? 7.5;
+          const lr = r.criteria.lexical ?? r.criteria.lexicalResource ?? 7.5;
+          const gra = r.criteria.grammar ?? r.criteria.grammaticalRange ?? 7.5;
+
+          document.getElementById('writing-overall-band').textContent = Number(r.overallBand).toFixed(1);
+          document.getElementById('writing-tr-score').textContent = Number(tr).toFixed(1);
+          document.getElementById('writing-cc-score').textContent = Number(cc).toFixed(1);
+          document.getElementById('writing-lr-score').textContent = Number(lr).toFixed(1);
+          document.getElementById('writing-gra-score').textContent = Number(gra).toFixed(1);
+          document.getElementById('writing-ai-feedback').innerHTML = Array.isArray(r.feedback)
+            ? r.feedback.map(f => `• ${f}`).join('<br>')
+            : r.feedback;
+
+          document.getElementById('writing-suggestions-list').innerHTML = (r.vocabularyUpgrades || []).map(u => `
+            <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+              <div>
+                <span class="line-through text-rose-500 font-semibold">${u.basic || u.original}</span>
+                <i class="fa-solid fa-arrow-right mx-1.5 text-slate-400 text-[10px]"></i>
+                <span class="font-extrabold text-emerald-600 dark:text-emerald-400">${u.band8 || u.upgrade}</span>
+              </div>
+              <span class="text-[10px] text-slate-400">${u.reason || 'Academic Band 8.0 Collocation'}</span>
+            </div>
+          `).join('');
+
+          document.getElementById('writing-result-card').classList.remove('hidden');
+        }
+      } catch (err) {
+        alert('Lỗi chấm bài IELTS Writing: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> <span>Chấm Điểm IELTS Writing Ngay (4 Tiêu Chí)</span>';
+      }
+    }
+
+    // AI SPEAKING & PRONUNCIATION COACH
+    function changeSpeakingSentence(sentence) {
+      document.getElementById('speaking-target-display').textContent = `"${sentence}"`;
+      document.getElementById('speaking-result-box').classList.add('hidden');
+    }
+
+    function playSpeakingTargetAudio() {
+      const target = document.getElementById('speaking-sentence-select').value;
+      speakText(target, 'en-US', 0.95);
+    }
+
+    function startSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const targetSentence = document.getElementById('speaking-sentence-select').value;
+      const btn = document.getElementById('btn-start-mic');
+
+      if (!SpeechRecognition) {
+        simulateSpeakingCheck();
+        return;
+      }
+
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      btn.innerHTML = '<i class="fa-solid fa-circle-dot fa-beat text-amber-300"></i> <span>Đang lắng nghe... Hãy đọc câu mẫu</span>';
+      recognition.start();
+
+      recognition.onresult = async (event) => {
+        const spokenSentence = event.results[0][0].transcript;
+        btn.innerHTML = '<i class="fa-solid fa-microphone"></i> <span>Bấm Để Thu Âm Giọng Đọc (Web Speech API)</span>';
+        await submitSpeakingEvaluation(targetSentence, spokenSentence);
+      };
+
+      recognition.onerror = () => {
+        btn.innerHTML = '<i class="fa-solid fa-microphone"></i> <span>Bấm Để Thu Âm Giọng Đọc (Web Speech API)</span>';
+        simulateSpeakingCheck();
+      };
+    }
+
+    async function simulateSpeakingCheck() {
+      const targetSentence = document.getElementById('speaking-sentence-select').value;
+      await submitSpeakingEvaluation(targetSentence, targetSentence);
+    }
+
+    async function submitSpeakingEvaluation(targetSentence, spokenSentence) {
+      if (!currentToken) { openLoginModal(); return; }
+      try {
+        const res = await fetch(`${API_BASE}/exams/speaking/evaluate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
+          body: JSON.stringify({ targetSentence, spokenText: spokenSentence, spokenSentence })
+        });
+        const json = await res.json();
+        if (json.success) {
+          const d = json.data || json;
+          const score = d.accuracy ?? d.pronunciationScore ?? 100;
+          document.getElementById('speaking-score-badge').textContent = `Pronunciation: ${score}% • Band ${d.estimatedBand}`;
+          document.getElementById('speaking-words-feedback').innerHTML = (d.wordBreakdown || []).map(w => {
+            const ok = w.correct ?? w.matched;
+            return `<span class="px-2 py-0.5 rounded-lg text-xs font-bold ${ok ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300' : 'bg-rose-100 text-rose-700'}">${w.word}</span>`;
+          }).join('');
+          document.getElementById('speaking-result-box').classList.remove('hidden');
+        }
+      } catch (err) {
+        alert('Lỗi chấm phát âm: ' + err.message);
+      }
+    }
+
+    // ==============================================================
+    // 18. CỤM TÍNH NĂNG BỔ SUNG 3: MULTI-EXAM, PRACTICE MODE & BOOKMARKS
+    // ==============================================================
+    function selectExamFromCatalog(examId, btnElem) {
+      EXAM_ID = examId;
+      document.querySelectorAll('.exam-cat-card').forEach(card => {
+        card.className = 'exam-cat-card p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-left hover:border-brand-400 transition-all';
+      });
+      if (btnElem) {
+        btnElem.className = 'exam-cat-card p-4 rounded-2xl border-2 border-brand-600 bg-brand-50/60 dark:bg-brand-950/30 text-left transition-all';
+      }
+      startExam();
+    }
+
+    function togglePracticeMode(checked) {
+      isPracticeMode = checked;
+      renderExamQuestions();
+    }
+
+    async function toggleQuestionBookmark(questionId) {
+      if (!currentToken) { openLoginModal(); return; }
+      try {
+        const res = await fetch(`${API_BASE}/exams/bookmarks/toggle`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
+          body: JSON.stringify({ questionId })
+        });
+        const json = await res.json();
+        if (json.success) {
+          bookmarkedQuestionIds = json.bookmarkedIds || json.bookmarks || [];
+          renderExamQuestions();
+          loadBookmarkedQuestions();
+        }
+      } catch (err) {
+        console.error('Lỗi bookmark câu hỏi:', err);
+      }
+    }
+
+    async function loadBookmarkedQuestions() {
+      if (!currentToken) return;
+      try {
+        const res = await fetch(`${API_BASE}/exams/bookmarks/my`, {
+          headers: { 'Authorization': 'Bearer ' + currentToken }
+        });
+        const json = await res.json();
+        if (json.success) {
+          const list = json.data || [];
+          bookmarkedQuestionIds = json.bookmarkedIds || list.map(q => String(q._id));
+          const countBadge = document.getElementById('bookmark-count-badge');
+          const box = document.getElementById('bookmarked-questions-list');
+          if (countBadge) countBadge.textContent = list.length;
+          if (!box) return;
+
+          if (list.length === 0) {
+            box.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">Bấm nút 🔖 trên câu hỏi để lưu vào sổ tay ôn tập.</div>';
+            return;
+          }
+
+          box.innerHTML = list.map(q => `
+            <div class="p-3 rounded-2xl bg-rose-50/50 dark:bg-slate-800/70 border border-rose-200/70 dark:border-slate-700 text-xs">
+              <div class="font-bold text-slate-800 dark:text-slate-200 line-clamp-2 mb-1">${q.content}</div>
+              <div class="flex items-center justify-between text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
+                <span>Đáp án đúng: ${q.correctAnswer || q.correctOption}</span>
+                <button onclick="toggleQuestionBookmark('${q._id}')" class="text-rose-500 hover:underline">Bỏ lưu</button>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        console.error('Lỗi tải sổ tay câu hỏi:', err);
+      }
+    }
+
+    // ==============================================================
+    // 19. CỤM TÍNH NĂNG BỔ SUNG 4: ENROLL, NOTES, REVIEWS & NEO4J RECS
+    // ==============================================================
+    async function enrollCurrentCourse() {
+      if (!currentToken) { openLoginModal(); return; }
+      if (!currentCourseId) return;
+      try {
+        const res = await fetch(`${API_BASE}/courses/${currentCourseId}/enroll`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
+          body: JSON.stringify({ progressPercent: 65 })
+        });
+        const json = await res.json();
+        if (json.success) {
+          const btn = document.getElementById('btn-enroll-classroom');
+          if (btn) {
+            btn.className = 'px-4 py-2 rounded-xl bg-brand-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm';
+            btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> <span>Đã ghi danh vào Hồ sơ</span>';
+          }
+        }
+      } catch (err) {
+        alert('Lỗi ghi danh khóa học: ' + err.message);
+      }
+    }
+
+    async function loadCourseNotes(courseId) {
+      if (!currentToken) return;
+      try {
+        const res = await fetch(`${API_BASE}/courses/${courseId}/notes`, {
+          headers: { 'Authorization': 'Bearer ' + currentToken }
+        });
+        const json = await res.json();
+        const box = document.getElementById('lesson-notes-list');
+        if (!box) return;
+        if (json.success && json.data && json.data.length > 0) {
+          box.innerHTML = json.data.map(n => `
+            <div class="p-3 rounded-2xl bg-amber-50/50 dark:bg-slate-800 border border-amber-200/70 dark:border-slate-700 flex items-start justify-between gap-3 text-xs">
+              <div>
+                <span class="px-2 py-0.5 rounded-md bg-amber-500 text-white font-mono font-bold text-[10px] mr-2">⏱ ${n.timestampFormatted || n.videoTimestamp || '05:00'}</span>
+                <span class="font-semibold text-slate-800 dark:text-slate-200">${n.content}</span>
+              </div>
+              <span class="text-[10px] text-slate-400 shrink-0">${new Date(n.createdAt).toLocaleTimeString('vi-VN')}</span>
+            </div>
+          `).join('');
+        } else {
+          box.innerHTML = '<div class="text-xs text-slate-400 italic">Chưa có ghi chú nào cho bài giảng này. Hãy thêm ghi chú đầu tiên!</div>';
+        }
+      } catch (err) {
+        console.error('Lỗi tải ghi chú:', err);
+      }
+    }
+
+    async function saveLessonNote() {
+      if (!currentToken) { openLoginModal(); return; }
+      const ts = document.getElementById('lesson-note-timestamp').value.trim() || '05:20';
+      const content = document.getElementById('lesson-note-input').value.trim();
+      if (!content) {
+        alert('Vui lòng nhập nội dung ghi chú bài giảng!');
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE}/courses/${currentCourseId}/notes`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
+          body: JSON.stringify({ lessonId: currentLessonId, timestampFormatted: ts, videoTimestamp: ts, content })
+        });
+        const json = await res.json();
+        if (json.success) {
+          document.getElementById('lesson-note-input').value = '';
+          loadCourseNotes(currentCourseId);
+          loadTelemetryLogs();
+        }
+      } catch (err) {
+        alert('Lỗi lưu ghi chú: ' + err.message);
+      }
+    }
+
+    function renderCourseReviews(reviews, rating) {
+      const badge = document.getElementById('course-avg-rating-badge');
+      const box = document.getElementById('course-reviews-list');
+      if (badge) badge.textContent = `⭐ ${rating || 4.9} / 5.0 (${(reviews || []).length} nhận xét)`;
+      if (!box) return;
+      if (!reviews || reviews.length === 0) {
+        box.innerHTML = '<div class="text-xs text-slate-400 italic">Hãy là học viên đầu tiên gửi đánh giá 5 sao cho khóa học này!</div>';
+        return;
+      }
+      box.innerHTML = reviews.map(r => `
+        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700 text-xs">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-bold text-slate-900 dark:text-white">${r.userName || r.studentName || 'Học viên EduPro'}</span>
+            <span class="text-amber-500 font-bold">${'⭐'.repeat(r.rating || 5)}</span>
+          </div>
+          <p class="text-slate-600 dark:text-slate-300">${r.comment}</p>
+        </div>
+      `).join('');
+    }
+
+    async function submitCourseReview() {
+      if (!currentToken) { openLoginModal(); return; }
+      const rating = Number(document.getElementById('course-review-rating').value || 5);
+      const comment = document.getElementById('course-review-comment').value.trim();
+      if (!comment) {
+        alert('Vui lòng nhập nhận xét của bạn về khóa học!');
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE}/courses/${currentCourseId}/reviews`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
+          body: JSON.stringify({ rating, comment })
+        });
+        const json = await res.json();
+        if (json.success) {
+          document.getElementById('course-review-comment').value = '';
+          const courseRes = await fetch(`${API_BASE}/courses/${currentCourseId}`);
+          const courseJson = await courseRes.json();
+          if (courseJson.success && courseJson.data) {
+            renderCourseReviews(courseJson.data.reviews || [], courseJson.data.rating);
+          }
+          loadCoursesCatalog();
+        }
+      } catch (err) {
+        alert('Lỗi gửi đánh giá: ' + err.message);
+      }
+    }
+
+    async function loadNeo4jCourseRecommendations(courseId) {
+      const box = document.getElementById('neo4j-course-recommendations');
+      if (!box) return;
+      try {
+        const res = await fetch(`${API_BASE}/graph/recommendations/${courseId}`);
+        const json = await res.json();
+        if (json.success && json.data) {
+          box.innerHTML = json.data.map(rec => `
+            <div onclick="enterClassroom('${rec.courseId || '670000000000000000000015'}')" class="p-3 rounded-2xl bg-indigo-50/50 dark:bg-slate-800 border border-indigo-200/70 dark:border-slate-700 hover:border-brand-500 cursor-pointer transition-all">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-brand-600 text-white">${rec.targetBand || 'IELTS / TOEIC'}</span>
+                <span class="text-[10px] font-mono text-indigo-600 dark:text-indigo-400">Neo4j Graph</span>
+              </div>
+              <div class="font-bold text-xs text-slate-900 dark:text-white">${rec.title}</div>
+              <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${rec.reason || 'Khóa học liên kết trực tiếp trên đồ thị Neo4j'}</div>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        console.error('Lỗi tải gợi ý Neo4j:', err);
+      }
+    }
+
+    // ==============================================================
+    // 20. CỤM TÍNH NĂNG BỔ SUNG 5 & 6: GAMIFICATION, 4-DB HEALTH & CMS
+    // ==============================================================
+    async function loadGamificationProfile() {
+      if (!currentToken) return;
+      try {
+        const res = await fetch(`${API_BASE}/courses/gamification/profile`, {
+          headers: { 'Authorization': 'Bearer ' + currentToken }
+        });
+        const json = await res.json();
+        if (json.success && json.data) {
+          const d = json.data;
+          const streakEl = document.getElementById('gamification-streak-badge');
+          const levelEl = document.getElementById('gamification-level-title');
+          const xpEl = document.getElementById('gamification-xp-value');
+          const wordsEl = document.getElementById('gamification-mastered-words');
+          const essaysEl = document.getElementById('gamification-essays-count');
+
+          const xpVal = d.xp ?? d.xpPoints ?? 850;
+          if (streakEl) streakEl.textContent = `Chuỗi học liên tiếp: ${d.streakDays || 7} ngày 🔥`;
+          if (levelEl) levelEl.textContent = `Cấp độ: ${d.levelTitle || d.cefrLevel || 'CEFR B2'}`;
+          if (xpEl) xpEl.textContent = `${xpVal.toLocaleString()} XP`;
+          if (wordsEl) wordsEl.textContent = `${d.masteredVocab ?? d.masteredWordsCount ?? 2} Từ`;
+          if (essaysEl) essaysEl.textContent = `${d.totalExams ?? d.essaysSubmittedCount ?? 1} Bài`;
+
+          const grid = document.getElementById('enrolled-courses-progress-grid');
+          if (grid && d.enrolledCourses) {
+            grid.innerHTML = d.enrolledCourses.map(c => `
+              <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between text-xs mb-2">
+                    <span class="px-2.5 py-0.5 rounded-full font-bold bg-brand-50 dark:bg-slate-900 text-brand-600 dark:text-indigo-400">${c.category}</span>
+                    <span class="font-extrabold text-emerald-600 dark:text-emerald-400">${c.progressPercent}% hoàn thành</span>
+                  </div>
+                  <h4 class="font-extrabold text-sm text-slate-900 dark:text-white mb-3">${c.title}</h4>
+                </div>
+                <div>
+                  <div class="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden mb-3">
+                    <div class="h-full bg-gradient-to-r from-brand-600 to-emerald-500 rounded-full" style="width: ${c.progressPercent}%"></div>
+                  </div>
+                  <button onclick="enterClassroom('${c._id || c.courseId}')" class="w-full py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs transition-all">
+                    Tiếp tục bài học ➔
+                  </button>
+                </div>
+              </div>
+            `).join('');
+          }
+        }
+      } catch (err) {
+        console.error('Lỗi tải Gamification:', err);
+      }
+    }
+
+    async function check4DatabasesHealth() {
+      const targets = [
+        { db: 'mongodb', query: 'STATS', badgeId: 'health-badge-mongo' },
+        { db: 'redis', query: 'KEYS *', badgeId: 'health-badge-redis' },
+        { db: 'cassandra', query: 'SELECT * FROM video_tracking_by_user LIMIT 5;', badgeId: 'health-badge-cassandra' },
+        { db: 'neo4j', query: 'MATCH (n) RETURN count(n)', badgeId: 'health-badge-neo4j' }
+      ];
+
+      for (const t of targets) {
+        try {
+          const res = await fetch(`${API_BASE}/admin/query-runner`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ targetDb: t.db, query: t.query })
+          });
+          const json = await res.json();
+          const badge = document.getElementById(t.badgeId);
+          if (badge && json.success) {
+            badge.textContent = json.engine && json.engine.includes('Fallback') ? 'READY (HYBRID)' : 'LIVE CONTAINER';
+          }
+        } catch (e) {}
+      }
+    }
+
+    async function handleCreateCourseCMS(e) {
+      e.preventDefault();
+      if (!currentToken) { openLoginModal(); return; }
+      const title = document.getElementById('cms-course-title').value.trim();
+      const category = document.getElementById('cms-course-category').value;
+      const price = Number(document.getElementById('cms-course-price').value || 1590000);
+      const tagline = document.getElementById('cms-course-tagline').value.trim();
+
+      try {
+        const res = await fetch(`${API_BASE}/courses`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
+          body: JSON.stringify({
+            title,
+            category,
+            price,
+            originalPrice: price + 600000,
+            tagline,
+            description: tagline,
+            thumbnail: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80',
+            durationHours: 36,
+            rating: 5.0,
+            reviewsCount: 1
+          })
+        });
+        const json = await res.json();
+        if (json.success) {
+          alert('Đã tạo khóa học mới vào MongoDB & xóa Cache Redis thành công!');
+          document.getElementById('cms-course-title').value = '';
+          document.getElementById('cms-course-tagline').value = '';
+          await loadCoursesCatalog();
+        } else {
+          alert('Lỗi: ' + (json.message || 'Không thể tạo khóa học'));
+        }
+      } catch (err) {
+        alert('Lỗi kết nối: ' + err.message);
+      }
+    }
+
+    async function handleCreateQuestionCMS(e) {
+      e.preventDefault();
+      if (!currentToken) { openLoginModal(); return; }
+      const content = document.getElementById('cms-q-content').value.trim();
+      const optionA = document.getElementById('cms-q-optA').value.trim();
+      const optionB = document.getElementById('cms-q-optB').value.trim();
+      const optionC = document.getElementById('cms-q-optC').value.trim();
+      const optionD = document.getElementById('cms-q-optD').value.trim();
+      const correctOption = document.getElementById('cms-q-correct').value;
+      const explanation = document.getElementById('cms-q-explanation').value.trim();
+
+      try {
+        const res = await fetch(`${API_BASE}/exams/questions/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
+          body: JSON.stringify({
+            examId: EXAM_ID,
+            content,
+            optionA,
+            optionB,
+            optionC,
+            optionD,
+            correctAnswer: correctOption,
+            correctOption,
+            explanation
+          })
+        });
+        const json = await res.json();
+        if (json.success) {
+          alert('Đã thêm câu hỏi trắc nghiệm mới vào Ngân hàng đề MongoDB thành công!');
+          document.getElementById('cms-q-content').value = '';
+          document.getElementById('cms-q-optA').value = '';
+          document.getElementById('cms-q-optB').value = '';
+          document.getElementById('cms-q-optC').value = '';
+          document.getElementById('cms-q-optD').value = '';
+          document.getElementById('cms-q-explanation').value = '';
+        } else {
+          alert('Lỗi: ' + (json.message || 'Không thể thêm câu hỏi'));
+        }
+      } catch (err) {
+        alert('Lỗi kết nối: ' + err.message);
+      }
+    }
+
     // KHỞI CHẠY LẦN ĐẦU
     window.addEventListener('DOMContentLoaded', () => {
       initTheme();
       syncUserUI();
       loadCoursesCatalog();
+      loadFlashcards();
+      loadDictations();
       initLiveEventStream();
     });
   </script>
