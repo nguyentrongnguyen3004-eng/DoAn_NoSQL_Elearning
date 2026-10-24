@@ -1,7 +1,7 @@
 // ==============================================================================
 // HOC PHAN DU LIEU NOSQL - HUIT (KHOA CNTT)
 // SCRIPT TAO DO THI TRI THUC (KNOWLEDGE GRAPH) VA TRUY VAN CHO NEO4J
-// NHOM 18: NEN TANG E-LEARNING & LUYEN THI TRAC NGHIEM
+// NHOM 18: NEN TANG E-LEARNING TIENG ANH & LUYEN THI QUOC TE (EDUPRO ENGLISH)
 // ==============================================================================
 
 // 1. XOA DU LIEU CU DE KHOI TAO LAI MO HINH SACH SE (NEU CAN)
@@ -15,73 +15,87 @@ CREATE CONSTRAINT unique_skill_id IF NOT EXISTS FOR (s:Skill) REQUIRE s.id IS UN
 
 // 3. TAO CAC NODE CHINH (4 LOAI NODE THEO SRS: Course, Lesson, Topic, Skill)
 CREATE 
-  // Node Khoa hoc
-  (c_nosql:Course {id: 'COURSE_NOSQL', name: 'Co So Du Lieu NoSQL', credits: 2, level: 'ChuyenNganh'}),
-  (c_dbms:Course {id: 'COURSE_DBMS', name: 'He Quan Tri Co So Du Lieu', credits: 3, level: 'CoSoNganh'}),
+  // Node Khoa hoc Tieng Anh
+  (c_ielts:Course {id: 'COURSE_01', name: 'IELTS Masterclass 7.5+: Chinh Phuc 4 Ky Nang Toan Dien', credits: 4, level: 'NangCao'}),
+  (c_toeic:Course {id: 'COURSE_02', name: 'Luyen Thi TOEIC 4 Ky Nang 850+', credits: 3, level: 'TrungCap'}),
+  (c_grammar:Course {id: 'COURSE_03', name: 'Ngu Phap Tieng Anh Toan Dien & 3000 Tu Vung Cot Loi (CEFR A2-B2)', credits: 3, level: 'CoBan'}),
+  (c_biz:Course {id: 'COURSE_04', name: 'Tieng Anh Giao Tiep Thuong Mai & Phong Van Quoc Te', credits: 3, level: 'TrungCap'}),
+  (c_ipa:Course {id: 'COURSE_05', name: 'Chuan Hoa Phat Am IPA 44 Am & Phan Xa Giao Tiep', credits: 2, level: 'CoBan'}),
 
-  // Node Chu de kien thuc (Topic)
-  (t_doc:Topic {id: 'TOPIC_DOC', name: 'Document Store Architecture', description: 'Mo hinh tai lieu BSON/JSON'}),
-  (t_graph:Topic {id: 'TOPIC_GRAPH', name: 'Graph Database & Cypher', description: 'Mo hinh do thi va duong di'}),
-  (t_kv:Topic {id: 'TOPIC_KV', name: 'Key-Value Memory Cache', description: 'Bo nho dem truy cap nhanh'}),
-  (t_col:Topic {id: 'TOPIC_COL', name: 'Wide-Column Cassandra', description: 'Luu tru cot theo thoi gian'}),
+  // Node Chu de kien thuc ngon ngu (Topic)
+  (t_ipa:Topic {id: 'TOPIC_PHONETICS', name: 'Phonetics & IPA 44 Sounds', description: 'Ngu am hoc, trong am va ngu dieu cau'}),
+  (t_tenses:Topic {id: 'TOPIC_GRAMMAR_TENSES', name: '12 English Tenses & Syntax', description: 'He thong 12 thi va cu phap cau chuan'}),
+  (t_colloc:Topic {id: 'TOPIC_COLLOCATIONS', name: 'Academic Vocabulary & Idioms', description: 'Tu vung hoc thuat, Collocations va Phrasal Verbs'}),
+  (t_receptive:Topic {id: 'TOPIC_RECEPTIVE', name: 'Reading & Listening Strategies', description: 'Chien thuat Skimming, Scanning va nghe bat Keyword'}),
+  (t_productive:Topic {id: 'TOPIC_PRODUCTIVE', name: 'Academic Writing & Speaking', description: 'Viet luan PEEL Task 1-2 va phan xa Speaking'}),
 
-  // Node Bai hoc (Lesson)
-  (l_01:Lesson {id: 'LESSON_01', title: 'Tong quan ve NoSQL va RDBMS', order: 1}),
-  (l_02:Lesson {id: 'LESSON_02', title: 'Thiet ke CSDL voi MongoDB', order: 2}),
-  (l_03:Lesson {id: 'LESSON_03', title: 'Toi uu truy cap voi Redis', order: 3}),
-  (l_04:Lesson {id: 'LESSON_04', title: 'Moi truong phan tan Cassandra', order: 4}),
-  (l_05:Lesson {id: 'LESSON_05', title: 'Mo hinh hoa quan he voi Neo4j', order: 5}),
+  // Node Bai hoc theo khung tham chieu CEFR A1 -> C2 (Lesson)
+  (l_01:Lesson {id: 'LESSON_01', title: 'Chuan hoa Phat am IPA 44 am & Tu vung nen tang (CEFR A1-A2)', order: 1}),
+  (l_02:Lesson {id: 'LESSON_02', title: 'He thong 12 Thi Tieng Anh & Cau truc cau cot loi (CEFR B1)', order: 2}),
+  (l_03:Lesson {id: 'LESSON_03', title: 'Cau dieu kien, Menh de quan he & Academic Collocations (CEFR B2)', order: 3}),
+  (l_04:Lesson {id: 'LESSON_04', title: 'Chien thuat doc nhanh Skimming/Scanning & Nghe bat Keyword (TOEIC/IELTS)', order: 4}),
+  (l_05:Lesson {id: 'LESSON_05', title: 'Tu duy viet luan IELTS Task 1-2 & Phan xa Speaking Fluency (CEFR C1)', order: 5}),
+  (l_06:Lesson {id: 'LESSON_06', title: 'Lam chu Tieng Anh Hoc thuat & Giao tiep Quoc te (Mastery C2 / IELTS 8.0+)', order: 6}),
 
-  // Node Ky nang (Skill)
-  (s_design:Skill {id: 'SKILL_MODELING', name: 'Thiet ke Data Model NoSQL'}),
-  (s_query:Skill {id: 'SKILL_CYPHER', name: 'Truy van Cypher Graph'}),
-  (s_cache:Skill {id: 'SKILL_CACHE_STRATEGY', name: 'Chien luoc Cache & Leaderboard'}),
-  (s_log:Skill {id: 'SKILL_TIME_SERIES', name: 'To chuc du lieu Time-Series'});
+  // Node Ky nang dau ra (Skill)
+  (s_pronun:Skill {id: 'SKILL_PRONUNCIATION', name: 'Phat Am & Ngu Dieu Ban Xu'}),
+  (s_grammar:Skill {id: 'SKILL_GRAMMAR_ACCURACY', name: 'Grammatical Range & Accuracy'}),
+  (s_reading:Skill {id: 'SKILL_SPEED_READING', name: 'Doc Hieu & Nghe Bat Y Chinh Toc Do Cao'}),
+  (s_writing:Skill {id: 'SKILL_ACADEMIC_WRITING', name: 'Viet Luan Hoc Thuat Band 8.0'}),
+  (s_speaking:Skill {id: 'SKILL_FLUENT_SPEAKING', name: 'Giao Tiep & Thuyet Trinh Quoc Te'});
 
-// 4. TAO CAC QUAN HE (5 LOAI RELATIONSHIP: CONTAINS, COVERS, REQUIRES, DEVELOPS, RELATED_TO)
+// 4. TAO CAC QUAN HE (5 LOAI RELATIONSHIP: CONTAINS, COVERS, PREREQUISITE_OF, DEVELOPS, RELATED_TO)
 CREATE
   // Course -> Lesson (CONTAINS)
-  (c_nosql)-[:CONTAINS {semester: 7}]->(l_01),
-  (c_nosql)-[:CONTAINS {semester: 7}]->(l_02),
-  (c_nosql)-[:CONTAINS {semester: 7}]->(l_03),
-  (c_nosql)-[:CONTAINS {semester: 7}]->(l_04),
-  (c_nosql)-[:CONTAINS {semester: 7}]->(l_05),
+  (c_ipa)-[:CONTAINS]->(l_01),
+  (c_grammar)-[:CONTAINS]->(l_02),
+  (c_grammar)-[:CONTAINS]->(l_03),
+  (c_toeic)-[:CONTAINS]->(l_04),
+  (c_ielts)-[:CONTAINS]->(l_05),
+  (c_ielts)-[:CONTAINS]->(l_06),
+  (c_biz)-[:CONTAINS]->(l_06),
 
   // Lesson -> Topic (COVERS)
-  (l_02)-[:COVERS]->(t_doc),
-  (l_03)-[:COVERS]->(t_kv),
-  (l_04)-[:COVERS]->(t_col),
-  (l_05)-[:COVERS]->(t_graph),
+  (l_01)-[:COVERS]->(t_ipa),
+  (l_02)-[:COVERS]->(t_tenses),
+  (l_03)-[:COVERS]->(t_colloc),
+  (l_04)-[:COVERS]->(t_receptive),
+  (l_05)-[:COVERS]->(t_productive),
 
-  // Dieu kien tien quyet giua cac khoa hoc va bai hoc (PREREQUISITE_OF / REQUIRES)
-  (c_dbms)-[:PREREQUISITE_OF]->(c_nosql),
+  // Dieu kien tien quyet giua cac khoa hoc va bai hoc (PREREQUISITE_OF)
+  (c_grammar)-[:PREREQUISITE_OF]->(c_toeic),
+  (c_toeic)-[:PREREQUISITE_OF]->(c_ielts),
   (l_01)-[:PREREQUISITE_OF]->(l_02),
   (l_02)-[:PREREQUISITE_OF]->(l_03),
-  (l_01)-[:PREREQUISITE_OF]->(l_05),
+  (l_03)-[:PREREQUISITE_OF]->(l_04),
+  (l_04)-[:PREREQUISITE_OF]->(l_05),
+  (l_05)-[:PREREQUISITE_OF]->(l_06),
 
   // Lesson -> Skill (DEVELOPS)
-  (l_02)-[:DEVELOPS {score: 80}]->(s_design),
-  (l_03)-[:DEVELOPS {score: 75}]->(s_cache),
-  (l_04)-[:DEVELOPS {score: 70}]->(s_log),
-  (l_05)-[:DEVELOPS {score: 90}]->(s_query),
+  (l_01)-[:DEVELOPS {score: 85}]->(s_pronun),
+  (l_02)-[:DEVELOPS {score: 80}]->(s_grammar),
+  (l_03)-[:DEVELOPS {score: 85}]->(s_grammar),
+  (l_04)-[:DEVELOPS {score: 90}]->(s_reading),
+  (l_05)-[:DEVELOPS {score: 95}]->(s_writing),
+  (l_06)-[:DEVELOPS {score: 95}]->(s_speaking),
 
   // Quan he bo tro giua cac Topic (RELATED_TO)
-  (t_doc)-[:RELATED_TO {relevance: 'high'}]->(t_graph),
-  (t_kv)-[:RELATED_TO {relevance: 'medium'}]->(t_col);
+  (t_tenses)-[:RELATED_TO {relevance: 'high'}]->(t_productive),
+  (t_colloc)-[:RELATED_TO {relevance: 'high'}]->(t_receptive);
 
 // ==============================================================================
 // CAC CAU TRUY VAN MINH CHUNG NANG LUC (DEMO TREN NEO4J BROWSER CHO GIANG VIEN)
 // ==============================================================================
 
-// 1. Truy van truc quan toan bo cay do thi cua khoa hoc NoSQL:
-// MATCH p=(c:Course {id: 'COURSE_NOSQL'})-[*1..2]->(x)
+// 1. Truy van truc quan toan bo cay do thi cua khoa hoc IELTS:
+// MATCH p=(c:Course {id: 'COURSE_01'})-[*1..2]->(x)
 // RETURN p;
 
-// 2. Truy van tim lo trinh hoc tap (Cac bai hoc tien quyet can hoc de toi Lesson 05):
+// 2. Truy van tim lo trinh hoc tap CEFR (Cac bai hoc tien quyet can hoc de toi Lesson 05 - IELTS C1):
 // MATCH path = (start:Lesson)-[:PREREQUISITE_OF*]->(target:Lesson {id: 'LESSON_05'})
-// RETURN [n in nodes(path) | n.title] AS LoTrinhHocTap;
+// RETURN [n in nodes(path) | n.title] AS LoTrinhHocTapCEFR;
 
-// 3. Truy van tim tat ca ky nang ma khoa hoc NoSQL giup sinh vien phat trien:
-// MATCH (:Course {id: 'COURSE_NOSQL'})-[:CONTAINS]->(l:Lesson)-[r:DEVELOPS]->(s:Skill)
-// RETURN l.title AS BaiHoc, s.name AS KyNangDatDuoc, r.score AS DiemDanhGia
+// 3. Truy van tim tat ca ky nang ma khoa hoc giup sinh vien phat trien:
+// MATCH (c:Course)-[:CONTAINS]->(l:Lesson)-[r:DEVELOPS]->(s:Skill)
+// RETURN c.name AS KhoaHoc, l.title AS BaiHoc, s.name AS KyNangDatDuoc, r.score AS DiemDanhGia
 // ORDER BY DiemDanhGia DESC;
