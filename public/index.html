@@ -4254,11 +4254,7 @@
     // ==============================================================
 
     // --- TÍNH NĂNG 1: ĐẤU TRƯỜNG PHẢN XẠ TỪ VỰNG TỐC ĐỘ 60 GIÂY (WORD ARENA - REDIS ZSET + CASSANDRA) ---
-    let arenaScore = 0;
-    let arenaCombo = 1;
-    let arenaTimeLeft = 60;
-    let arenaInterval = null;
-    let currentArenaQuestion = null;
+    var arenaInterval = null;
 
     const ARENA_QUESTION_POOL = [
       { word: 'Mitigate', phonetic: '/ˈmɪt.ɪ.ɡeɪt/ • Verb', options: ['Làm giảm nhẹ, xoa dịu tác động xấu', 'Tăng vọt đột biến về số lượng', 'Trì hoãn sang thời điểm khác', 'Đồng thuận 100% trong cuộc họp'], answer: 0 },
