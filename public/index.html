@@ -346,6 +346,66 @@
       </div>
     </div>
 
+    <!-- GIAI ĐOẠN 4 - TÍNH NĂNG 6: PHÒNG TỰ HỌC ẢO LOFI & ĐỒNG HỒ TẬP TRUNG POMODORO (VIRTUAL LOFI STUDY ROOM WITH LIVE POMODORO) -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-8 border border-indigo-500/30 text-white shadow-xl relative overflow-hidden">
+        <div class="absolute -right-12 -top-12 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
+          <!-- Bên trái: Tiêu đề & Real-time Presence -->
+          <div class="space-y-3 max-w-xl text-center lg:text-left">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span id="lofi-presence-text">128 bạn đang cùng học lúc này (Redis Set)</span>
+            </div>
+            <h3 class="text-2xl sm:text-3xl font-black tracking-tight">Phòng Tự Học Ảo Lofi & Tập Trung Pomodoro</h3>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Duy trì chuỗi tập trung 25 phút chuẩn khoa học Pomodoro với âm thanh Lofi thư giãn. Hoàn thành 1 chu kỳ để nhận ngay <span class="text-amber-400 font-bold">+100 XP</span> lưu vết vào Cassandra Time-series!
+            </p>
+            <!-- Lofi Audio Ambient Bar -->
+            <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2 pt-1">
+              <button onclick="toggleLofiAudio()" id="btn-toggle-lofi-audio" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-xs font-bold text-white flex items-center gap-2 transition-all">
+                <i class="fa-solid fa-play" id="lofi-audio-icon"></i>
+                <span id="lofi-audio-label">Bật nhạc Lofi Study Beat</span>
+              </button>
+              <div class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-300">
+                <i class="fa-solid fa-volume-low text-indigo-300"></i>
+                <input type="range" id="lofi-volume-slider" min="0" max="100" value="50" oninput="changeLofiVolume(this.value)" class="w-20 accent-indigo-400 cursor-pointer">
+              </div>
+            </div>
+          </div>
+
+          <!-- Bên phải: Đồng hồ Pomodoro 25:00 -->
+          <div class="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md flex flex-col items-center space-y-4 min-w-[280px]">
+            <div class="flex items-center gap-2 p-1 rounded-xl bg-white/10 text-xs font-bold">
+              <button onclick="setPomodoroMode(25, 'focus')" id="pomo-mode-focus" class="px-3 py-1 rounded-lg bg-indigo-600 text-white transition-all">25m Tập trung</button>
+              <button onclick="setPomodoroMode(5, 'short')" id="pomo-mode-short" class="px-3 py-1 rounded-lg text-slate-300 hover:text-white transition-all">5m Nghỉ ngắn</button>
+              <button onclick="setPomodoroMode(15, 'long')" id="pomo-mode-long" class="px-3 py-1 rounded-lg text-slate-300 hover:text-white transition-all">15m Nghỉ dài</button>
+            </div>
+
+            <!-- Đồng hồ số lớn -->
+            <div id="pomodoro-timer-display" class="text-5xl sm:text-6xl font-black font-mono tracking-wider text-amber-300 drop-shadow-md">
+              25:00
+            </div>
+
+            <!-- Nút điều khiển Pomodoro -->
+            <div class="flex items-center gap-2 w-full justify-center">
+              <button onclick="togglePomodoroTimer()" id="btn-pomodoro-toggle" class="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-black text-xs shadow-lg shadow-amber-400/20 transition-all flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-play" id="pomodoro-toggle-icon"></i>
+                <span id="pomodoro-toggle-label">Bắt đầu tập trung</span>
+              </button>
+              <button onclick="resetPomodoroTimer()" class="py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all" title="Đặt lại đồng hồ">
+                <i class="fa-solid fa-rotate-right"></i>
+              </button>
+            </div>
+
+            <div class="text-[11px] text-slate-400 text-center font-medium" id="pomodoro-hint-text">
+              Chu kỳ 25 phút giúp tăng 200% khả năng ghi nhớ từ vựng.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Danh sách khóa học nổi bật + Bộ lọc danh mục (Tính năng 3) -->
     <div id="courses-list-anchor" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4">
@@ -628,8 +688,89 @@
         </div>
       </div>
 
+          <!-- GIAI ĐOẠN 4 - TÍNH NĂNG 1: PHÒNG LUYỆN NGHE ĐA GIỌNG BẢN XỨ (MULTI-ACCENT LISTENING LAB - CASSANDRA TELEMETRY) -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <span class="text-xs font-bold text-sky-600 dark:text-sky-400 uppercase tracking-widest"><i class="fa-solid fa-earth-americas mr-1"></i> Multi-Accent Listening Lab (Cassandra Telemetry Log)</span>
+            <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">Phòng Luyện Nghe 4 Giọng Bản Xứ: UK • US • AU • IN</h3>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Luyện phản xạ nhận diện ngữ điệu, khác biệt phát âm (Rhoticity, Flapped T, Vowel shifts) và ghi nhật ký luyện tập thời gian thực vào Cassandra.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="accent-practice-counter-badge" class="px-3 py-1.5 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 text-sky-700 dark:text-sky-300 font-bold text-xs flex items-center gap-1.5">
+              <i class="fa-solid fa-headphones"></i> <span id="accent-practice-count-text">0 lượt luyện</span>
+            </span>
+            <button onclick="loadAccentSamples()" class="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs font-bold text-slate-700 dark:text-slate-300 transition-all">
+              <i class="fa-solid fa-rotate-right mr-1"></i> Đổi câu khác
+            </button>
+          </div>
+        </div>
+
+        <!-- Bộ chọn câu luyện nghe -->
+        <div id="accent-sentence-tabs" class="flex flex-wrap gap-2"></div>
+
+        <!-- Khung hiển thị câu nói và bộ 4 cờ giọng đọc -->
+        <div class="p-6 rounded-2xl bg-gradient-to-br from-sky-50/50 via-white to-indigo-50/40 dark:from-slate-800/60 dark:via-slate-900 dark:to-indigo-950/30 border border-sky-200/80 dark:border-slate-700 space-y-5">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-700 pb-4">
+            <div>
+              <span id="accent-topic-badge" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-sky-100 dark:bg-sky-900/50 text-sky-800 dark:text-sky-300">Chủ đề: Công nghệ & Đời sống</span>
+              <h4 id="accent-sentence-text" class="text-lg sm:text-xl font-black text-slate-900 dark:text-white mt-2 leading-relaxed">
+                Loading multi-accent sentence...
+              </h4>
+              <p id="accent-sentence-meaning" class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 italic">
+                Bản dịch tiếng Việt...
+              </p>
+            </div>
+          </div>
+
+          <!-- Lưới 4 Giọng bản xứ tương tác -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="accent-cards-container">
+            <!-- Render động 4 thẻ: UK, US, AU, IN -->
+          </div>
+
+          <!-- Chi tiết phân tích âm vị và lưu vết Cassandra -->
+          <div id="accent-detail-analysis" class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 space-y-2">
+            <div class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+              <i class="fa-solid fa-wave-square text-sky-500"></i>
+              <span>Phân tích chuyển đổi âm vị học (Phonetic Shifts):</span>
+            </div>
+            <div id="accent-detail-text" class="leading-relaxed">
+              Nhấp vào một trong 4 lá cờ trên để nghe phát âm chuẩn bản xứ và xem phân tích âm vị đặc trưng!
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GIAI ĐOẠN 4 - TÍNH NĂNG 5: SỔ TAY NGỮ PHÁP HÌNH ẢNH & INFOGRAPHICS TRỰC QUAN (VISUAL GRAMMAR TIMELINES & MINDCARDS) -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest"><i class="fa-solid fa-shapes mr-1"></i> Visual Grammar Infographics (Mindcards & Interactive Timelines)</span>
+            <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">Sổ Tay Ngữ Pháp Trực Quan & Dòng Thời Gian Tương Tác</h3>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Hiểu sâu bản chất các điểm ngữ pháp hóc búa nhất qua sơ đồ timeline trực quan, công thức đảo ngữ và mẹo phân biệt tức thì.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="loadVisualGrammarCards()" class="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs font-bold text-slate-700 dark:text-slate-300 transition-all">
+              <i class="fa-solid fa-rotate-right mr-1"></i> Làm mới sơ đồ
+            </button>
+          </div>
+        </div>
+
+        <!-- Bộ chọn thẻ điểm ngữ pháp -->
+        <div id="grammar-card-tabs" class="flex flex-wrap gap-2"></div>
+
+        <!-- Container sơ đồ infographic hiển thị -->
+        <div id="visual-grammar-card-display" class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-5">
+          <!-- Render động từ API /api/courses/grammar/visual-cards -->
+          <div class="text-center py-8 text-slate-400 text-xs">
+            <i class="fa-solid fa-circle-notch fa-spin text-xl text-emerald-600 mb-2"></i>
+            <p>Đang tải dữ liệu infographics ngữ pháp...</p>
+          </div>
+        </div>
+      </div>
+
     </div>
-  </section>
+  </section></section>
 
   <!-- ============================================================== -->
   <!-- 2C. PHÂN HỆ MỚI: CHẤM ĐIỂM IELTS WRITING & LUYỆN PHÁT ÂM AI     -->
@@ -830,8 +971,220 @@
         </div>
       </div>
 
+          <!-- GIAI ĐOẠN 4 - TÍNH NĂNG 2: MÔ PHỎNG PHỎNG VẤN TUYỂN DỤNG QUỐC TẾ 1V1 (AI JOB & IELTS MOCK INTERVIEW SIMULATOR - MONGO & REDIS TTL) -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/20 text-xs font-bold mb-1">
+              <i class="fa-solid fa-user-tie"></i> Multi-turn Dialog State (MongoDB & Redis TTL 1800s)
+            </div>
+            <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">Phòng Phỏng Vấn Tuyển Dụng Quốc Tế & IELTS Speaking 1v1</h3>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Trải nghiệm quy trình phỏng vấn 3 giai đoạn chuẩn quốc tế (Self-Introduction ➔ Behavioral STAR ➔ In-depth Q&A) với giám khảo AI phản hồi tự nhiên.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <select id="interview-type-select" onchange="resetInterviewState()" class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-violet-500">
+              <option value="JOB">👔 Global Tech & Business Job Interview</option>
+              <option value="IELTS">🎓 IELTS Speaking Examiner (Part 1 - 3)</option>
+            </select>
+            <button onclick="startMockInterview()" id="btn-start-interview" class="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs shadow-md shadow-violet-600/20 transition-all flex items-center gap-1.5">
+              <i class="fa-solid fa-play"></i> Bắt đầu phỏng vấn
+            </button>
+          </div>
+        </div>
+
+        <!-- 3-Stage Progress Indicator -->
+        <div class="grid grid-cols-3 gap-2 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 text-center text-xs font-bold">
+          <div id="interview-stage-indicator-1" class="py-2 px-3 rounded-xl bg-violet-600 text-white shadow-sm transition-all flex items-center justify-center gap-1.5">
+            <span class="w-5 h-5 rounded-full bg-white/20 text-[11px] flex items-center justify-center">1</span>
+            <span>Giai đoạn 1: Giới thiệu bản thân</span>
+          </div>
+          <div id="interview-stage-indicator-2" class="py-2 px-3 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 transition-all flex items-center justify-center gap-1.5">
+            <span class="w-5 h-5 rounded-full bg-slate-300 dark:bg-slate-700 text-[11px] flex items-center justify-center">2</span>
+            <span>Giai đoạn 2: STAR Phương pháp</span>
+          </div>
+          <div id="interview-stage-indicator-3" class="py-2 px-3 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 transition-all flex items-center justify-center gap-1.5">
+            <span class="w-5 h-5 rounded-full bg-slate-300 dark:bg-slate-700 text-[11px] flex items-center justify-center">3</span>
+            <span>Giai đoạn 3: Đào sâu & Xử lý tình huống</span>
+          </div>
+        </div>
+
+        <!-- Khung phòng vấn tương tác -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <!-- Chat Dialogue Stream -->
+          <div class="lg:col-span-8 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-4">
+            <!-- Thông tin Giám khảo -->
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
+              <div class="flex items-center gap-3">
+                <img id="interviewer-avatar" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80" class="w-12 h-12 rounded-full border-2 border-violet-500 object-cover shadow-sm">
+                <div>
+                  <div class="font-extrabold text-sm text-slate-900 dark:text-white" id="interviewer-name">Ms. Sarah Jenkins (Head of Talent Acquisition)</div>
+                  <div class="text-[11px] text-violet-600 dark:text-violet-400" id="interviewer-role">Global Hiring Panel & Ex-IELTS Examiner</div>
+                </div>
+              </div>
+              <button onclick="speakInterviewerQuestion()" class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-violet-50 hover:text-violet-600 transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-volume-high text-violet-600"></i> Nghe câu hỏi
+              </button>
+            </div>
+
+            <!-- Dialogue History / Current Question Box -->
+            <div id="interview-chat-stream" class="space-y-3 max-h-[360px] overflow-y-auto pr-1">
+              <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-violet-100 dark:border-violet-950/40 shadow-sm">
+                <div class="text-xs font-bold text-violet-600 dark:text-violet-400 mb-1 flex items-center gap-1.5">
+                  <i class="fa-solid fa-comment-dots"></i> Giám khảo phỏng vấn đặt câu hỏi:
+                </div>
+                <div id="interview-current-question" class="text-sm font-semibold text-slate-900 dark:text-white leading-relaxed">
+                  "Bấm 'Bắt đầu phỏng vấn' để kết nối với giám khảo AI và nhận câu hỏi đầu tiên."
+                </div>
+              </div>
+            </div>
+
+            <!-- Khung trả lời của ứng viên -->
+            <div class="space-y-3 pt-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-700 dark:text-slate-300">Câu trả lời bằng Tiếng Anh của bạn:</span>
+                <div class="flex items-center gap-2">
+                  <button onclick="startInterviewVoiceInput()" id="btn-interview-mic" class="px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800 font-bold text-[11px] flex items-center gap-1">
+                    <i class="fa-solid fa-microphone"></i> Nói qua Mic
+                  </button>
+                  <button onclick="fillSampleInterviewAnswer()" class="text-violet-600 dark:text-violet-400 hover:underline font-bold text-[11px]">
+                    Điền câu trả lời mẫu
+                  </button>
+                </div>
+              </div>
+              <textarea id="interview-answer-input" rows="3" class="w-full p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs sm:text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="Type or speak your answer in professional English (e.g. In my previous role as a project coordinator, I was tasked with...)"></textarea>
+
+              <div class="flex items-center justify-between pt-1">
+                <span id="interview-session-status" class="text-[11px] text-slate-400">Phiên phỏng vấn lưu TTL trong Redis 30 phút.</span>
+                <button onclick="sendInterviewResponse()" id="btn-send-interview-answer" class="px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs shadow-md shadow-violet-600/20 transition-all flex items-center gap-1.5">
+                  <span>Gửi câu trả lời & Nhận đánh giá</span> <i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Radar Điểm & Nhận xét chi tiết của Giám khảo -->
+          <div class="lg:col-span-4 p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-4">
+            <h4 class="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
+              <i class="fa-solid fa-chart-pie text-violet-600"></i> Bảng Đánh Giá Năng Lực Ứng Viên
+            </h4>
+
+            <div class="space-y-3">
+              <div>
+                <div class="flex justify-between text-xs font-bold mb-1">
+                  <span class="text-slate-600 dark:text-slate-400">Độ Trôi Chảy (Fluency)</span>
+                  <span id="interview-score-fluency" class="text-violet-600 dark:text-violet-400 font-mono">--%</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                  <div id="interview-bar-fluency" class="bg-violet-600 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-xs font-bold mb-1">
+                  <span class="text-slate-600 dark:text-slate-400">Độ Tự Tin & Chuyên Nghiệp</span>
+                  <span id="interview-score-confidence" class="text-emerald-600 dark:text-emerald-400 font-mono">--%</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                  <div id="interview-bar-confidence" class="bg-emerald-600 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-xs font-bold mb-1">
+                  <span class="text-slate-600 dark:text-slate-400">Độ Rộng Từ Vựng (Lexical Band)</span>
+                  <span id="interview-score-lexical" class="text-amber-600 dark:text-amber-400 font-mono">-- / 9.0</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                  <div id="interview-bar-lexical" class="bg-amber-600 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div id="interview-feedback-box" class="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs space-y-2 text-slate-600 dark:text-slate-300">
+              <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <i class="fa-solid fa-lightbulb text-amber-500"></i> Lời khuyên cải thiện:
+              </div>
+              <div id="interview-feedback-text" class="text-[11px] leading-relaxed">
+                Hoàn thành câu trả lời của giai đoạn hiện tại để nhận góp ý cấu trúc câu và từ vựng từ giám khảo.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GIAI ĐOẠN 4 - TÍNH NĂNG 4: TRÌNH PHÂN TÍCH & NÂNG CẤP TỪ VỰNG ĐOẠN VĂN TỰ ĐỘNG (SMART LEXICAL UPGRADER - NEO4J LEXICAL GRAPH) -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20 text-xs font-bold mb-1">
+              <i class="fa-solid fa-diagram-project"></i> Neo4j Lexical & Collocation Graph
+            </div>
+            <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">Trình Phân Tích & Nâng Cấp Từ Vựng Đoạn Văn Tự Động (Smart Lexical Upgrader)</h3>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Dán bất kỳ đoạn văn viết luận nào để tự động quét từ vựng cơ bản (Band 5.0) và gợi ý thay thế bằng Academic Collocations & Phrasal Verbs Band 8.0+.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="fillSampleLexicalEssay()" class="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs font-bold text-slate-700 dark:text-slate-300 transition-all">
+              Dán đoạn văn mẫu
+            </button>
+            <button onclick="analyzeEssayLexicalUpgrades()" id="btn-analyze-lexical" class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-md shadow-teal-600/20 transition-all flex items-center gap-1.5">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Nâng cấp đoạn văn
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Textarea nhập văn bản cần nâng cấp -->
+          <div class="lg:col-span-6 space-y-3">
+            <div class="flex items-center justify-between text-xs">
+              <label for="lexical-input-text" class="font-bold text-slate-700 dark:text-slate-300">Văn bản bài viết gốc của bạn:</label>
+              <span id="lexical-word-count" class="text-slate-400 font-mono">0 từ</span>
+            </div>
+            <textarea id="lexical-input-text" rows="8" oninput="updateLexicalWordCount()" class="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs sm:text-sm leading-relaxed text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Paste your essay paragraph here to analyze lexical richness..."></textarea>
+            <button onclick="applyAllLexicalUpgrades()" id="btn-apply-all-upgrades" class="hidden w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2">
+              <i class="fa-solid fa-check-double"></i> 1-Click Áp dụng tất cả từ vựng nâng cấp Band 8.0+
+            </button>
+          </div>
+
+          <!-- Kết quả phân tích & Chú giải màu sắc -->
+          <div class="lg:col-span-6 space-y-4">
+            <!-- Thống kê nhanh Band điểm -->
+            <div class="grid grid-cols-3 gap-2 text-center">
+              <div class="p-3 rounded-xl bg-teal-50 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800">
+                <div class="text-[10px] font-bold uppercase text-teal-600 dark:text-teal-400">Ước tính Lexical Band</div>
+                <div id="lexical-result-band" class="text-lg font-black text-teal-700 dark:text-teal-300 font-mono mt-0.5">--</div>
+              </div>
+              <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800">
+                <div class="text-[10px] font-bold uppercase text-emerald-600 dark:text-emerald-400">Academic Collocations</div>
+                <div id="lexical-result-colloc" class="text-lg font-black text-emerald-700 dark:text-emerald-300 font-mono mt-0.5">0</div>
+              </div>
+              <div class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800">
+                <div class="text-[10px] font-bold uppercase text-rose-600 dark:text-rose-400">Từ vựng yếu phát hiện</div>
+                <div id="lexical-result-weak" class="text-lg font-black text-rose-700 dark:text-rose-300 font-mono mt-0.5">0</div>
+              </div>
+            </div>
+
+            <!-- Khung văn bản được annotate màu sắc -->
+            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-2">
+              <div class="flex items-center justify-between text-xs border-b border-slate-200 dark:border-slate-700 pb-2">
+                <span class="font-bold text-slate-700 dark:text-slate-300">Bản đồ phân tích Lexical Heatmap:</span>
+                <div class="flex items-center gap-2 text-[10px]">
+                  <span class="px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 font-bold">Collocation C1/C2</span>
+                  <span class="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200 font-bold">Cần nâng cấp</span>
+                </div>
+              </div>
+              <div id="lexical-annotated-output" class="text-xs sm:text-sm leading-loose text-slate-800 dark:text-slate-200 min-h-[120px]">
+                Kết quả tô màu từ vựng và gợi ý cải thiện sẽ hiển thị tại đây sau khi phân tích.
+              </div>
+            </div>
+
+            <!-- Danh sách gợi ý thay thế từ Neo4j -->
+            <div id="lexical-suggestions-container" class="space-y-2 max-h-[160px] overflow-y-auto pr-1 text-xs"></div>
+          </div>
+        </div>
+      </div>
+
     </div>
-  </section>
+  </section></section>
 
   <!-- ============================================================== -->
   <!-- 3. PHÂN HỆ 2: PHÒNG THI / KHẢO SÁT NĂNG LỰC TRỰC TUYẾN         -->
@@ -1500,8 +1853,56 @@
         </div>
       </div>
 
+          <!-- GIAI ĐOẠN 4 - TÍNH NĂNG 3: BẢN ĐỒ ĐỊA LÝ & BẢNG XẾP HẠNG VÙNG MIỀN (REDIS GEOSPATIAL ENGLISH LEADERBOARD) -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <span class="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest"><i class="fa-solid fa-map-location-dot mr-1"></i> Redis Geospatial Indexing (GEOADD & GEODIST)</span>
+            <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">Bản Đồ Câu Lạc Bộ Tiếng Anh & Bảng Xếp Hạng Vùng Miền</h3>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Tìm kiếm các English Speaking Clubs gần vị trí của bạn nhất, check-in tích lũy +50 XP vào Cassandra và xem bảng đua điểm các trường Đại học toàn quốc.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <select id="geo-city-filter" onchange="loadRegionalClubs(this.value)" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200">
+              <option value="all">Toàn quốc (Tất cả)</option>
+              <option value="TP.HCM">TP. Hồ Chí Minh</option>
+              <option value="Hà Nội">Hà Nội</option>
+              <option value="Đà Nẵng">Đà Nẵng</option>
+            </select>
+            <button onclick="loadRegionalClubs()" class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs font-bold text-slate-700 dark:text-slate-300 transition-all">
+              <i class="fa-solid fa-rotate-right mr-1"></i> Quét lại GPS
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <!-- Danh sách CLB Tiếng Anh theo khoảng cách km -->
+          <div class="lg:col-span-7 space-y-3">
+            <div class="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
+              <span>Các CLB Tiếng Anh gần nhất (Tính toán GEODIST):</span>
+              <span id="geo-my-coords-display" class="text-amber-600 dark:text-amber-400 font-mono text-[11px]">📍 Vị trí: 10.8018° N, 106.6397° E (HUIT)</span>
+            </div>
+            <div id="geo-clubs-container" class="space-y-3">
+              <div class="text-center py-8 text-slate-400 text-xs">Đang tải danh sách câu lạc bộ...</div>
+            </div>
+          </div>
+
+          <!-- Bảng xếp hạng các trường Đại học vùng miền (Redis ZSET) -->
+          <div class="lg:col-span-5 p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-4">
+            <div class="flex items-center justify-between">
+              <h4 class="font-extrabold text-xs uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
+                <i class="fa-solid fa-trophy text-amber-500"></i> BXH Đại Học Vùng Miền (Redis ZSET)
+              </h4>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300">Cập nhật thời gian thực</span>
+            </div>
+            <div id="regional-leaderboard-container" class="space-y-2">
+              <div class="text-center py-6 text-slate-400 text-xs">Đang tải bảng xếp hạng vùng miền...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
-  </section>
+  </section></section>
 
   <!-- ============================================================== -->
   <!-- 7. PHÂN HỆ 6: QUẢN TRỊ, CMS GIẢNG VIÊN & 4-NOSQL MONITOR       -->
@@ -2293,6 +2694,21 @@
     </div>
   </footer>
 
+  <!-- FLOATING MINI POMODORO WIDGET (LUÔN HIỂN THỊ KHI ĐANG HỌC) -->
+  <div id="floating-pomodoro-pill" class="fixed bottom-6 right-6 z-40 flex items-center gap-3 px-4 py-2.5 rounded-full bg-slate-900/95 dark:bg-slate-800/95 text-white shadow-2xl border border-indigo-500/40 backdrop-blur-md cursor-pointer hover:scale-105 transition-all" onclick="showSection('courses'); window.scrollTo({top: 400, behavior: 'smooth'});">
+    <div class="relative flex items-center justify-center">
+      <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping absolute"></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+    </div>
+    <div class="text-xs font-mono font-bold flex items-center gap-1.5">
+      <span>🍅</span>
+      <span id="floating-pomo-display">25:00</span>
+    </div>
+    <span class="text-[11px] text-slate-300 border-l border-white/20 pl-2 hidden sm:inline" id="floating-pomo-status">Focus Mode</span>
+  </div>
+
+
+
   <!-- ============================================================== -->
   <!-- TÍNH NĂNG GIAI ĐOẠN 2 (#2): POPUP TRA TỪ ĐIỂN TỨC THÌ KHI BÔI ĐEN -->
   <!-- ============================================================== -->
@@ -2409,12 +2825,13 @@
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      if (sectionId === 'vocab') { loadFlashcards(); loadDictations(); loadWordArenaLeaderboard(); loadSrsDueQueue(); loadCollocationMindmap('problem'); loadClozeExercise(); }
+      if (sectionId === 'vocab') { loadFlashcards(); loadDictations(); loadWordArenaLeaderboard(); loadSrsDueQueue(); loadCollocationMindmap('problem'); loadClozeExercise(); loadAccentSamples(); loadVisualGrammarCards(); }
       if (sectionId === 'writing') { updateEssayWordCount(); loadPvPSpeakingLeaderboard(); }
       if (sectionId === 'exam') { startExam(); loadBookmarkedQuestions(); initAntiCheatMonitoring(); }
       if (sectionId === 'graph') { initKnowledgeGraph(); generateAdaptiveRoadmap(); loadSkillTreeData(); }
-      if (sectionId === 'history') { loadUserHistory(); loadGamificationProfile(); loadCassandraHeatmap(); loadWeaknessDiagnosticData(); }
+      if (sectionId === 'history') { loadUserHistory(); loadGamificationProfile(); loadCassandraHeatmap(); loadWeaknessDiagnosticData(); loadRegionalClubs(); }
       if (sectionId === 'analytics') { loadAnalyticsData(); check4DatabasesHealth(); loadAdminUsersList(); }
+      if (sectionId === 'courses') { loadPomodoroPresence(); }
     }
 
     function scrollToCoursesList() {
@@ -5370,7 +5787,972 @@
       } catch (e) {}
     }
 
-    // KHỞI CHẠY LẦN ĐẦU
+    
+    // ==============================================================
+    // GIAI ĐOẠN 4 - TÍNH NĂNG 1: MULTI-ACCENT LISTENING LAB
+    // ==============================================================
+    window.tier4Accents = {
+      samples: [],
+      currentIndex: 0,
+      practiceCount: 0
+    };
+
+    async function loadAccentSamples() {
+      const tabs = document.getElementById('accent-sentence-tabs');
+      if (!tabs) return;
+      try {
+        const res = await fetch(`${API_BASE}/courses/accents/samples`);
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          window.tier4Accents.samples = json.data;
+          window.tier4Accents.currentIndex = 0;
+          renderAccentTabs();
+          selectAccentSentence(0);
+        }
+      } catch (err) {
+        console.error('Error loading accent samples:', err);
+      }
+    }
+
+    function renderAccentTabs() {
+      const tabs = document.getElementById('accent-sentence-tabs');
+      if (!tabs) return;
+      tabs.innerHTML = window.tier4Accents.samples.map((s, idx) => `
+        <button onclick="selectAccentSentence(${idx})" id="accent-tab-btn-${idx}" class="accent-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${idx === window.tier4Accents.currentIndex ? 'bg-sky-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'}">
+          Câu ${idx + 1}: ${s.topic || 'Giao tiếp'}
+        </button>
+      `).join('');
+    }
+
+    function selectAccentSentence(idx) {
+      window.tier4Accents.currentIndex = idx;
+      document.querySelectorAll('.accent-tab-btn').forEach((b, i) => {
+        if (i === idx) {
+          b.className = 'accent-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-sky-600 text-white shadow-sm';
+        } else {
+          b.className = 'accent-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200';
+        }
+      });
+
+      const s = window.tier4Accents.samples[idx];
+      if (!s) return;
+
+      const txtEl = document.getElementById('accent-sentence-text');
+      const meanEl = document.getElementById('accent-sentence-meaning');
+      const topicEl = document.getElementById('accent-topic-badge');
+      if (txtEl) txtEl.innerText = `"${s.sentence}"`;
+      if (meanEl) meanEl.innerText = s.translation || '';
+      if (topicEl) topicEl.innerText = `Chủ đề: ${s.topic || 'Giao tiếp thực tế'}`;
+
+      const container = document.getElementById('accent-cards-container');
+      if (!container) return;
+
+      const accentDefs = [
+        { key: 'uk', flag: '🇬🇧', name: 'Anh - Anh (UK)', dialect: 'Received Pronunciation', bcp47: 'en-GB' },
+        { key: 'us', flag: '🇺🇸', name: 'Anh - Mỹ (US)', dialect: 'General American', bcp47: 'en-US' },
+        { key: 'au', flag: '🇦🇺', name: 'Anh - Úc (AU)', dialect: 'General Australian', bcp47: 'en-AU' },
+        { key: 'in', flag: '🇮🇳', name: 'Anh - Ấn (IN)', dialect: 'Indian English Standard', bcp47: 'en-IN' }
+      ];
+
+      container.innerHTML = accentDefs.map(def => {
+        const item = (s.accents && s.accents[def.key]) || {};
+        return `
+          <div onclick="playAccentAudio('${def.key}', '${def.bcp47}')" id="accent-card-${def.key}" class="accent-play-card cursor-pointer p-4 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-sky-500 hover:shadow-lg transition-all space-y-2 group">
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">${def.flag}</span>
+              <span class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 group-hover:bg-sky-500 group-hover:text-white text-slate-600 dark:text-slate-300 flex items-center justify-center text-xs transition-colors">
+                <i class="fa-solid fa-play"></i>
+              </span>
+            </div>
+            <div>
+              <div class="font-extrabold text-xs text-slate-900 dark:text-white">${def.name}</div>
+              <div class="text-[10px] text-slate-400">${def.dialect}</div>
+            </div>
+            <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700 font-mono text-[11px] text-sky-600 dark:text-sky-400">
+              ${item.phoneticKey || '/phonetic/'}
+            </div>
+            <div class="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-2">
+              ${item.accentNote || 'Ngữ điệu đặc trưng'}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function playAccentAudio(accentKey, bcp47) {
+      document.querySelectorAll('.accent-play-card').forEach(c => {
+        c.classList.remove('border-sky-500', 'ring-2', 'ring-sky-400/50');
+      });
+      const activeCard = document.getElementById(`accent-card-${accentKey}`);
+      if (activeCard) {
+        activeCard.classList.add('border-sky-500', 'ring-2', 'ring-sky-400/50');
+      }
+
+      const s = window.tier4Accents.samples[window.tier4Accents.currentIndex];
+      if (!s) return;
+      const accentData = (s.accents && s.accents[accentKey]) || {};
+
+      const detailEl = document.getElementById('accent-detail-text');
+      if (detailEl) {
+        detailEl.innerHTML = `
+          <div class="space-y-1">
+            <div class="font-bold text-sky-600 dark:text-sky-400">${accentData.phoneticKey || ''}</div>
+            <div class="text-slate-700 dark:text-slate-200"><strong>Đặc trưng âm học:</strong> ${accentData.accentNote || 'Âm vị chuẩn vùng miền'}</div>
+            <div class="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-circle-check"></i> Đang phát giọng đọc ${accentKey.toUpperCase()} qua Web Speech Engine...
+            </div>
+          </div>
+        `;
+      }
+
+      speakText(s.sentence, bcp47);
+
+      try {
+        const res = await fetch(`${API_BASE}/courses/accents/log-practice`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            accent: accentKey,
+            sentenceId: s.id || s._id,
+            sentence: s.sentence
+          })
+        });
+        const json = await res.json();
+        if (json.success) {
+          window.tier4Accents.practiceCount = json.totalPracticeCount || (window.tier4Accents.practiceCount + 1);
+          const countBadge = document.getElementById('accent-practice-count-text');
+          if (countBadge) countBadge.innerText = `${window.tier4Accents.practiceCount} lượt luyện`;
+          showToast(`🎧 Đã lưu vết nghe ${accentKey.toUpperCase()} vào Cassandra (+15 XP)`, 'success');
+        }
+      } catch (e) {
+        window.tier4Accents.practiceCount++;
+        const countBadge = document.getElementById('accent-practice-count-text');
+        if (countBadge) countBadge.innerText = `${window.tier4Accents.practiceCount} lượt luyện`;
+      }
+    }
+
+    // ==============================================================
+    // GIAI ĐOẠN 4 - TÍNH NĂNG 5: VISUAL GRAMMAR TIMELINES & MINDCARDS
+    // ==============================================================
+    window.tier4Grammar = {
+      cards: [],
+      selectedIndex: 0
+    };
+
+    async function loadVisualGrammarCards() {
+      const container = document.getElementById('visual-grammar-card-display');
+      if (!container) return;
+      try {
+        const res = await fetch(`${API_BASE}/courses/grammar/visual-cards`);
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          window.tier4Grammar.cards = json.data;
+          renderGrammarCardTabs();
+          selectGrammarCard(0);
+        }
+      } catch (err) {
+        console.error('Error loading grammar cards:', err);
+      }
+    }
+
+    function renderGrammarCardTabs() {
+      const tabs = document.getElementById('grammar-card-tabs');
+      if (!tabs) return;
+      tabs.innerHTML = window.tier4Grammar.cards.map((c, idx) => `
+        <button onclick="selectGrammarCard(${idx})" id="grammar-tab-btn-${idx}" class="grammar-tab-btn px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${idx === window.tier4Grammar.selectedIndex ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'}">
+          <i class="fa-solid fa-layer-group mr-1.5"></i> ${c.title}
+        </button>
+      `).join('');
+    }
+
+    function selectGrammarCard(idx) {
+      window.tier4Grammar.selectedIndex = idx;
+      document.querySelectorAll('.grammar-tab-btn').forEach((b, i) => {
+        if (i === idx) {
+          b.className = 'grammar-tab-btn px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-emerald-600 text-white shadow-sm';
+        } else {
+          b.className = 'grammar-tab-btn px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200';
+        }
+      });
+
+      const card = window.tier4Grammar.cards[idx];
+      const display = document.getElementById('visual-grammar-card-display');
+      if (!card || !display) return;
+
+      display.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-700 pb-4">
+            <div>
+              <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">${card.level || 'B1-C1'} • ${card.category || 'Ngữ pháp thực hành'}</span>
+              <h4 class="text-xl font-black text-slate-900 dark:text-white mt-2">${card.title}</h4>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">${card.conceptOverview || ''}</p>
+            </div>
+          </div>
+
+          <!-- Sơ đồ Dòng thời gian Visual Timeline SVG -->
+          <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-timeline text-emerald-500"></i> Sơ đồ trực quan Timeline:
+              </span>
+              <span class="text-[11px] text-slate-400 font-mono">Past ➔ Present ➔ Future</span>
+            </div>
+            
+            <div class="w-full overflow-x-auto py-2">
+              <div class="min-w-[500px] h-28 relative flex items-center justify-between px-6 border-b-2 border-dashed border-slate-300 dark:border-slate-700">
+                <!-- Point A (Past) -->
+                <div class="flex flex-col items-center relative z-10">
+                  <div class="w-8 h-8 rounded-full bg-rose-500 text-white font-black text-xs flex items-center justify-center shadow-md">A</div>
+                  <span class="text-[11px] font-bold text-rose-600 dark:text-rose-400 mt-1">Past Simple</span>
+                  <span class="text-[10px] text-slate-400">Point in past (ended)</span>
+                </div>
+
+                <!-- Span Line (Present Perfect) -->
+                <div class="flex-1 mx-4 h-3 bg-gradient-to-r from-emerald-400 to-indigo-500 rounded-full relative flex items-center justify-center">
+                  <span class="text-[10px] font-extrabold text-white uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-900/60 backdrop-blur-sm">Present Perfect Connection</span>
+                </div>
+
+                <!-- Point NOW (Present) -->
+                <div class="flex flex-col items-center relative z-10">
+                  <div class="w-8 h-8 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center shadow-md">NOW</div>
+                  <span class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 mt-1">Present (Now)</span>
+                  <span class="text-[10px] text-slate-400">Result connected</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bảng so sánh cấu trúc & ví dụ phân tích -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${(card.comparisonRules || []).map(r => `
+              <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2">
+                <div class="font-extrabold text-xs text-slate-900 dark:text-white flex items-center justify-between">
+                  <span>${r.name}</span>
+                  <span class="font-mono text-[11px] text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40">${r.formula}</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 text-xs text-slate-700 dark:text-slate-300 font-medium">
+                  "${r.example}"
+                </div>
+                <div class="text-[11px] text-slate-500 dark:text-slate-400 italic">
+                  💡 ${r.usageNote}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- Bẫy đề thi & Mẹo ghi nhớ thần tốc -->
+          <div class="p-4 rounded-xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 space-y-2 text-xs">
+            <div class="font-extrabold text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
+              <i class="fa-solid fa-triangle-exclamation"></i> Bẫy đề thi hay gặp (Exam Pitfalls):
+            </div>
+            <div class="text-amber-900/80 dark:text-amber-200 leading-relaxed">
+              ${card.commonTrap || 'Tránh nhầm lẫn mốc thời gian xác định (yesterday, in 2020) với khoảng thời gian kéo dài (for 3 years, since then).'}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ==============================================================
+    // GIAI ĐOẠN 4 - TÍNH NĂNG 2: AI JOB & IELTS MOCK INTERVIEW SIMULATOR
+    // ==============================================================
+    window.tier4Interview = {
+      sessionId: null,
+      stage: 1,
+      currentQuestion: '',
+      history: [],
+      completed: false
+    };
+
+    function resetInterviewState() {
+      window.tier4Interview = {
+        sessionId: null,
+        stage: 1,
+        currentQuestion: '',
+        history: [],
+        completed: false
+      };
+      const stream = document.getElementById('interview-chat-stream');
+      if (stream) {
+        stream.innerHTML = `
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-violet-100 dark:border-violet-950/40 shadow-sm">
+            <div class="text-xs font-bold text-violet-600 dark:text-violet-400 mb-1 flex items-center gap-1.5">
+              <i class="fa-solid fa-comment-dots"></i> Giám khảo phỏng vấn đặt câu hỏi:
+            </div>
+            <div id="interview-current-question" class="text-sm font-semibold text-slate-900 dark:text-white leading-relaxed">
+              "Bấm 'Bắt đầu phỏng vấn' để kết nối với giám khảo AI và nhận câu hỏi đầu tiên."
+            </div>
+          </div>
+        `;
+      }
+      updateInterviewStageIndicators(1);
+      const ansInput = document.getElementById('interview-answer-input');
+      if (ansInput) ansInput.value = '';
+    }
+
+    function updateInterviewStageIndicators(currentStage) {
+      for (let s = 1; s <= 3; s++) {
+        const el = document.getElementById(`interview-stage-indicator-${s}`);
+        if (!el) continue;
+        if (s === currentStage) {
+          el.className = 'py-2 px-3 rounded-xl bg-violet-600 text-white shadow-sm transition-all flex items-center justify-center gap-1.5';
+        } else if (s < currentStage) {
+          el.className = 'py-2 px-3 rounded-xl bg-emerald-600 text-white shadow-sm transition-all flex items-center justify-center gap-1.5';
+        } else {
+          el.className = 'py-2 px-3 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 transition-all flex items-center justify-center gap-1.5';
+        }
+      }
+    }
+
+    async function startMockInterview() {
+      const typeSelect = document.getElementById('interview-type-select');
+      const interviewType = typeSelect ? typeSelect.value : 'JOB';
+      const btn = document.getElementById('btn-start-interview');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Kết nối...`;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/courses/interview/start`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ interviewType })
+        });
+        const json = await res.json();
+        if (json.success && json.data) {
+          const d = json.data;
+          window.tier4Interview.sessionId = d.sessionId;
+          window.tier4Interview.stage = d.stage || 1;
+          window.tier4Interview.currentQuestion = d.question;
+          window.tier4Interview.completed = false;
+
+          const qEl = document.getElementById('interview-current-question');
+          if (qEl) qEl.innerText = `"${d.question}"`;
+
+          const nameEl = document.getElementById('interviewer-name');
+          const roleEl = document.getElementById('interviewer-role');
+          const avatarEl = document.getElementById('interviewer-avatar');
+          if (nameEl && d.interviewerName) nameEl.innerText = d.interviewerName;
+          if (roleEl && d.interviewerRole) roleEl.innerText = d.interviewerRole;
+          if (avatarEl && d.interviewerAvatar) avatarEl.src = d.interviewerAvatar;
+
+          updateInterviewStageIndicators(d.stage || 1);
+          showToast(`🎙️ Đã kết nối với giám khảo (${interviewType === 'JOB' ? 'Tuyển dụng' : 'IELTS'})!`, 'success');
+          speakInterviewerQuestion();
+        }
+      } catch (err) {
+        console.error('Error starting interview:', err);
+        showToast('Không thể kết nối phòng phỏng vấn.', 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<i class="fa-solid fa-rotate-right"></i> Bắt đầu lại`;
+        }
+      }
+    }
+
+    function speakInterviewerQuestion() {
+      const q = window.tier4Interview.currentQuestion || (document.getElementById('interview-current-question') ? document.getElementById('interview-current-question').innerText : '');
+      if (q) speakText(q, 'en-US');
+    }
+
+    function fillSampleInterviewAnswer() {
+      const input = document.getElementById('interview-answer-input');
+      if (!input) return;
+      const stage = window.tier4Interview.stage || 1;
+      const sampleAnswers = {
+        1: "Certainly! I have been working as a software developer for the past 4 years, specializing in distributed systems and cloud microservices. I am passionate about tackling scalable architectural problems and collaborating with cross-functional international teams.",
+        2: "In my previous project, we faced a critical database bottleneck during a major product launch. I took the initiative to implement a Redis caching layer and partitioned our time-series logs, which successfully reduced query latency by 75% and kept system uptime at 99.9%.",
+        3: "I believe effective communication and empathy are vital when handling conflicting opinions. I always focus on objective metrics and user impact to align the team towards shared milestones."
+      };
+      input.value = sampleAnswers[stage] || sampleAnswers[1];
+    }
+
+    function startInterviewVoiceInput() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        showToast('Trình duyệt không hỗ trợ nhận diện giọng nói Web Speech. Vui lòng nhập bằng bàn phím.', 'info');
+        return;
+      }
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      const micBtn = document.getElementById('btn-interview-mic');
+      if (micBtn) micBtn.innerHTML = `<i class="fa-solid fa-circle-dot text-rose-500 animate-ping"></i> Đang nghe...`;
+
+      recognition.onresult = (e) => {
+        const transcript = e.results[0][0].transcript;
+        const input = document.getElementById('interview-answer-input');
+        if (input) input.value = (input.value ? input.value + ' ' : '') + transcript;
+        showToast('Đã ghi nhận giọng nói!', 'success');
+      };
+      recognition.onend = () => {
+        if (micBtn) micBtn.innerHTML = `<i class="fa-solid fa-microphone"></i> Nói qua Mic`;
+      };
+      recognition.onerror = () => {
+        if (micBtn) micBtn.innerHTML = `<i class="fa-solid fa-microphone"></i> Nói qua Mic`;
+      };
+      recognition.start();
+    }
+
+    async function sendInterviewResponse() {
+      const input = document.getElementById('interview-answer-input');
+      const answer = input ? input.value.trim() : '';
+      if (!answer) {
+        showToast('Vui lòng nhập hoặc nói câu trả lời của bạn trước khi gửi.', 'warning');
+        return;
+      }
+      if (!window.tier4Interview.sessionId) {
+        showToast('Vui lòng bấm Bắt đầu phỏng vấn trước.', 'warning');
+        return;
+      }
+
+      const btn = document.getElementById('btn-send-interview-answer');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Giám khảo đang chấm...`;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/courses/interview/respond`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId: window.tier4Interview.sessionId,
+            answer: answer
+          })
+        });
+        const json = await res.json();
+        if (json.success && json.data) {
+          const d = json.data;
+          const stream = document.getElementById('interview-chat-stream');
+          if (stream) {
+            stream.innerHTML += `
+              <div class="p-3.5 rounded-2xl bg-violet-50 dark:bg-violet-950/40 border border-violet-200 dark:border-violet-900 text-xs space-y-1">
+                <div class="font-bold text-violet-700 dark:text-violet-300">👤 Câu trả lời của bạn:</div>
+                <div class="text-slate-800 dark:text-slate-200 font-medium">"${answer}"</div>
+              </div>
+            `;
+            if (d.nextQuestion) {
+              stream.innerHTML += `
+                <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-violet-100 dark:border-violet-950/40 shadow-sm space-y-1">
+                  <div class="text-xs font-bold text-violet-600 dark:text-violet-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-comment-dots"></i> Giám khảo chuyển tiếp:
+                  </div>
+                  <div class="text-sm font-semibold text-slate-900 dark:text-white leading-relaxed">
+                    "${d.nextQuestion}"
+                  </div>
+                </div>
+              `;
+            }
+            stream.scrollTop = stream.scrollHeight;
+          }
+
+          if (input) input.value = '';
+
+          const fScore = d.fluencyScore || 85;
+          const cScore = d.confidenceScore || 88;
+          const lBand = d.lexicalScoreBand || '7.5';
+
+          const fEl = document.getElementById('interview-score-fluency');
+          const cEl = document.getElementById('interview-score-confidence');
+          const lEl = document.getElementById('interview-score-lexical');
+          const fBar = document.getElementById('interview-bar-fluency');
+          const cBar = document.getElementById('interview-bar-confidence');
+          const lBar = document.getElementById('interview-bar-lexical');
+
+          if (fEl) fEl.innerText = `${fScore}%`;
+          if (cEl) cEl.innerText = `${cScore}%`;
+          if (lEl) lEl.innerText = `${lBand} / 9.0`;
+
+          if (fBar) fBar.style.width = `${fScore}%`;
+          if (cBar) cBar.style.width = `${cScore}%`;
+          if (lBar) lBar.style.width = `${(parseFloat(lBand) / 9.0) * 100}%`;
+
+          const feedbackEl = document.getElementById('interview-feedback-text');
+          if (feedbackEl) {
+            feedbackEl.innerHTML = `
+              <div class="space-y-1.5">
+                <div class="text-emerald-600 dark:text-emerald-400 font-bold">✨ Điểm cộng: ${d.compliment || 'Cấu trúc câu tự nhiên, phản xạ tốt.'}</div>
+                <div class="text-slate-700 dark:text-slate-300">💡 <strong>Gợi ý nâng tầm:</strong> ${d.suggestion || 'Hãy sử dụng thêm các transition phrases như "Furthermore", "In retrospective".'}</div>
+              </div>
+            `;
+          }
+
+          window.tier4Interview.stage = d.stage;
+          window.tier4Interview.currentQuestion = d.nextQuestion || '';
+          updateInterviewStageIndicators(d.stage);
+
+          if (d.completed) {
+            window.tier4Interview.completed = true;
+            showToast('🎉 Chúc mừng! Bạn đã hoàn thành trọn vẹn buổi phỏng vấn (+150 XP)!', 'success');
+          } else {
+            speakInterviewerQuestion();
+          }
+        }
+      } catch (err) {
+        console.error('Error sending interview response:', err);
+        showToast('Lỗi gửi phản hồi phỏng vấn.', 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<span>Gửi câu trả lời & Nhận đánh giá</span> <i class="fa-solid fa-arrow-right"></i>`;
+        }
+      }
+    }
+
+    // ==============================================================
+    // GIAI ĐOẠN 4 - TÍNH NĂNG 4: SMART LEXICAL UPGRADER (NEO4J)
+    // ==============================================================
+    window.tier4Lexical = {
+      currentAnalysis: null,
+      sampleEssay: "In this modern world, pollution is a very big problem. Many people do a lot of things to make money, but it has a bad effect on nature. The government must do something to solve this problem quickly because it is very important for our future."
+    };
+
+    function updateLexicalWordCount() {
+      const input = document.getElementById('lexical-input-text');
+      const countEl = document.getElementById('lexical-word-count');
+      if (!input || !countEl) return;
+      const words = input.value.trim().split(/\s+/).filter(Boolean);
+      countEl.innerText = `${words.length} từ`;
+    }
+
+    function fillSampleLexicalEssay() {
+      const input = document.getElementById('lexical-input-text');
+      if (!input) return;
+      input.value = window.tier4Lexical.sampleEssay;
+      updateLexicalWordCount();
+      analyzeEssayLexicalUpgrades();
+    }
+
+    async function analyzeEssayLexicalUpgrades() {
+      const input = document.getElementById('lexical-input-text');
+      const text = input ? input.value.trim() : '';
+      if (!text) {
+        showToast('Vui lòng dán đoạn văn cần phân tích từ vựng.', 'warning');
+        return;
+      }
+
+      const btn = document.getElementById('btn-analyze-lexical');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Neo4j đang quét...`;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/graph/lexical-upgrader/analyze`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text })
+        });
+        const json = await res.json();
+        if (json.success && json.data) {
+          const d = json.data;
+          window.tier4Lexical.currentAnalysis = d;
+
+          const bandEl = document.getElementById('lexical-result-band');
+          const collocEl = document.getElementById('lexical-result-colloc');
+          const weakEl = document.getElementById('lexical-result-weak');
+          if (bandEl) bandEl.innerText = d.lexicalScoreBand || '6.0';
+          if (collocEl) collocEl.innerText = d.academicCollocationsCount || 0;
+          if (weakEl) weakEl.innerText = d.weakWordsCount || 0;
+
+          const outEl = document.getElementById('lexical-annotated-output');
+          if (outEl && d.annotatedHtml) {
+            outEl.innerHTML = d.annotatedHtml;
+          }
+
+          const sugContainer = document.getElementById('lexical-suggestions-container');
+          if (sugContainer && Array.isArray(d.suggestions)) {
+            if (d.suggestions.length === 0) {
+              sugContainer.innerHTML = `<div class="p-3 text-center text-emerald-600 font-bold bg-emerald-50 dark:bg-emerald-950/30 rounded-xl">Đoạn văn của bạn có vốn từ vựng học thuật rất tốt!</div>`;
+            } else {
+              sugContainer.innerHTML = d.suggestions.map((s, idx) => `
+                <div class="flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                  <div>
+                    <span class="line-through text-rose-500 font-bold mr-1.5">${s.original}</span>
+                    <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 mr-1.5"></i>
+                    <span class="text-emerald-600 dark:text-emerald-400 font-extrabold">${s.replacement}</span>
+                    <span class="text-[10px] text-slate-400 ml-1">(${s.reason || 'Academic C1/C2'})</span>
+                  </div>
+                  <button onclick="applySingleLexicalUpgrade('${s.original}', '${s.replacement}')" class="px-2.5 py-1 rounded-lg bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 hover:bg-teal-100 text-[11px] font-bold transition-all">
+                    Áp dụng
+                  </button>
+                </div>
+              `).join('');
+            }
+          }
+
+          const applyAllBtn = document.getElementById('btn-apply-all-upgrades');
+          if (applyAllBtn) {
+            if (d.suggestions && d.suggestions.length > 0) applyAllBtn.classList.remove('hidden');
+            else applyAllBtn.classList.add('hidden');
+          }
+
+          showToast('✨ Đã đối sánh từ vựng qua Lexical Graph Neo4j!', 'success');
+        }
+      } catch (err) {
+        console.error('Error analyzing lexical upgrades:', err);
+        showToast('Lỗi phân tích từ vựng qua đồ thị.', 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> Nâng cấp đoạn văn`;
+        }
+      }
+    }
+
+    function applySingleLexicalUpgrade(original, replacement) {
+      const input = document.getElementById('lexical-input-text');
+      if (!input) return;
+      const regex = new RegExp(`\\b${original}\\b`, 'gi');
+      input.value = input.value.replace(regex, replacement);
+      updateLexicalWordCount();
+      analyzeEssayLexicalUpgrades();
+    }
+
+    function applyAllLexicalUpgrades() {
+      const d = window.tier4Lexical.currentAnalysis;
+      if (!d || !Array.isArray(d.suggestions)) return;
+      const input = document.getElementById('lexical-input-text');
+      if (!input) return;
+      let text = input.value;
+      d.suggestions.forEach(s => {
+        const regex = new RegExp(`\\b${s.original}\\b`, 'gi');
+        text = text.replace(regex, s.replacement);
+      });
+      input.value = text;
+      updateLexicalWordCount();
+      analyzeEssayLexicalUpgrades();
+      showToast('🚀 Đã thay thế toàn bộ từ vựng Band 8.0+!', 'success');
+    }
+
+    // ==============================================================
+    // GIAI ĐOẠN 4 - TÍNH NĂNG 3: REDIS GEOSPATIAL ENGLISH LEADERBOARD
+    // ==============================================================
+    window.tier4Geo = {
+      clubs: [],
+      userCoords: { lat: 10.8018, lon: 106.6397 }
+    };
+
+    async function loadRegionalClubs(city = 'all') {
+      const container = document.getElementById('geo-clubs-container');
+      if (!container) return;
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          pos => {
+            window.tier4Geo.userCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+            const coordEl = document.getElementById('geo-my-coords-display');
+            if (coordEl) coordEl.innerText = `📍 Vị trí: ${pos.coords.latitude.toFixed(4)}° N, ${pos.coords.longitude.toFixed(4)}° E`;
+            fetchClubsAndLeaderboard(city);
+          },
+          () => {
+            fetchClubsAndLeaderboard(city);
+          },
+          { timeout: 3000 }
+        );
+      } else {
+        fetchClubsAndLeaderboard(city);
+      }
+    }
+
+    async function fetchClubsAndLeaderboard(city) {
+      const container = document.getElementById('geo-clubs-container');
+      const { lat, lon } = window.tier4Geo.userCoords;
+
+      try {
+        const res = await fetch(`${API_BASE}/courses/geo/clubs?city=${city}&lat=${lat}&lon=${lon}`);
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) {
+          window.tier4Geo.clubs = json.data;
+          if (container) {
+            container.innerHTML = json.data.map(club => `
+              <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-400 shadow-sm transition-all flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div class="space-y-1">
+                  <div class="flex items-center gap-2">
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300">${club.city || 'TP.HCM'}</span>
+                    <span class="text-xs font-black text-slate-900 dark:text-white">${club.name}</span>
+                  </div>
+                  <div class="text-[11px] text-slate-500 dark:text-slate-400">
+                    <i class="fa-solid fa-location-dot text-amber-500 mr-1"></i> ${club.address || 'Khuôn viên trường'}
+                  </div>
+                  <div class="text-[10px] text-slate-400 flex items-center gap-3">
+                    <span><i class="fa-regular fa-clock mr-1"></i> ${club.weeklySchedule || 'Tối T7 18:30'}</span>
+                    <span><i class="fa-solid fa-users mr-1"></i> ${club.membersCount || 150} thành viên</span>
+                  </div>
+                </div>
+
+                <div class="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-2">
+                  <span class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono font-bold text-xs text-amber-600 dark:text-amber-400">
+                    Cách ${club.distanceKm !== undefined ? club.distanceKm : '1.2'} km
+                  </span>
+                  <button onclick="checkinGeoLocation('${club.id}', '${club.name}')" class="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow-sm transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-map-pin"></i> Check-in (+50 XP)
+                  </button>
+                </div>
+              </div>
+            `).join('');
+          }
+        }
+      } catch (err) {
+        console.error('Error loading geo clubs:', err);
+      }
+
+      try {
+        const lbRes = await fetch(`${API_BASE}/courses/geo/regional-leaderboard`);
+        const lbJson = await lbRes.json();
+        const lbBox = document.getElementById('regional-leaderboard-container');
+        if (lbBox && lbJson.success && Array.isArray(lbJson.data)) {
+          lbBox.innerHTML = lbJson.data.map((item, idx) => `
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+              <div class="flex items-center gap-2.5">
+                <span class="w-6 h-6 rounded-lg ${idx === 0 ? 'bg-amber-400 text-slate-950 font-black' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold'} text-xs flex items-center justify-center">
+                  #${idx + 1}
+                </span>
+                <div>
+                  <div class="font-extrabold text-xs text-slate-900 dark:text-white">${item.university}</div>
+                  <div class="text-[10px] text-slate-400">${item.region} • ${item.activeStudents} sinh viên</div>
+                </div>
+              </div>
+              <span class="font-mono font-black text-xs text-amber-600 dark:text-amber-400">${item.totalPoints ? item.totalPoints.toLocaleString() : '12,500'} pts</span>
+            </div>
+          `).join('');
+        }
+      } catch (e) {}
+    }
+
+    async function checkinGeoLocation(clubId, clubName) {
+      const { lat, lon } = window.tier4Geo.userCoords;
+      try {
+        const res = await fetch(`${API_BASE}/courses/geo/checkin`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ clubId, clubName, lat, lon })
+        });
+        const json = await res.json();
+        if (json.success) {
+          showToast(`📍 Đã check-in thành công tại ${clubName}! (+50 XP vào Redis GEO & Cassandra)`, 'success');
+          loadRegionalClubs(document.getElementById('geo-city-filter') ? document.getElementById('geo-city-filter').value : 'all');
+        }
+      } catch (err) {
+        showToast(`📍 Đã check-in tại ${clubName}! (+50 XP)`, 'success');
+      }
+    }
+
+    // ==============================================================
+    // GIAI ĐOẠN 4 - TÍNH NĂNG 6: VIRTUAL LOFI STUDY ROOM & POMODORO
+    // ==============================================================
+    window.tier4Pomodoro = {
+      timer: null,
+      secondsLeft: 25 * 60,
+      totalSeconds: 25 * 60,
+      isRunning: false,
+      mode: 'focus',
+      audioContext: null,
+      isAudioPlaying: false,
+      gainNode: null,
+      oscillatorNodes: []
+    };
+
+    async function loadPomodoroPresence() {
+      try {
+        const res = await fetch(`${API_BASE}/courses/pomodoro/presence`);
+        const json = await res.json();
+        const pText = document.getElementById('lofi-presence-text');
+        if (pText && json.success) {
+          pText.innerText = `${json.activeCount || 128} bạn đang cùng học lúc này (Redis Set)`;
+        }
+      } catch (e) {}
+    }
+
+    function setPomodoroMode(minutes, mode) {
+      if (window.tier4Pomodoro.timer) {
+        clearInterval(window.tier4Pomodoro.timer);
+        window.tier4Pomodoro.timer = null;
+      }
+      window.tier4Pomodoro.isRunning = false;
+      window.tier4Pomodoro.mode = mode;
+      window.tier4Pomodoro.totalSeconds = minutes * 60;
+      window.tier4Pomodoro.secondsLeft = minutes * 60;
+
+      ['focus', 'short', 'long'].forEach(m => {
+        const btn = document.getElementById(`pomo-mode-${m}`);
+        if (!btn) return;
+        if (m === mode) {
+          btn.className = 'px-3 py-1 rounded-lg bg-indigo-600 text-white transition-all';
+        } else {
+          btn.className = 'px-3 py-1 rounded-lg text-slate-300 hover:text-white transition-all';
+        }
+      });
+
+      const toggleLabel = document.getElementById('pomodoro-toggle-label');
+      const toggleIcon = document.getElementById('pomodoro-toggle-icon');
+      if (toggleLabel) toggleLabel.innerText = 'Bắt đầu tập trung';
+      if (toggleIcon) toggleIcon.className = 'fa-solid fa-play';
+
+      const floatingStatus = document.getElementById('floating-pomo-status');
+      if (floatingStatus) {
+        floatingStatus.innerText = mode === 'focus' ? 'Focus Mode' : 'Break Time';
+      }
+
+      updatePomodoroDisplay();
+    }
+
+    function togglePomodoroTimer() {
+      if (window.tier4Pomodoro.isRunning) {
+        clearInterval(window.tier4Pomodoro.timer);
+        window.tier4Pomodoro.timer = null;
+        window.tier4Pomodoro.isRunning = false;
+        const toggleLabel = document.getElementById('pomodoro-toggle-label');
+        const toggleIcon = document.getElementById('pomodoro-toggle-icon');
+        if (toggleLabel) toggleLabel.innerText = 'Tiếp tục';
+        if (toggleIcon) toggleIcon.className = 'fa-solid fa-play';
+      } else {
+        window.tier4Pomodoro.isRunning = true;
+        const toggleLabel = document.getElementById('pomodoro-toggle-label');
+        const toggleIcon = document.getElementById('pomodoro-toggle-icon');
+        if (toggleLabel) toggleLabel.innerText = 'Tạm dừng';
+        if (toggleIcon) toggleIcon.className = 'fa-solid fa-pause';
+
+        window.tier4Pomodoro.timer = setInterval(() => {
+          if (window.tier4Pomodoro.secondsLeft > 0) {
+            window.tier4Pomodoro.secondsLeft--;
+            updatePomodoroDisplay();
+          } else {
+            clearInterval(window.tier4Pomodoro.timer);
+            window.tier4Pomodoro.timer = null;
+            window.tier4Pomodoro.isRunning = false;
+            finishPomodoroSession();
+          }
+        }, 1000);
+      }
+    }
+
+    function resetPomodoroTimer() {
+      if (window.tier4Pomodoro.timer) {
+        clearInterval(window.tier4Pomodoro.timer);
+        window.tier4Pomodoro.timer = null;
+      }
+      window.tier4Pomodoro.isRunning = false;
+      window.tier4Pomodoro.secondsLeft = window.tier4Pomodoro.totalSeconds;
+      const toggleLabel = document.getElementById('pomodoro-toggle-label');
+      const toggleIcon = document.getElementById('pomodoro-toggle-icon');
+      if (toggleLabel) toggleLabel.innerText = 'Bắt đầu tập trung';
+      if (toggleIcon) toggleIcon.className = 'fa-solid fa-play';
+      updatePomodoroDisplay();
+    }
+
+    function updatePomodoroDisplay() {
+      const s = window.tier4Pomodoro.secondsLeft;
+      const m = Math.floor(s / 60);
+      const remS = s % 60;
+      const formatted = `${String(m).padStart(2, '0')}:${String(remS).padStart(2, '0')}`;
+
+      const disp = document.getElementById('pomodoro-timer-display');
+      if (disp) disp.innerText = formatted;
+
+      const floatDisp = document.getElementById('floating-pomo-display');
+      if (floatDisp) floatDisp.innerText = formatted;
+    }
+
+    async function finishPomodoroSession() {
+      updatePomodoroDisplay();
+      const toggleLabel = document.getElementById('pomodoro-toggle-label');
+      const toggleIcon = document.getElementById('pomodoro-toggle-icon');
+      if (toggleLabel) toggleLabel.innerText = 'Bắt đầu lại';
+      if (toggleIcon) toggleIcon.className = 'fa-solid fa-rotate-right';
+
+      try {
+        const res = await fetch(`${API_BASE}/courses/pomodoro/finish-session`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ durationMinutes: 25 })
+        });
+        const json = await res.json();
+        if (json.success) {
+          showToast('🍅 Chúc mừng bạn đã hoàn thành phiên tập trung 25 phút (+100 XP lưu vết vào Cassandra)!', 'success');
+        }
+      } catch (e) {
+        showToast('🍅 Hoàn thành phiên Pomodoro 25 phút! (+100 XP)', 'success');
+      }
+
+      setPomodoroMode(5, 'short');
+    }
+
+    function toggleLofiAudio() {
+      if (window.tier4Pomodoro.isAudioPlaying) {
+        stopLofiAudio();
+      } else {
+        startLofiAudio();
+      }
+    }
+
+    function startLofiAudio() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        if (!window.tier4Pomodoro.audioContext) {
+          window.tier4Pomodoro.audioContext = new AudioContext();
+        }
+        const ctx = window.tier4Pomodoro.audioContext;
+        if (ctx.state === 'suspended') ctx.resume();
+
+        const masterGain = ctx.createGain();
+        masterGain.gain.setValueAtTime(0.08, ctx.currentTime);
+        masterGain.connect(ctx.destination);
+        window.tier4Pomodoro.gainNode = masterGain;
+
+        const chordFrequencies = [220.00, 261.63, 329.63, 392.00]; // Am7 chord
+        window.tier4Pomodoro.oscillatorNodes = chordFrequencies.map(freq => {
+          const osc = ctx.createOscillator();
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(600, ctx.currentTime);
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime);
+          osc.connect(filter);
+          filter.connect(masterGain);
+          osc.start();
+          return osc;
+        });
+
+        window.tier4Pomodoro.isAudioPlaying = true;
+        const icon = document.getElementById('lofi-audio-icon');
+        const label = document.getElementById('lofi-audio-label');
+        if (icon) icon.className = 'fa-solid fa-pause';
+        if (label) label.innerText = 'Tạm dừng Lofi Ambient';
+        showToast('🎵 Đang phát Lofi Study Chords thư giãn...', 'info');
+      } catch (e) {
+        console.error('AudioContext error:', e);
+      }
+    }
+
+    function stopLofiAudio() {
+      if (window.tier4Pomodoro.oscillatorNodes) {
+        window.tier4Pomodoro.oscillatorNodes.forEach(osc => {
+          try { osc.stop(); osc.disconnect(); } catch (e) {}
+        });
+        window.tier4Pomodoro.oscillatorNodes = [];
+      }
+      window.tier4Pomodoro.isAudioPlaying = false;
+      const icon = document.getElementById('lofi-audio-icon');
+      const label = document.getElementById('lofi-audio-label');
+      if (icon) icon.className = 'fa-solid fa-play';
+      if (label) label.innerText = 'Bật nhạc Lofi Study Beat';
+    }
+
+    function changeLofiVolume(val) {
+      if (window.tier4Pomodoro.gainNode && window.tier4Pomodoro.audioContext) {
+        const gainVal = (parseFloat(val) / 100) * 0.15;
+        window.tier4Pomodoro.gainNode.gain.setValueAtTime(gainVal, window.tier4Pomodoro.audioContext.currentTime);
+      }
+    }
+
+
+// KHỞI CHẠY LẦN ĐẦU
     window.addEventListener('DOMContentLoaded', () => {
       initTheme();
       syncUserUI();
