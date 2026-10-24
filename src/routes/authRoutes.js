@@ -322,7 +322,62 @@ router.post('/forgot-password/reset', async (req, res) => {
   }
 });
 
-// 6. LẤY DANH SÁCH TÀI KHOẢN MẪU DEMO
+// 6. LẤY DANH SÁCH TÀI KHOẢN & QUẢN TRỊ NGƯỜI DÙNG (DÀNH CHO ADMIN)
+router.get('/users', async (req, res) => {
+  try {
+    const db = getMongoDb();
+    if (!db) {
+      return res.status(500).json({ success: false, message: 'Database MongoDB chưa sẵn sàng' });
+    }
+    const users = await db.collection('users').find({}, { projection: { passwordHash: 0 } }).sort({ createdAt: -1 }).toArray();
+    res.json({
+      success: true,
+      total: users.length,
+      data: users
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// 7. CẬP NHẬT PHÂN QUYỀN ROLE CHO TÀI KHOẢN (ADMIN ONLY)
+router.put('/users/:id/role', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
+    const { ObjectId } = require('mongodb');
+    const db = getMongoDb();
+
+    if (!['STUDENT', 'TEACHER', 'ADMIN'].includes(role)) {
+      return res.status(400).json({ success: false, message: 'Role không hợp lệ. Chọn STUDENT, TEACHER hoặc ADMIN.' });
+    }
+
+    if (!db) {
+      return res.status(500).json({ success: false, message: 'Database MongoDB chưa sẵn sàng' });
+    }
+
+    let filter = { _id: id };
+    if (ObjectId.isValid(id)) {
+      filter = { _id: new ObjectId(id) };
+    }
+
+    const result = await db.collection('users').updateOne(filter, { $set: { role, updatedAt: new Date() } });
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy tài khoản người dùng' });
+    }
+
+    res.json({
+      success: true,
+      message: `Đã cập nhật quyền thành công sang: ${role}`,
+      data: { userId: id, role }
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// 8. LẤY DANH SÁCH TÀI KHOẢN MẪU DEMO
 router.get('/demo-accounts', async (req, res) => {
   try {
     const db = getMongoDb();

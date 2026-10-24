@@ -1535,6 +1535,42 @@
           </div>
         </div>
 
+        <!-- TÍNH NĂNG QUẢN TRỊ VIÊN: BẢNG QUẢN LÝ NGƯỜI DÙNG & PHÂN QUYỀN HỆ THỐNG (MONGODB USERS COLLECTION) -->
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-bold mb-1">
+                <i class="fa-solid fa-user-shield"></i> Phân Hệ Quản Trị Hệ Thống (Role ADMIN)
+              </div>
+              <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">Quản Lý Tài Khoản & Phân Quyền Người Dùng (MongoDB `users`)</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Danh sách toàn bộ tài khoản người dùng trong hệ thống NoSQL. Quản trị viên có thể thay đổi phân quyền (STUDENT / TEACHER / ADMIN) trực tiếp.</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <span id="admin-users-count-badge" class="px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 font-bold text-xs">Đang tải tài khoản...</span>
+              <button onclick="loadAdminUsersList()" class="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all">
+                <i class="fa-solid fa-rotate-right"></i> Làm mới
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto rounded-2xl border border-slate-200/80 dark:border-slate-800">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  <th class="py-3.5 px-4">Tài khoản & Họ tên</th>
+                  <th class="py-3.5 px-4">Email</th>
+                  <th class="py-3.5 px-4">Vai trò (Role)</th>
+                  <th class="py-3.5 px-4 text-center">Trạng thái</th>
+                  <th class="py-3.5 px-4 text-right">Ngày đăng ký</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-table-body" class="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+                <tr><td colspan="5" class="py-8 text-center text-slate-400">Đang tải danh sách người dùng...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
       </div>
 
     </div>
@@ -1803,6 +1839,18 @@
               </div>
             </div>
             <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-200 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-200">INSTRUCTOR</span>
+          </button>
+
+          <!-- Administrator: Ban Giám Đốc Học Thuật (Role ADMIN) -->
+          <button type="button" onclick="execLogin('admin')" class="w-full p-2.5 sm:p-3 rounded-2xl border border-purple-200 dark:border-purple-800 bg-purple-50/30 dark:bg-purple-950/20 hover:bg-purple-50 dark:hover:bg-purple-950/40 flex items-center justify-between transition-all group">
+            <div class="flex items-center gap-3">
+              <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=100&q=80" alt="" class="w-9 h-9 rounded-full object-cover border border-purple-300 dark:border-purple-700">
+              <div class="text-left">
+                <div class="font-bold text-xs sm:text-sm text-purple-950 dark:text-purple-300">Ban Giám Đốc Học Thuật (Admin)</div>
+                <div class="text-[11px] text-purple-600 dark:text-purple-400">Quản trị viên tối cao (Role ADMIN) / Quản lý người dùng</div>
+              </div>
+            </div>
+            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-purple-200 dark:bg-purple-800 text-purple-900 dark:text-purple-100">ADMIN</span>
           </button>
         </div>
       </div>
@@ -2135,7 +2183,7 @@
       if (sectionId === 'exam') { startExam(); loadBookmarkedQuestions(); }
       if (sectionId === 'graph') { initKnowledgeGraph(); generateAdaptiveRoadmap(); }
       if (sectionId === 'history') { loadUserHistory(); loadGamificationProfile(); loadCassandraHeatmap(); }
-      if (sectionId === 'analytics') { loadAnalyticsData(); check4DatabasesHealth(); }
+      if (sectionId === 'analytics') { loadAnalyticsData(); check4DatabasesHealth(); loadAdminUsersList(); }
     }
 
     function scrollToCoursesList() {
@@ -2548,9 +2596,14 @@
         document.getElementById('auth-unlogged').classList.add('hidden');
         document.getElementById('auth-logged').classList.remove('hidden');
 
+        const roleMap = {
+          ADMIN: 'Quản trị viên (Admin)',
+          TEACHER: 'Giảng viên',
+          STUDENT: 'Học viên'
+        };
         document.getElementById('nav-user-name').textContent = currentUser.fullName;
-        document.getElementById('nav-user-role').textContent = currentUser.role === 'TEACHER' ? 'Giảng viên' : 'Học viên';
-        document.getElementById('nav-user-avatar').src = currentUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80';
+        document.getElementById('nav-user-role').textContent = roleMap[currentUser.role] || 'Học viên';
+        document.getElementById('nav-user-avatar').src = currentUser.avatar || (currentUser.role === 'ADMIN' ? 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80' : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80');
 
         if (currentUser.role === 'TEACHER' || currentUser.role === 'ADMIN') {
           document.getElementById('nav-btn-analytics').classList.remove('hidden');
@@ -4628,6 +4681,68 @@
           `).join('');
         }
       } catch (e) {}
+    }
+
+    // --- PHÂN HỆ QUẢN TRỊ VIÊN: QUẢN LÝ TÀI KHOẢN & PHÂN QUYỀN HỆ THỐNG (ROLE ADMIN - MONGODB) ---
+    async function loadAdminUsersList() {
+      const tbody = document.getElementById('admin-users-table-body');
+      if (!tbody) return;
+      try {
+        const res = await fetch(`${API_BASE}/auth/users`);
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) {
+          const badge = document.getElementById('admin-users-count-badge');
+          if (badge) badge.innerText = `${json.total || json.data.length} tài khoản trong CSDL`;
+          tbody.innerHTML = json.data.map(u => `
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+              <td class="py-3.5 px-4 flex items-center gap-3">
+                <img src="${u.avatar || (u.role === 'ADMIN' ? 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80' : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80')}" class="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700">
+                <div>
+                  <div class="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">${u.fullName || u.username}</div>
+                  <div class="text-[10px] text-slate-400 font-mono">@${u.username}</div>
+                </div>
+              </td>
+              <td class="py-3.5 px-4 text-xs font-mono text-slate-600 dark:text-slate-300">${u.email || 'N/A'}</td>
+              <td class="py-3.5 px-4">
+                <select onchange="updateUserRole('${u._id}', this.value)" class="px-2.5 py-1.5 rounded-xl text-xs font-bold outline-none border transition-all cursor-pointer ${u.role === 'ADMIN' ? 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 border-purple-300 dark:border-purple-800' : u.role === 'TEACHER' ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'}">
+                  <option value="STUDENT" ${u.role === 'STUDENT' ? 'selected' : ''}>STUDENT (Học viên)</option>
+                  <option value="TEACHER" ${u.role === 'TEACHER' ? 'selected' : ''}>TEACHER (Giảng viên)</option>
+                  <option value="ADMIN" ${u.role === 'ADMIN' ? 'selected' : ''}>ADMIN (Quản trị viên)</option>
+                </select>
+              </td>
+              <td class="py-3.5 px-4 text-center">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block mr-1"></span>ACTIVE
+                </span>
+              </td>
+              <td class="py-3.5 px-4 text-right text-[11px] text-slate-400 font-mono">
+                ${u.createdAt ? new Date(u.createdAt).toLocaleDateString('vi-VN') : 'Mặc định'}
+              </td>
+            </tr>
+          `).join('');
+        }
+      } catch (e) {
+        console.error('Lỗi load users:', e);
+      }
+    }
+
+    async function updateUserRole(userId, newRole) {
+      try {
+        const res = await fetch(`${API_BASE}/auth/users/${userId}/role`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ role: newRole })
+        });
+        const json = await res.json();
+        if (json.success) {
+          alert(`Đã cập nhật phân quyền tài khoản thành công sang: ${newRole}`);
+          loadAdminUsersList();
+        } else {
+          alert('Lỗi: ' + json.message);
+        }
+      } catch (e) {
+        alert('Lỗi kết nối: ' + e.message);
+      }
     }
 
     // KHỞI CHẠY LẦN ĐẦU
