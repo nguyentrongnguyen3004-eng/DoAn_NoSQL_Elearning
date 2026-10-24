@@ -7,7 +7,9 @@
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "seed:mongo": "node scripts/mongo_seed.js",
-    "demo:redis": "node scripts/redis_demo.js"
+    "seed:all": "node scripts/seed_all_4_nosql.js",
+    "demo:redis": "node scripts/redis_demo.js",
+    "test": "node scripts/automated_tests.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
