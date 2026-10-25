@@ -358,9 +358,6 @@
               <span id="lofi-presence-text">128 bạn đang cùng học lúc này</span>
             </div>
             <h3 class="text-2xl sm:text-3xl font-black tracking-tight">Không Gian Tự Học Lofi & Pomodoro</h3>
-            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Rèn luyện sự tập trung tối đa với âm thanh Lofi thư giãn và chu kỳ 25 phút khoa học. Hoàn thành mỗi chu kỳ để nhận ngay <span class="text-amber-400 font-bold">+100 XP</span> tích lũy!
-            </p>
             <!-- Lofi Audio Ambient Bar -->
             <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2 pt-1">
               <button onclick="toggleLofiAudio()" id="btn-toggle-lofi-audio" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-xs font-bold text-white flex items-center gap-2 transition-all">
@@ -454,7 +451,6 @@
           <div>
             <span class="text-xs font-bold text-amber-500 uppercase tracking-widest"><i class="fa-solid fa-bolt mr-1"></i> Kho Từ Vựng Flashcards 3D</span>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-1">Kho Từ Vựng & Luyện Phát Âm Chuẩn</h2>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Luyện phát âm chuẩn IPA Anh - Mỹ, ghi nhớ ngữ cảnh học thuật và củng cố trí nhớ dài hạn theo phương pháp Spaced Repetition.</p>
           </div>
           <div class="flex items-center gap-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 px-5 py-3 rounded-2xl">
             <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center text-lg font-black shrink-0">
@@ -486,7 +482,6 @@
                 <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">Ôn Tập Thông Minh (Spaced Repetition)</h4>
                 <span id="srs-due-badge" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-500 text-white">2 từ đến hạn ôn</span>
               </div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Tự động nhắc nhở từ vựng đến hạn ôn tập giúp tối ưu khả năng ghi nhớ dài hạn.</p>
               <div id="srs-due-words-pills" class="flex flex-wrap gap-1.5 mt-2"></div>
             </div>
           </div>
@@ -515,7 +510,6 @@
                   <i class="fa-solid fa-bolt mr-1"></i> Word Arena 60s Speed Quiz
                 </span>
                 <h3 class="text-xl sm:text-2xl font-black mt-2">Đấu Trường Phản Xạ Từ Vựng Tốc Độ Cao</h3>
-                <p class="text-xs text-slate-300 mt-0.5">Chọn nhanh nghĩa Tiếng Việt chuẩn xác trong 60 giây để nhân hệ số Combo (<code class="text-amber-300 font-bold">x2, x3</code>) và nâng hạng trên bảng xếp hạng tuần!</p>
               </div>
               <button onclick="startWordArenaGame()" id="btn-start-arena" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/25 transition-all flex items-center gap-2">
                 <i class="fa-solid fa-play"></i>
@@ -579,7 +573,6 @@
           <div>
             <span class="text-xs font-bold text-sky-500 uppercase tracking-widest"><i class="fa-solid fa-headphones mr-1"></i> Luyện Nghe Chép Chính Tả (Audio Dictation)</span>
             <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">Luyện Nghe Chép Chính Tả (Audio Dictation)</h3>
-            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Luyện nghe và chép lại câu văn học thuật để rèn luyện độ chính xác ngữ âm và ngữ pháp.</p>
           </div>
           <select id="dictation-selector" onchange="selectDictationItem(this.value)" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 outline-none focus:border-brand-500">
             <option value="0">Bài nghe 1: TOEIC Business Meeting (CEFR B1)</option>
@@ -636,7 +629,6 @@
           <div>
             <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest"><i class="fa-solid fa-diagram-project mr-1"></i> Sơ Đồ Mạng Nhện Cụm Từ Học Thuật</span>
             <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">Sơ Đồ Mạng Nhện Cụm Từ Học Thuật (Collocation Mindmap)</h3>
-            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Khám phá các tổ hợp từ vựng tự nhiên (Verb + Noun, Adjective + Noun, Synonyms) để tối ưu điểm Lexical Resource IELTS Band 8.0+.</p>
           </div>
           <div class="flex items-center gap-2">
             <select id="collocation-word-select" onchange="loadCollocationMindmap(this.value)" class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 outline-none">
@@ -658,7 +650,6 @@
           <div>
             <span class="text-xs font-bold text-teal-600 dark:text-teal-400 uppercase tracking-widest"><i class="fa-solid fa-compact-disc mr-1"></i> Luyện Nghe Điền Khuyết Phụ Đề</span>
             <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">Luyện Nghe Điền Khuyết Đồng Bộ Âm Thanh</h3>
-            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Nghe bài giảng học thuật và điền từ khóa còn thiếu để rèn luyện phản xạ bắt âm trong ngữ cảnh.</p>
           </div>
           <button onclick="playClozeAudioSentence()" id="btn-play-cloze-audio" class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all">
             <i class="fa-solid fa-play"></i> Nghe đoạn văn mẫu
@@ -692,7 +683,6 @@
           <div>
             <span class="text-xs font-bold text-sky-600 dark:text-sky-400 uppercase tracking-widest"><i class="fa-solid fa-earth-americas mr-1"></i> Luyện Nghe 4 Giọng Bản Xứ</span>
             <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">Phòng Luyện Nghe 4 Giọng Bản Xứ: UK • US • AU • IN</h3>
-            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Luyện phản xạ nhận diện ngữ điệu và phát âm đặc trưng theo thời gian thực (Anh, Mỹ, Úc, Ấn).</p>
           </div>
           <div class="flex items-center gap-2">
             <span id="accent-practice-counter-badge" class="px-3 py-1.5 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 text-sky-700 dark:text-sky-300 font-bold text-xs flex items-center gap-1.5">
@@ -745,7 +735,6 @@
           <div>
             <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest"><i class="fa-solid fa-shapes mr-1"></i> Sổ Tay Ngữ Pháp Trực Quan</span>
             <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">Sổ Tay Ngữ Pháp Trực Quan & Dòng Thời Gian Tương Tác</h3>
-            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Nắm vững các cấu trúc ngữ pháp trọng tâm qua sơ đồ dòng thời gian trực quan và ví dụ thực tế.</p>
           </div>
           <div class="flex items-center gap-2">
             <button onclick="loadVisualGrammarCards()" class="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs font-bold text-slate-700 dark:text-slate-300 transition-all">
@@ -782,7 +771,6 @@
           <div>
             <span class="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-widest"><i class="fa-solid fa-pen-fancy mr-1"></i> Chấm Điểm IELTS Writing Task 2</span>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-1">Phòng Luyện Viết & Chấm Điểm IELTS Writing Task 2</h2>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Chấm điểm chuẩn khảo thí IDP/BC theo 4 tiêu chí, đếm từ trực tiếp và gợi ý từ vựng học thuật Band 8.0+.</p>
           </div>
           <button onclick="insertSampleBand8Essay()" class="px-4 py-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-bold hover:bg-purple-100 transition-all shrink-0">
             <i class="fa-solid fa-sparkles mr-1.5"></i> Chèn bài luận mẫu Band 8.0
@@ -859,7 +847,6 @@
           <div>
             <span class="text-xs font-bold text-rose-500 uppercase tracking-widest"><i class="fa-solid fa-microphone-lines mr-1"></i> AI Speaking & Pronunciation Coach</span>
             <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">Luyện Phát Âm Chuẩn IPA & Phản Xạ Nói IELTS Speaking</h3>
-            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Luyện đọc các câu mẫu học thuật, thu âm trực tiếp qua Microphone trình duyệt hoặc mô phỏng chấm điểm phát âm từng từ.</p>
           </div>
           <select id="speaking-sentence-select" onchange="changeSpeakingSentence(this.value)" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 outline-none">
             <option value="0">Câu mẫu 1: IELTS Speaking Part 3 (Technology & Education)</option>
@@ -905,7 +892,6 @@
               <i class="fa-solid fa-swords"></i> Đấu Trường Luyện Nói Song Đấu 1v1
             </div>
             <h3 class="text-xl sm:text-2xl font-black">Đấu Trường Luyện Nói Đối Kháng 1v1</h3>
-            <p class="text-xs sm:text-sm text-slate-300 mt-0.5">Ghép cặp luyện phát âm và phản xạ nói trực tiếp cùng bạn học hoặc AI Đối luyện.</p>
           </div>
           <button onclick="startSpeakingMatchmake()" id="btn-start-matchmake" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 text-slate-950 font-black text-xs shadow-lg shadow-rose-500/25 transition-all flex items-center gap-2">
             <i class="fa-solid fa-bolt"></i>
@@ -977,7 +963,6 @@
               <i class="fa-solid fa-user-tie"></i> Mô Phỏng Phỏng Vấn Tuyển Dụng & IELTS 1v1
             </div>
             <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">Phòng Phỏng Vấn Tuyển Dụng Quốc Tế & IELTS Speaking 1v1</h3>
-            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Trải nghiệm quy trình phỏng vấn 3 giai đoạn chuẩn quốc tế (Self-Introduction ➔ Behavioral STAR ➔ In-depth Q&A) với giám khảo AI phản hồi tự nhiên.</p>
           </div>
           <div class="flex items-center gap-2">
             <select id="interview-type-select" onchange="resetInterviewState()" class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-violet-500">
@@ -1118,7 +1103,6 @@
               <i class="fa-solid fa-diagram-project"></i> Nâng Cấp Từ Vựng Học Thuật AI
             </div>
             <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">Trình Nâng Cấp Từ Vựng Đoạn Văn (Lexical Upgrader)</h3>
-            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Dán bất kỳ đoạn văn viết luận nào để tự động quét từ vựng cơ bản (Band 5.0) và gợi ý thay thế bằng Academic Collocations & Phrasal Verbs Band 8.0+.</p>
           </div>
           <div class="flex items-center gap-2">
             <button onclick="fillSampleLexicalEssay()" class="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs font-bold text-slate-700 dark:text-slate-300 transition-all">
@@ -1334,7 +1318,6 @@
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Trực tiếp
               </span>
             </div>
-            <p class="text-xs text-slate-400 mb-4">Top thí sinh có điểm đánh giá xuất sắc nhất trong kỳ khảo sát:</p>
             <div id="exam-leaderboard-list" class="space-y-2">
               <div class="text-center py-6 text-slate-400 text-xs">Đang tải xếp hạng...</div>
             </div>
@@ -1351,7 +1334,6 @@
               </div>
               <span id="bookmark-count-badge" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950 text-rose-600">0 câu</span>
             </div>
-            <p class="text-xs text-slate-400 mb-3">Nhấn biểu tượng <i class="fa-regular fa-bookmark"></i> trên câu hỏi để lưu vào sổ tay ôn tập:</p>
             <div id="bookmarked-questions-list" class="space-y-2.5 max-h-64 overflow-y-auto pr-1">
               <div class="text-center py-4 text-slate-400 text-xs">Chưa có câu hỏi nào được lưu.</div>
             </div>
@@ -1499,7 +1481,6 @@
               <i class="fa-solid fa-timeline text-sky-500"></i>
               <span>Nhật Ký Tiến Trình Học Tập</span>
             </h4>
-            <p class="text-xs text-slate-400 mb-4">Ghi nhận tiến trình học tập cá nhân theo thời gian thực:</p>
             <div id="telemetry-log-stream" class="space-y-2 max-h-60 overflow-y-auto pr-1">
               <div class="text-center py-4 text-slate-400 text-xs">Đang tải nhật ký...</div>
             </div>
@@ -1511,7 +1492,6 @@
               <i class="fa-solid fa-diagram-project text-emerald-500"></i>
               <span>Khóa Học Bổ Trợ Đề Xuất</span>
             </h4>
-            <p class="text-xs text-slate-400 mb-3">Đề xuất dựa trên các mục tiêu và kỹ năng tương đồng:</p>
             <div id="neo4j-course-recommendations" class="space-y-2"></div>
           </div>
         </div>
@@ -1534,7 +1514,6 @@
               <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Trí Tuệ Nhân Tạo Thiết Kế Lộ Trình
             </span>
             <h3 class="text-xl sm:text-2xl font-black mt-2">AI Thiết Kế Lộ Trình Học Tiếng Anh Cá Nhân Hóa</h3>
-            <p class="text-xs sm:text-sm text-slate-300 mt-0.5">Chọn trình độ hiện tại và mục tiêu mong muốn để hệ thống tự động tối ưu lộ trình học tập tinh gọn và phù hợp nhất.</p>
           </div>
         </div>
 
@@ -1580,7 +1559,6 @@
           <div>
             <span class="text-xs font-bold text-brand-600 dark:text-indigo-400 uppercase tracking-widest">English Knowledge Graph (CEFR A1 ➔ C2)</span>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-1">Bản Đồ Tri Thức & Lộ Trình Tiếng Anh</h2>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Khám phá mạng lưới liên kết giữa Khóa học, Bài học tiên quyết (IPA ➔ Ngữ pháp ➔ TOEIC/IELTS) và Kỹ năng ngôn ngữ.</p>
           </div>
 
           <!-- Bộ lọc lộ trình mục tiêu -->
@@ -1653,7 +1631,6 @@
               <i class="fa-solid fa-tree"></i> Cây Kỹ Năng Học Thuật
             </div>
             <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">Cây Kỹ Năng Học Thuật Tiếng Anh (CEFR A1 ➔ C2)</h3>
-            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Tiến hóa năng lực ngôn ngữ theo từng tầng bậc. Mỗi kỹ năng yêu cầu điều kiện tiên quyết từ nhánh dưới.</p>
           </div>
           <div class="flex items-center gap-2">
             <span id="skill-tree-mastered-badge" class="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-bold text-xs">2/6 Kỹ năng đã Master</span>
@@ -1686,7 +1663,6 @@
               <span id="gamification-streak-badge">Chuỗi học liên tiếp: 7 ngày 🔥</span>
             </div>
             <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight" id="gamification-level-title">Cấp độ: Upper-Intermediate (CEFR B2)</h2>
-            <p class="text-xs sm:text-sm text-indigo-100 mt-1.5">Tích lũy điểm XP qua mỗi từ vựng thuộc lòng, bài chép chính tả, bài viết IELTS và đề thi hoàn thành.</p>
             <div class="mt-4 flex items-center gap-4">
               <div class="px-4 py-2 rounded-2xl bg-white/15 backdrop-blur">
                 <div class="text-[10px] uppercase text-indigo-200 font-bold">Tổng điểm kinh nghiệm</div>
@@ -1743,7 +1719,6 @@
           <div>
             <span class="text-xs font-bold text-amber-500 uppercase tracking-widest"><i class="fa-solid fa-calendar-check mr-1"></i> Nhiệt Kế Chuyên Cần 30 Ngày</span>
             <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5">Biểu Đồ Nhiệt Tần Suất Học Tập (Study Activity Heatmap)</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Thống kê tần suất và chuỗi ngày học tập tích cực trong 12 tuần gần nhất.</p>
           </div>
           <div class="flex items-center gap-3">
             <span id="heatmap-summary-badge" class="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold">58 ngày tích cực • 184 sự kiện</span>
@@ -1777,7 +1752,6 @@
               <i class="fa-solid fa-stethoscope"></i> AI Error Diagnostic & Knowledge Remediation
             </div>
             <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">Chẩn Đoán Lỗ Hổng Kiến Thức & Kế Hoạch Bù Đắp</h3>
-            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Phân tích các lỗi sai phổ biến từ lịch sử làm bài để gợi ý trọng tâm ôn luyện chuẩn xác.</p>
           </div>
           <button onclick="loadWeaknessDiagnosticData()" class="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs font-bold transition-all">
             <i class="fa-solid fa-rotate-right mr-1"></i> Cập nhật chẩn đoán
@@ -1857,7 +1831,6 @@
           <div>
             <span class="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest"><i class="fa-solid fa-map-location-dot mr-1"></i> Bản Đồ Câu Lạc Bộ Tiếng Anh</span>
             <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">Câu Lạc Bộ Tiếng Anh Gần Bạn & Điểm Hẹn Giao Tiếp</h3>
-            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Tìm kiếm các câu lạc bộ tiếng Anh gần vị trí của bạn, check-in nhận +50 XP và thi đua điểm số cùng các trường đại học.</p>
           </div>
           <div class="flex items-center gap-2">
             <select id="geo-city-filter" onchange="loadRegionalClubs(this.value)" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200">
@@ -1961,8 +1934,7 @@
             </div>
             <div>
               <h4 class="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">CMS: Tạo Khóa Học Tiếng Anh Mới</h4>
-              <p class="text-[11px] text-slate-400">Lưu vào MongoDB `courses` & Tự động xóa Cache Redis</p>
-            </div>
+              </div>
           </div>
           <form onsubmit="handleCreateCourseCMS(event)" class="space-y-3">
             <input type="text" id="cms-course-title" required placeholder="Tên khóa học (Vd: IELTS Speaking Band 8.0 Intensive)" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs outline-none focus:border-brand-500">
@@ -1990,8 +1962,7 @@
             </div>
             <div>
               <h4 class="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">CMS: Thêm Câu Hỏi Vào Ngân Hàng Đề Thi</h4>
-              <p class="text-[11px] text-slate-400">Lưu trực tiếp vào MongoDB `questions` cho kỳ thi hiện tại</p>
-            </div>
+              </div>
           </div>
           <form onsubmit="handleCreateQuestionCMS(event)" class="space-y-2.5">
             <input type="text" id="cms-q-content" required placeholder="Nội dung câu hỏi (Vd: [TOEIC Part 5] If she ___ earlier, she wouldn't have missed the flight.)" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs outline-none focus:border-emerald-500">
@@ -2111,8 +2082,7 @@
               </div>
               <div>
                 <h4 class="font-extrabold text-slate-900 dark:text-white text-base">NoSQL Live Query Inspector</h4>
-                <p class="text-xs text-slate-400">Thực thi và giám sát trực tiếp 4 hệ quản trị cơ sở dữ liệu trên giao diện web</p>
-              </div>
+                  </div>
             </div>
             <span class="text-[11px] font-mono px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Live Console</span>
           </div>
@@ -2150,8 +2120,7 @@
                 <i class="fa-solid fa-user-shield"></i> Phân Hệ Quản Trị Hệ Thống (Role ADMIN)
               </div>
               <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">Quản Lý Tài Khoản & Phân Quyền Người Dùng (MongoDB `users`)</h3>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Danh sách toàn bộ tài khoản người dùng trong hệ thống NoSQL. Quản trị viên có thể thay đổi phân quyền (STUDENT / TEACHER / ADMIN) trực tiếp.</p>
-            </div>
+              </div>
             <div class="flex items-center gap-3">
               <span id="admin-users-count-badge" class="px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 font-bold text-xs">Đang tải tài khoản...</span>
               <button onclick="loadAdminUsersList()" class="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all">
