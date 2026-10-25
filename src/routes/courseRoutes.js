@@ -388,7 +388,7 @@ router.post('/dictation/check', authenticateToken, async (req, res) => {
       return { word: origWord, correct: isOk };
     });
 
-    const accuracy = targetClean.length > 0 ? Math.round((matched / targetClean.length) * 100) : 0;
+    const accuracy = targetClean.length > 0 ? Math.max(0, Math.min(100, Math.round((matched / targetClean.length) * 100))) : 0;
     await recordCassandraEvent(studentId, 'DICTATION_PRACTICE', 'LISTENING_LAB', dictationId, 60, { accuracy });
 
     res.json({
@@ -521,7 +521,7 @@ router.post('/arena/submit-score', async (req, res) => {
     const studentId = req.user ? req.user.username : '2001230589';
     const playerLabel = req.user ? `${req.user.fullName} (${studentId})` : 'Nguyễn Trọng Nguyên (2001230589)';
     const { score, maxCombo, comboMax, matchedPairs } = req.body;
-    const numScore = Number(score) || 0;
+    const numScore = Math.max(0, Math.min(20000, Math.round(Number(score) || 0)));
     const key = 'arena:vocab:leaderboard';
 
     const prev = memoryArenaLeaderboard.get(playerLabel) || 0;
@@ -1090,6 +1090,9 @@ router.post('/:id/notes', authenticateToken, async (req, res) => {
     const courseId = req.params.id;
     const studentId = req.user.username;
     const { lessonTitle, timestampFormatted, content } = req.body;
+    if (!content || !content.trim()) {
+      return res.status(400).json({ success: false, message: 'Nội dung ghi chú không được để trống.' });
+    }
 
     const noteDoc = {
       courseId,
@@ -1121,7 +1124,7 @@ router.post('/:id/reviews', authenticateToken, async (req, res) => {
 
     const reviewObj = {
       userName: `${req.user.fullName} (${req.user.username})`,
-      rating: Number(rating) || 5,
+      rating: Math.max(1, Math.min(5, Math.round(Number(rating) || 5))),
       comment: comment || 'Khóa học rất hữu ích và bám sát đề thi thực tế!',
       createdAt: new Date()
     };
@@ -1178,6 +1181,9 @@ router.post('/:id/discussions', async (req, res) => {
     const courseId = req.params.id;
     const db = getMongoDb();
     const { title, questionTitle, content } = req.body;
+    if (!content || !content.trim()) {
+      return res.status(400).json({ success: false, message: 'Nội dung câu hỏi thảo luận không được để trống.' });
+    }
     const resolvedTitle = title || questionTitle || 'Câu hỏi thảo luận chuyên đề Tiếng Anh';
     const username = req.user ? req.user.username : '2001230589';
     const fullName = req.user ? req.user.fullName : 'Nguyễn Trọng Nguyên';
@@ -1445,7 +1451,7 @@ router.post('/dictation/cloze-submit', async (req, res) => {
       source: 'AUDIO_CLOZE_ENGINE_AND_CASSANDRA',
       correctCount,
       totalBlanks,
-      scorePct: Math.round((correctCount / totalBlanks) * 100),
+      scorePct: Math.max(0, Math.min(100, Math.round((correctCount / Math.max(1, totalBlanks)) * 100))),
       xpEarned,
       detail: detailFeedback,
       message: correctCount === totalBlanks 
@@ -1515,8 +1521,8 @@ router.post('/speaking/submit-duel', async (req, res) => {
     const playerKey = `${fullName} (${studentId})`;
     const { myScore, opponentScore } = req.body;
 
-    const userScore = Number(myScore) || Math.floor(82 + Math.random() * 15);
-    const oppScore = Number(opponentScore) || Math.floor(75 + Math.random() * 20);
+    const userScore = Math.max(0, Math.min(100, Math.round(Number(myScore) || Math.floor(82 + Math.random() * 15))));
+    const oppScore = Math.max(0, Math.min(100, Math.round(Number(opponentScore) || Math.floor(75 + Math.random() * 20))));
     const isWinner = userScore >= oppScore;
 
     const currentStats = memorySpeakingPvPLeaderboard.get(playerKey) || { wins: 0, score: 0, title: 'Speaking Duelist' };

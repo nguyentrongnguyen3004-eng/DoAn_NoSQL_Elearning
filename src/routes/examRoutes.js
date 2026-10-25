@@ -304,6 +304,10 @@ router.post('/writing/evaluate', authenticateToken, async (req, res) => {
     const words = text ? text.split(/\s+/).filter(Boolean) : [];
     const wordCount = words.length;
 
+    if (wordCount < 10) {
+      return res.status(400).json({ success: false, message: 'Nội dung bài viết quá ngắn (tối thiểu 10 từ để phân tích).' });
+    }
+
     // Phan tich tu vung hoc thuat & tu noi (Linking words)
     const lower = text.toLowerCase();
     const linkingList = ['furthermore', 'moreover', 'however', 'nevertheless', 'consequently', 'therefore', 'in conclusion', 'on the other hand', 'for instance', 'specifically', 'undeniably', 'while', 'although'];
@@ -312,15 +316,15 @@ router.post('/writing/evaluate', authenticateToken, async (req, res) => {
     const foundLinking = linkingList.filter(w => lower.includes(w));
     const foundAcademic = academicList.filter(w => lower.includes(w));
 
-    // Tinh diem 4 tieu chi chuan IDP / British Council
-    const baseScore = wordCount >= 180 ? 7.0 : (wordCount >= 100 ? 6.5 : 5.5);
-    const taskResponse = Math.min(9.0, Math.round((baseScore + (wordCount >= 220 ? 0.5 : 0)) * 2) / 2);
-    const coherence = Math.min(9.0, Math.round((baseScore + (foundLinking.length >= 3 ? 1.0 : 0.5)) * 2) / 2);
-    const lexical = Math.min(9.0, Math.round((baseScore + (foundAcademic.length >= 3 ? 1.0 : 0.5)) * 2) / 2);
-    const grammar = Math.min(9.0, Math.round((baseScore + 0.5) * 2) / 2);
+    // Tinh diem 4 tieu chi chuan IDP / British Council (clamped 1.0..9.0)
+    const baseScore = wordCount >= 180 ? 7.0 : (wordCount >= 100 ? 6.0 : (wordCount >= 50 ? 5.0 : 4.0));
+    const taskResponse = Math.max(1.0, Math.min(9.0, Math.round((baseScore + (wordCount >= 250 ? 1.0 : (wordCount >= 200 ? 0.5 : 0))) * 2) / 2));
+    const coherence = Math.max(1.0, Math.min(9.0, Math.round((baseScore + (foundLinking.length >= 3 ? 1.0 : (foundLinking.length >= 1 ? 0.5 : 0))) * 2) / 2));
+    const lexical = Math.max(1.0, Math.min(9.0, Math.round((baseScore + (foundAcademic.length >= 3 ? 1.0 : (foundAcademic.length >= 1 ? 0.5 : 0))) * 2) / 2));
+    const grammar = Math.max(1.0, Math.min(9.0, Math.round((baseScore + 0.5) * 2) / 2));
 
     const rawOverall = (taskResponse + coherence + lexical + grammar) / 4;
-    const overallBand = Math.round(rawOverall * 2) / 2;
+    const overallBand = Math.max(1.0, Math.min(9.0, Math.round(rawOverall * 2) / 2));
 
     const evaluationDoc = {
       studentId,

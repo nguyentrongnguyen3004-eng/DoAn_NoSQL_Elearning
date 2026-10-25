@@ -4450,6 +4450,11 @@
         alert('Vui lòng nhập bài luận Tiếng Anh hoặc bấm nút "Chèn bài luận mẫu Band 8.0" để chấm thử!');
         return;
       }
+      const wordsCount = essayText.split(/\s+/).filter(Boolean).length;
+      if (wordsCount < 15) {
+        alert('Bài luận quá ngắn (tối thiểu 15 từ để phân tích 4 tiêu chí). Chuẩn thi IELTS Task 2 khuyến nghị từ 250 từ trở lên.');
+        return;
+      }
 
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>AI đang phân tích 4 tiêu chí IELTS...</span>';
@@ -4497,7 +4502,7 @@
         alert('Lỗi chấm bài IELTS Writing: ' + err.message);
       } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> <span>Chấm Điểm 4 Tiêu Chí IELTS</span>';
+        btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> <span>Chấm Điểm Bài Viết</span>';
       }
     }
 
@@ -5016,6 +5021,10 @@
           clearInterval(arenaInterval);
           arenaInterval = null;
           document.getElementById('arena-feedback-status').innerText = `🏁 Hết giờ! Tổng điểm: ${arenaScore} pts`;
+          document.querySelectorAll('#arena-options-grid button').forEach(b => {
+            b.disabled = true;
+            b.classList.add('opacity-50', 'cursor-not-allowed');
+          });
           submitWordArenaScore();
         }
       }, 1000);
@@ -5036,6 +5045,7 @@
     }
 
     function answerWordArena(choiceIdx) {
+      if (arenaTimeLeft <= 0 || !arenaInterval) return; // Constraint: Cannot answer when game ended
       if (!currentArenaQuestion) {
         nextWordArenaQuestion();
         return;
@@ -5059,7 +5069,7 @@
     }
 
     async function submitWordArenaScore() {
-      const scoreToSubmit = arenaScore > 0 ? arenaScore : 1250;
+      const scoreToSubmit = arenaScore;
       try {
         const res = await fetch(`${API_BASE}/courses/arena/submit-score`, {
           method: 'POST',
