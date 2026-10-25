@@ -286,14 +286,11 @@ async function recordCassandraEvent(studentId, eventType, courseId, lessonId, du
 // A1. LAY DANH SACH FLASHCARD TU VUNG + TRANG THAI DA THUOC TU REDIS SET
 router.get('/flashcards/list', async (req, res) => {
   try {
-    const studentId = req.query.studentId || '2001230589';
+    const studentId = req.query.studentId || (req.user && (req.user.username || req.user.id)) || '2001230589';
     const redisKey = `flashcards:mastered:${studentId}`;
     let masteredIds = [];
-
     if (redisClient && redisClient.status === 'ready') {
-      try {
-        masteredIds = await redisClient.smembers(redisKey);
-      } catch (e) {}
+      try { masteredIds = await redisClient.smembers(redisKey); } catch (e) {}
     }
     if (!masteredIds || masteredIds.length === 0) {
       const memSet = memoryFlashcardMastered.get(studentId) || new Set(['FC_01', 'FC_05']);
@@ -301,17 +298,24 @@ router.get('/flashcards/list', async (req, res) => {
       masteredIds = Array.from(memSet);
     }
 
-    const cards = DEFAULT_FLASHCARDS.map(c => ({
-      ...c,
-      mastered: masteredIds.includes(c.id)
+    const db = getMongoDb();
+    let customCards = [];
+    if (db) {
+      const filter = req.user
+        ? { $or: [{ userId: req.user.id }, { userId: req.user.username }] }
+        : {};
+      customCards = await db.collection('custom_flashcards').find(filter).sort({ createdAt: -1 }).toArray().catch(() => []);
+    }
+    const formattedCustom = customCards.map(c => ({
+      id: String(c._id), word: c.word, phonetic: c.phonetic || '', pos: 'Custom',
+      category: c.category || 'Daily', meaning: c.meaning, example: c.example || '',
+      collocation: '', mastered: false, isCustom: true
     }));
-
-    res.json({
+    const allCards = [...formattedCustom, ...DEFAULT_FLASHCARDS.map(c => ({ ...c, mastered: masteredIds.includes(c.id) }))];
+    return res.json({
       success: true,
       source: (redisClient && redisClient.status === 'ready') ? 'MONGODB_AND_REDIS_SET' : 'MONGODB_AND_MEMORY_SET',
-      masteredCount: masteredIds.length,
-      totalCount: cards.length,
-      data: cards
+      data: allCards, totalCount: allCards.length, masteredCount: masteredIds.length
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -644,42 +648,30 @@ router.get('/dictionary/lookup', async (req, res) => {
   }
 });
 
-router.post('/flashcards/custom', async (req, res) => {
+router.post('/flashcards/custom', authenticateToken, async (req, res) => {
   try {
     const db = getMongoDb();
-    const studentId = req.user ? req.user.username : '2001230589';
-    const { word, phonetic, pos, meaning, example, collocation } = req.body;
-
+    if (!db) return res.status(500).json({ success: false, message: 'Database MongoDB chưa sẵn sàng' });
+    const { word, phonetic, pos, meaning, example, collocation, category } = req.body || {};
+    const cleanWord = typeof word === 'string' ? word.trim() : '';
+    const cleanMeaning = typeof meaning === 'string' ? meaning.trim() : '';
+    if (!cleanWord || cleanWord.length > 50) return res.status(400).json({ success: false, message: 'T? v?ng kh?ng ???c ?? tr?ng v? t?i ?a 50 k? t?' });
+    if (!cleanMeaning) return res.status(400).json({ success: false, message: 'Ngh?a ti?ng Vi?t kh?ng ???c ?? tr?ng' });
+    const studentId = req.user.id || req.user.username;
     const newCard = {
-      id: 'FC_CUSTOM_' + Date.now().toString().slice(-4),
-      word: word || 'New Vocabulary',
-      phonetic: phonetic || '/vəˈkæb.jə.lər.i/',
-      pos: pos || 'Academic Word',
-      category: 'IELTS Band 8.0',
-      meaning: meaning || 'Từ vựng lưu từ Trợ lý Tra từ điển tức thì',
-      collocation: collocation || word,
-      example: example || `Using "${word}" accurately will elevate your IELTS Band score.`,
-      createdBy: studentId,
-      createdAt: new Date()
+      id: 'FC_CUSTOM_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+      userId: studentId, createdBy: req.user.username || studentId,
+      word: cleanWord, phonetic: typeof phonetic === 'string' ? phonetic.trim() : '',
+      pos: pos || 'Word', category: category || 'Daily', meaning: cleanMeaning,
+      collocation: collocation || cleanWord, example: typeof example === 'string' ? example.trim() : '', createdAt: new Date()
     };
-
-    if (db) {
-      await db.collection('custom_flashcards').insertOne(newCard);
-    }
-
-    if (!DEFAULT_FLASHCARDS.some(c => c.word.toLowerCase() === newCard.word.toLowerCase())) {
-      DEFAULT_FLASHCARDS.unshift(newCard);
-    }
-
-    await recordCassandraEvent(studentId, 'CUSTOM_FLASHCARD_SAVED', 'DICTIONARY_POPUP', newCard.id, 15, { word: newCard.word });
-
-    res.status(201).json({
-      success: true,
-      message: `Đã lưu từ "${newCard.word}" vào Bộ Flashcard cá nhân (MongoDB) & đồng bộ lên Kho thẻ 3D!`,
-      data: newCard
-    });
+    const result = await db.collection('custom_flashcards').insertOne(newCard);
+    newCard._id = result.insertedId;
+    if (!DEFAULT_FLASHCARDS.some(c => c.word.toLowerCase() === cleanWord.toLowerCase())) DEFAULT_FLASHCARDS.unshift(newCard);
+    await recordCassandraEvent(req.user.username || studentId, 'CUSTOM_FLASHCARD_SAVED', 'VOCAB_STUDIO', newCard.id, 15, { word: newCard.word });
+    return res.status(201).json({ success: true, message: 'Th?m t? v?ng m?i th?nh c?ng!', data: newCard });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    return res.status(500).json({ success: false, message: err.message });
   }
 });
 
@@ -2201,6 +2193,24 @@ router.post('/pomodoro/finish-session', async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
+});
+
+router.get('/flashcards/export', authenticateToken, async (req, res) => {
+  try {
+    const db = getMongoDb();
+    if (!db) return res.status(500).json({ success: false, message: 'MongoDB chưa sẵn sàng' });
+    const userId = req.user.id || req.user.username;
+    const [systemCards, customCards] = await Promise.all([
+      db.collection('flashcards').find({}).limit(200).toArray().catch(() => []),
+      db.collection('custom_flashcards').find({ userId }).toArray().catch(() => [])
+    ]);
+    const quote = value => '"' + String(value == null ? '' : value).replace(/"/g, '""') + '"';
+    const rows = ['"Từ vựng","Phiên âm","Nghĩa tiếng Việt","Ví dụ","Danh mục"'];
+    for (const card of [...customCards, ...systemCards]) rows.push([card.word, card.phonetic || card.ipa, card.meaning || card.meaningVi, card.example, card.category || 'Chung'].map(quote).join(','));
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="EduPro_Vocabulary.csv"');
+    return res.send('\uFEFF' + rows.join('\r\n'));
+  } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
 });
 
 module.exports = router;
