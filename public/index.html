@@ -3779,10 +3779,15 @@
                   <div class="text-lg font-black text-slate-900 dark:text-white">${priceStr}</div>
                   <div class="text-xs text-slate-400 line-through">${origPriceStr}</div>
                 </div>
-                <button onclick="enterClassroom('${c._id}')" class="px-5 py-2.5 rounded-xl font-bold text-xs text-white bg-brand-600 hover:bg-brand-700 shadow-md shadow-brand-500/20 transition-all flex items-center gap-1.5">
-                  <span>Vào học</span>
-                  <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                </button>
+                <div class="flex items-center gap-2">
+                  <button onclick="enterClassroom('${c._id}')" class="px-3.5 py-2 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+                    Vào học
+                  </button>
+                  <button onclick="enrollCurrentCourse('${c._id}')" class="px-4 py-2 rounded-xl font-bold text-xs text-white bg-brand-600 hover:bg-brand-700 shadow-md shadow-brand-500/20 transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-qrcode text-[11px]"></i>
+                    <span>Đăng ký</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -3794,11 +3799,31 @@
 
     let currentCourseId = null;
     let currentLessonId = null;
+    let currentClassroomCourseId = null;
+
+    function showToast(message, type = 'info') {
+      const iconMap = {
+        success: '✅',
+        error: '⚠️',
+        warning: '🔔',
+        info: 'ℹ️'
+      };
+      if (typeof showLiveToast === 'function') {
+        showLiveToast('Thông Báo Hệ Thống', message, iconMap[type] || '📢');
+      } else {
+        alert(message);
+      }
+    }
+
+    function showCustomAlert(message, type = 'info') {
+      showToast(message, type);
+    }
 
     // 6. LỚP HỌC TRỰC TUYẾN
     async function enterClassroom(courseId) {
       if (!currentToken) { openLoginModal(); return; }
       currentCourseId = courseId;
+      currentClassroomCourseId = courseId;
 
       try {
         const res = await fetch(`${API_BASE}/courses/${courseId}`);
@@ -5280,30 +5305,19 @@
       }
     }
 
-    async function enrollCurrentCourse() {
-      if (currentClassroomCourseId) {
-        openVietQRCheckout(currentClassroomCourseId);
+    async function enrollCurrentCourse(targetCourseId) {
+      const courseIdToEnroll = targetCourseId || currentCourseId || currentClassroomCourseId;
+      if (!currentToken) { 
+        openLoginModal(); 
+        return; 
+      }
+      if (courseIdToEnroll) {
+        currentCourseId = courseIdToEnroll;
+        currentClassroomCourseId = courseIdToEnroll;
+        openVietQRCheckout(courseIdToEnroll);
         return;
       }
-      if (!currentToken) { openLoginModal(); return; }
-      if (!currentCourseId) return;
-      try {
-        const res = await fetch(`${API_BASE}/courses/${currentCourseId}/enroll`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
-          body: JSON.stringify({ progressPercent: 65 })
-        });
-        const json = await res.json();
-        if (json.success) {
-          const btn = document.getElementById('btn-enroll-course') || document.getElementById('btn-enroll-classroom');
-          if (btn) {
-            btn.className = 'px-4 py-2 rounded-xl bg-brand-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm';
-            btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> <span>Đã ghi danh vào Hồ sơ</span>';
-          }
-        }
-      } catch (err) {
-        alert('Lỗi ghi danh khóa học: ' + err.message);
-      }
+      showToast('Vui lòng chọn khóa học để đăng ký.', 'warning');
     }
 
     async function loadCourseNotes(courseId) {
