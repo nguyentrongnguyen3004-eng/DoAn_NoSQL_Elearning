@@ -5105,7 +5105,6 @@
     // ==============================================================
     // 19. CỤM TÍNH NĂNG BỔ SUNG 4: ENROLL, NOTES, REVIEWS & NEO4J RECS
     // ==============================================================
-    async 
     // ==============================================================================
     // TÍNH NĂNG THƯƠNG MẠI: CỔNG THANH TOÁN VIETQR ĐỘNG (NAPAS 247)
     // ==============================================================================
@@ -7390,8 +7389,8 @@
     }
 
 
-// KHỞI CHẠY LẦN ĐẦU
-    window.addEventListener('DOMContentLoaded', () => {
+// KHỞI CHẠY LẦN ĐẦU (ĐẢM BẢO CHẠY KỂ CẢ KHI DOM ĐÃ READY)
+    function bootstrapApplication() {
       initTheme();
       syncUserUI();
       loadCoursesCatalog();
@@ -7411,7 +7410,13 @@
       loadClozeExercise();
       loadWeaknessDiagnosticData();
       loadPvPSpeakingLeaderboard();
-    });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bootstrapApplication);
+    } else {
+      bootstrapApplication();
+    }
   </script>
 </body>
 </html>
