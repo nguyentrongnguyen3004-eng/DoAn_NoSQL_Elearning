@@ -633,8 +633,23 @@ router.post('/:id/submit', authenticateToken, async (req, res) => {
     });
 
     const totalCount = questions.length;
-    const score = totalCount > 0 ? Math.round(((correctCount / totalCount) * 10) * 10) / 10 : 0;
+    let score = totalCount > 0 ? Math.round(((correctCount / totalCount) * 10) * 10) / 10 : 0;
     const resolvedTitle = EXAM_TITLES_MAP[examId] || exam.title;
+
+    // Check if disqualified by anti-cheat
+    const cheatsKey = `exam:${examId}:cheats:${studentId}`;
+    let cheatCount = memoryCheatingStore.get(cheatsKey) || 0;
+    if (redisClient && redisClient.status === 'ready') {
+      try {
+        const val = await redisClient.hget(cheatsKey, 'violations');
+        if (val) cheatCount = parseInt(val, 10);
+      } catch (e) {}
+    }
+    const isDisqualified = cheatCount >= 3 || req.body.isDisqualified === true;
+    if (isDisqualified) {
+      score = 0;
+      correctCount = 0;
+    }
 
     const resultDoc = {
       examId: resolveMongoExamId(examId),
@@ -645,15 +660,19 @@ router.post('/:id/submit', authenticateToken, async (req, res) => {
       score: score,
       correctCount: correctCount,
       totalCount: totalCount,
+      isDisqualified: isDisqualified,
       submittedAt: new Date(),
       answers: detailedAnswers
     };
 
     await db.collection('results').insertOne(resultDoc);
 
-    const leaderboardKey = `leaderboard:${examId}`;
-    const memberName = `${req.user.fullName} (${studentId})`;
-    await safeRedis.zadd(leaderboardKey, score, memberName);
+    // Only add to leaderboard if not disqualified
+    if (!isDisqualified) {
+      const leaderboardKey = `leaderboard:${examId}`;
+      const memberName = `${req.user.fullName} (${studentId})`;
+      await safeRedis.zadd(leaderboardKey, score, memberName);
+    }
 
     try {
       await safeRedis.publish('leaderboard_update', JSON.stringify({
@@ -814,12 +833,34 @@ router.post('/anti-cheat/log-violation', async (req, res) => {
     const reason = req.body.reason || 'TAB_SWITCH_OR_BLUR';
     const redisKey = `exam:${examId}:cheats:${studentId}`;
 
-    let count = (memoryCheatingStore.get(redisKey) || 0) + 1;
+    let currentCount = memoryCheatingStore.get(redisKey) || 0;
+    if (redisClient && redisClient.status === 'ready') {
+      try {
+        const val = await redisClient.hget(redisKey, 'violations');
+        if (val) currentCount = parseInt(val, 10);
+      } catch (e) {}
+    }
+
+    // STRICT CONSTRAINT: Once 3 violations reached, permanently clamp to 3 and disqualify
+    if (currentCount >= 3) {
+      return res.json({
+        success: true,
+        source: 'REDIS_ATOMIC_COUNTER_AND_CASSANDRA_LOG',
+        studentId,
+        examId,
+        violationCount: 3,
+        maxAllowed: 3,
+        isDisqualified: true,
+        message: 'ĐÌNH CHỈ THI: Bạn đã vi phạm rời màn hình thi 3/3 lần! Bài thi đã bị hệ thống tự động khóa và thu bài.'
+      });
+    }
+
+    const count = Math.min(3, currentCount + 1);
     memoryCheatingStore.set(redisKey, count);
 
     if (redisClient && redisClient.status === 'ready') {
       try {
-        count = await redisClient.hincrby(redisKey, 'violations', 1);
+        await redisClient.hset(redisKey, 'violations', count);
         await redisClient.expire(redisKey, 3600);
       } catch (e) {}
     }
@@ -851,9 +892,26 @@ router.post('/anti-cheat/log-violation', async (req, res) => {
       maxAllowed: 3,
       isDisqualified,
       message: isDisqualified 
-        ? 'CẢNH BÁO NGUY CẤP: Bạn đã vi phạm rời màn hình thi 3 lần! Bài thi bị tự động thu hồi và hủy kết quả.'
-        : `CẢNH BÁO GIAN LẬN: Bạn vừa rời khỏi màn hình thi! Lần vi phạm: ${count}/3.`
+        ? 'CẢNH BÁO NGUY CẤP: Bạn đã vi phạm rời màn hình thi 3/3 lần! Bài thi bị tự động thu hồi và đình chỉ.'
+        : `CẢNH BÁO VI PHẠM: Bạn vừa rời khỏi màn hình thi! Lần vi phạm: ${count}/3.`
     });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.post('/anti-cheat/reset', async (req, res) => {
+  try {
+    const studentId = req.user ? req.user.username : (req.body.studentId || '2001230589');
+    const examId = req.body.examId || '670000000000000000000040';
+    const redisKey = `exam:${examId}:cheats:${studentId}`;
+    memoryCheatingStore.set(redisKey, 0);
+    if (redisClient && redisClient.status === 'ready') {
+      try {
+        await redisClient.del(redisKey);
+      } catch (e) {}
+    }
+    res.json({ success: true, violationCount: 0, maxAllowed: 3, isDisqualified: false });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
