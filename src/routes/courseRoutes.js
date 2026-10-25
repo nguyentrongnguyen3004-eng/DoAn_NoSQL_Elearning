@@ -286,14 +286,11 @@ async function recordCassandraEvent(studentId, eventType, courseId, lessonId, du
 // A1. LAY DANH SACH FLASHCARD TU VUNG + TRANG THAI DA THUOC TU REDIS SET
 router.get('/flashcards/list', async (req, res) => {
   try {
-    const studentId = req.query.studentId || '2001230589';
+    const studentId = req.query.studentId || (req.user && (req.user.username || req.user.id)) || '2001230589';
     const redisKey = `flashcards:mastered:${studentId}`;
     let masteredIds = [];
-
     if (redisClient && redisClient.status === 'ready') {
-      try {
-        masteredIds = await redisClient.smembers(redisKey);
-      } catch (e) {}
+      try { masteredIds = await redisClient.smembers(redisKey); } catch (e) {}
     }
     if (!masteredIds || masteredIds.length === 0) {
       const memSet = memoryFlashcardMastered.get(studentId) || new Set(['FC_01', 'FC_05']);
@@ -301,17 +298,24 @@ router.get('/flashcards/list', async (req, res) => {
       masteredIds = Array.from(memSet);
     }
 
-    const cards = DEFAULT_FLASHCARDS.map(c => ({
-      ...c,
-      mastered: masteredIds.includes(c.id)
+    const db = getMongoDb();
+    let customCards = [];
+    if (db) {
+      const filter = req.user
+        ? { $or: [{ userId: req.user.id }, { userId: req.user.username }] }
+        : {};
+      customCards = await db.collection('custom_flashcards').find(filter).sort({ createdAt: -1 }).toArray().catch(() => []);
+    }
+    const formattedCustom = customCards.map(c => ({
+      id: String(c._id), word: c.word, phonetic: c.phonetic || '', pos: 'Custom',
+      category: c.category || 'Daily', meaning: c.meaning, example: c.example || '',
+      collocation: '', mastered: false, isCustom: true
     }));
-
-    res.json({
+    const allCards = [...formattedCustom, ...DEFAULT_FLASHCARDS.map(c => ({ ...c, mastered: masteredIds.includes(c.id) }))];
+    return res.json({
       success: true,
       source: (redisClient && redisClient.status === 'ready') ? 'MONGODB_AND_REDIS_SET' : 'MONGODB_AND_MEMORY_SET',
-      masteredCount: masteredIds.length,
-      totalCount: cards.length,
-      data: cards
+      data: allCards, totalCount: allCards.length, masteredCount: masteredIds.length
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -644,42 +648,30 @@ router.get('/dictionary/lookup', async (req, res) => {
   }
 });
 
-router.post('/flashcards/custom', async (req, res) => {
+router.post('/flashcards/custom', authenticateToken, async (req, res) => {
   try {
     const db = getMongoDb();
-    const studentId = req.user ? req.user.username : '2001230589';
-    const { word, phonetic, pos, meaning, example, collocation } = req.body;
-
+    if (!db) return res.status(500).json({ success: false, message: 'Database MongoDB chưa sẵn sàng' });
+    const { word, phonetic, pos, meaning, example, collocation, category } = req.body || {};
+    const cleanWord = typeof word === 'string' ? word.trim() : '';
+    const cleanMeaning = typeof meaning === 'string' ? meaning.trim() : '';
+    if (!cleanWord || cleanWord.length > 50) return res.status(400).json({ success: false, message: 'T? v?ng kh?ng ???c ?? tr?ng v? t?i ?a 50 k? t?' });
+    if (!cleanMeaning) return res.status(400).json({ success: false, message: 'Ngh?a ti?ng Vi?t kh?ng ???c ?? tr?ng' });
+    const studentId = req.user.id || req.user.username;
     const newCard = {
-      id: 'FC_CUSTOM_' + Date.now().toString().slice(-4),
-      word: word || 'New Vocabulary',
-      phonetic: phonetic || '/vəˈkæb.jə.lər.i/',
-      pos: pos || 'Academic Word',
-      category: 'IELTS Band 8.0',
-      meaning: meaning || 'Từ vựng lưu từ Trợ lý Tra từ điển tức thì',
-      collocation: collocation || word,
-      example: example || `Using "${word}" accurately will elevate your IELTS Band score.`,
-      createdBy: studentId,
-      createdAt: new Date()
+      id: 'FC_CUSTOM_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+      userId: studentId, createdBy: req.user.username || studentId,
+      word: cleanWord, phonetic: typeof phonetic === 'string' ? phonetic.trim() : '',
+      pos: pos || 'Word', category: category || 'Daily', meaning: cleanMeaning,
+      collocation: collocation || cleanWord, example: typeof example === 'string' ? example.trim() : '', createdAt: new Date()
     };
-
-    if (db) {
-      await db.collection('custom_flashcards').insertOne(newCard);
-    }
-
-    if (!DEFAULT_FLASHCARDS.some(c => c.word.toLowerCase() === newCard.word.toLowerCase())) {
-      DEFAULT_FLASHCARDS.unshift(newCard);
-    }
-
-    await recordCassandraEvent(studentId, 'CUSTOM_FLASHCARD_SAVED', 'DICTIONARY_POPUP', newCard.id, 15, { word: newCard.word });
-
-    res.status(201).json({
-      success: true,
-      message: `Đã lưu từ "${newCard.word}" vào Bộ Flashcard cá nhân (MongoDB) & đồng bộ lên Kho thẻ 3D!`,
-      data: newCard
-    });
+    const result = await db.collection('custom_flashcards').insertOne(newCard);
+    newCard._id = result.insertedId;
+    if (!DEFAULT_FLASHCARDS.some(c => c.word.toLowerCase() === cleanWord.toLowerCase())) DEFAULT_FLASHCARDS.unshift(newCard);
+    await recordCassandraEvent(req.user.username || studentId, 'CUSTOM_FLASHCARD_SAVED', 'VOCAB_STUDIO', newCard.id, 15, { word: newCard.word });
+    return res.status(201).json({ success: true, message: 'Th?m t? v?ng m?i th?nh c?ng!', data: newCard });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    return res.status(500).json({ success: false, message: err.message });
   }
 });
 
@@ -1050,6 +1042,107 @@ router.post('/:id/enroll', authenticateToken, async (req, res) => {
 });
 
 // 2.2B TAO DON HANG THANH TOAN VIETQR DONG (DYNAMIC VIETQR ORDER CHECKOUT)
+// Helpers and authenticated LMS progress APIs.
+function enrollmentUserFilter(user) {
+  const ids = [user.id, user.username].filter(Boolean);
+  return { $or: [{ userId: { $in: ids } }, { studentId: { $in: ids } }] };
+}
+function enrollmentCourseFilter(courseId) {
+  return ObjectId.isValid(courseId) ? { $or: [{ courseId }, { courseId: new ObjectId(courseId) }] } : { courseId };
+}
+async function courseLessonList(db, courseId) {
+  const filter = ObjectId.isValid(courseId) ? { $or: [{ courseId }, { courseId: new ObjectId(courseId) }] } : { courseId };
+  return db.collection('lessons').find(filter).sort({ order: 1 }).toArray();
+}
+
+router.post('/:id/lessons/:lessonIndex/toggle-complete', authenticateToken, async (req, res) => {
+  try {
+    const db = getMongoDb();
+    if (!db) return res.status(500).json({ success: false, message: 'MongoDB is not ready' });
+    const courseId = req.params.id;
+    const index = Number.parseInt(req.params.lessonIndex, 10);
+    if (!Number.isInteger(index) || index < 0) return res.status(400).json({ success: false, message: 'Invalid lesson index' });
+    const lessons = await courseLessonList(db, courseId);
+    if (index >= lessons.length) return res.status(404).json({ success: false, message: 'Lesson not found' });
+    const lessonKey = String(lessons[index]._id || index);
+    const userId = req.user.id || req.user.username;
+    const filter = { ...enrollmentUserFilter(req.user), ...enrollmentCourseFilter(courseId) };
+    const collection = db.collection('user_enrollments');
+    const enrollment = await collection.findOne(filter);
+    let completedLessons = enrollment && Array.isArray(enrollment.completedLessons) ? enrollment.completedLessons.map(String) : [];
+    const completed = typeof req.body.completed === 'boolean' ? req.body.completed : !completedLessons.includes(lessonKey);
+    completedLessons = completed ? [...new Set([...completedLessons, lessonKey])] : completedLessons.filter(id => id !== lessonKey);
+    await collection.updateOne(filter, { $set: { userId, studentId: req.user.username || userId, courseId, completedLessons, status: 'active', updatedAt: new Date() } }, { upsert: true });
+    const progressPercent = lessons.length ? Math.round(completedLessons.length / lessons.length * 100) : 0;
+    if (redisClient && redisClient.status === 'ready') await redisClient.set(`course:progress:${userId}:${courseId}`, String(progressPercent), 'EX', 86400).catch(() => {});
+    return res.json({ success: true, progressPercent, completedLessons });
+  } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
+});
+
+router.get('/:id/progress', authenticateToken, async (req, res) => {
+  try {
+    const courseId = req.params.id;
+    const userId = req.user.id || req.user.username;
+    const key = `course:progress:${userId}:${courseId}`;
+    if (redisClient && redisClient.status === 'ready') {
+      const cached = await redisClient.get(key).catch(() => null);
+      if (cached !== null) return res.json({ success: true, progressPercent: Number(cached) });
+    }
+    const db = getMongoDb();
+    if (!db) return res.status(500).json({ success: false, message: 'MongoDB is not ready' });
+    const [lessons, enrollment] = await Promise.all([
+      courseLessonList(db, courseId),
+      db.collection('user_enrollments').findOne({ ...enrollmentUserFilter(req.user), ...enrollmentCourseFilter(courseId) })
+    ]);
+    const completedLessons = enrollment && Array.isArray(enrollment.completedLessons) ? enrollment.completedLessons : [];
+    const progressPercent = lessons.length ? Math.round(completedLessons.length / lessons.length * 100) : 0;
+    if (redisClient && redisClient.status === 'ready') await redisClient.set(key, String(progressPercent), 'EX', 86400).catch(() => {});
+    return res.json({ success: true, progressPercent, completedLessons });
+  } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
+});
+
+router.get('/:id/lessons/:lessonIndex/resources', authenticateToken, async (req, res) => {
+  try {
+    const db = getMongoDb();
+    if (!db) return res.status(500).json({ success: false, message: 'MongoDB is not ready' });
+    const lessons = await courseLessonList(db, req.params.id);
+    const index = Number.parseInt(req.params.lessonIndex, 10);
+    if (!Number.isInteger(index) || index < 0 || index >= lessons.length) return res.status(404).json({ success: false, message: 'Lesson not found' });
+    const resources = Array.isArray(lessons[index].resources) && lessons[index].resources.length ? lessons[index].resources : [
+      { id: `slide-${index + 1}`, title: `Lecture slides ${index + 1}.pdf`, type: 'pdf', url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', size: '2.4 MB' },
+      { id: `audio-${index + 1}`, title: `Listening practice ${index + 1}.mp3`, type: 'audio', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', size: '5.1 MB' },
+      { id: `exercise-${index + 1}`, title: `Homework ${index + 1}.doc`, type: 'doc', url: 'https://file-examples.com/storage/fe1a2a5b9b4cbe/2017/02/file-sample_100kB.doc', size: '100 KB' }
+    ];
+    return res.json({ success: true, data: resources });
+  } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
+});
+
+router.delete('/:id/enroll', authenticateToken, async (req, res) => {
+  try {
+    const courseId = req.params.id;
+    const userId = req.user.id || req.user.username;
+    const db = getMongoDb();
+    if (db) await db.collection('user_enrollments').deleteOne({ ...enrollmentUserFilter(req.user), ...enrollmentCourseFilter(courseId) });
+    const set = memoryEnrolledCourses.get(req.user.username);
+    if (set) set.delete(courseId);
+    if (redisClient && redisClient.status === 'ready') await redisClient.del(`course:progress:${userId}:${courseId}`, `cache:user:enrolled:${userId}`, `cache:user:enrolled:${req.user.username}`).catch(() => {});
+    return res.json({ success: true, message: 'Hủy đăng ký khóa học thành công' });
+  } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
+});
+
+router.post('/:id/archive', authenticateToken, async (req, res) => {
+  try {
+    const db = getMongoDb();
+    if (!db) return res.status(500).json({ success: false, message: 'MongoDB is not ready' });
+    const result = await db.collection('user_enrollments').updateOne(
+      { ...enrollmentUserFilter(req.user), ...enrollmentCourseFilter(req.params.id) },
+      { $set: { status: 'archived', updatedAt: new Date() } }
+    );
+    if (!result.matchedCount) return res.status(404).json({ success: false, message: 'Enrollment not found' });
+    return res.json({ success: true, message: 'Course archived successfully' });
+  } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
+});
+
 router.post('/:id/checkout-order', authenticateToken, async (req, res) => {
   try {
     const courseId = req.params.id;
@@ -2100,6 +2193,24 @@ router.post('/pomodoro/finish-session', async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
+});
+
+router.get('/flashcards/export', authenticateToken, async (req, res) => {
+  try {
+    const db = getMongoDb();
+    if (!db) return res.status(500).json({ success: false, message: 'MongoDB chưa sẵn sàng' });
+    const userId = req.user.id || req.user.username;
+    const [systemCards, customCards] = await Promise.all([
+      db.collection('flashcards').find({}).limit(200).toArray().catch(() => []),
+      db.collection('custom_flashcards').find({ userId }).toArray().catch(() => [])
+    ]);
+    const quote = value => '"' + String(value == null ? '' : value).replace(/"/g, '""') + '"';
+    const rows = ['"Từ vựng","Phiên âm","Nghĩa tiếng Việt","Ví dụ","Danh mục"'];
+    for (const card of [...customCards, ...systemCards]) rows.push([card.word, card.phonetic || card.ipa, card.meaning || card.meaningVi, card.example, card.category || 'Chung'].map(quote).join(','));
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="EduPro_Vocabulary.csv"');
+    return res.send('\uFEFF' + rows.join('\r\n'));
+  } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
 });
 
 module.exports = router;

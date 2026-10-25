@@ -3,9 +3,78 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { getMongoDb, redisClient } = require('../config/db');
 const { sendOtpEmail } = require('../services/emailService');
+const { authenticateToken } = require('../middlewares/auth');
+const { ObjectId } = require('mongodb');
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'nosql_elearning_super_secret_jwt_key_2026';
+
+// Quản lý hồ sơ học viên trong phiên đăng nhập.
+router.put('/profile', authenticateToken, async (req, res) => {
+  try {
+    const { fullName, phone, school, targetBand, avatarUrl } = req.body || {};
+    const cleanFullName = typeof fullName === 'string' ? fullName.trim() : '';
+    if (!cleanFullName || /[<>]/.test(cleanFullName)) {
+      return res.status(400).json({ success: false, message: 'Họ và tên không được để trống' });
+    }
+    if (phone && !/^(0|\+84)[3|5|7|8|9][0-9]{8}$/.test(phone.trim())) {
+      return res.status(400).json({ success: false, message: 'Số điện thoại không đúng định dạng Việt Nam' });
+    }
+
+    const db = getMongoDb();
+    if (!db) return res.status(500).json({ success: false, message: 'Database MongoDB chưa sẵn sàng' });
+    const userFilter = ObjectId.isValid(req.user.id) ? { _id: new ObjectId(req.user.id) } : { _id: req.user.id };
+    const users = db.collection('users');
+    const user = await users.findOne(userFilter);
+    if (!user) return res.status(404).json({ success: false, message: 'Không tìm thấy tài khoản người dùng' });
+
+    const updatedAt = new Date();
+    await users.updateOne(userFilter, { $set: {
+      fullName: cleanFullName,
+      phone: phone ? phone.trim() : (phone || ''),
+      school: school || '',
+      targetBand: targetBand || '',
+      avatar: avatarUrl || user.avatar,
+      updatedAt
+    } });
+    const { passwordHash, ...safeUser } = { ...user, fullName: cleanFullName, phone: phone ? phone.trim() : (phone || ''), school: school || '', targetBand: targetBand || '', avatar: avatarUrl || user.avatar, updatedAt };
+    return res.json({ success: true, message: 'Cập nhật hồ sơ thành công', data: { user: safeUser } });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.post('/change-password', authenticateToken, async (req, res) => {
+  try {
+    const { oldPassword, newPassword, confirmPassword } = req.body || {};
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({ success: false, message: 'Vui lòng nhập đầy đủ các thông tin mật khẩu' });
+    }
+    if (newPassword.length < 6) return res.status(400).json({ success: false, message: 'Mật khẩu mới phải có tối thiểu 6 ký tự' });
+    if (newPassword !== confirmPassword) return res.status(400).json({ success: false, message: 'Xác nhận mật khẩu mới không khớp' });
+    if (newPassword === oldPassword) return res.status(400).json({ success: false, message: 'Mật khẩu mới không được trùng mật khẩu cũ' });
+
+    const db = getMongoDb();
+    if (!db) return res.status(500).json({ success: false, message: 'Database MongoDB chưa sẵn sàng' });
+    const userFilter = ObjectId.isValid(req.user.id) ? { _id: new ObjectId(req.user.id) } : { _id: req.user.id };
+    const user = await db.collection('users').findOne(userFilter);
+    if (!user) return res.status(404).json({ success: false, message: 'Không tìm thấy tài khoản người dùng' });
+    const bcryptMatches = user.passwordHash ? await bcrypt.compare(oldPassword, user.passwordHash).catch(() => false) : false;
+    if (!bcryptMatches && user.passwordHash !== oldPassword) {
+      return res.status(400).json({ success: false, message: 'Mật khẩu hiện tại không chính xác' });
+    }
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    await db.collection('users').updateOne(userFilter, { $set: { passwordHash, updatedAt: new Date() } });
+    return res.json({ success: true, message: 'Đổi mật khẩu thành công! Vui lòng ghi nhớ mật khẩu mới.' });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Helper tạo OTP ngẫu nhiên 6 chữ số
+function generateOtp() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
 
 // Helper tạo OTP ngẫu nhiên 6 chữ số
 function generateOtp() {

@@ -299,13 +299,15 @@ router.post('/writing/evaluate', authenticateToken, async (req, res) => {
     const db = getMongoDb();
     const studentId = req.user.username;
     const { topic, essayText } = req.body;
+    const taskType = req.body.taskType === 'task1' ? 'task1' : 'task2';
 
     const text = (essayText || '').trim();
     const words = text ? text.split(/\s+/).filter(Boolean) : [];
     const wordCount = words.length;
 
-    if (wordCount < 10) {
-      return res.status(400).json({ success: false, message: 'Nội dung bài viết quá ngắn (tối thiểu 10 từ để phân tích).' });
+    const minimumWords = 15;
+    if (wordCount < minimumWords) {
+      return res.status(400).json({ success: false, message: `Nội dung quá ngắn (tối thiểu ${minimumWords} từ để phân tích).` });
     }
 
     // Phan tich tu vung hoc thuat & tu noi (Linking words)
@@ -317,32 +319,35 @@ router.post('/writing/evaluate', authenticateToken, async (req, res) => {
     const foundAcademic = academicList.filter(w => lower.includes(w));
 
     // Tinh diem 4 tieu chi chuan IDP / British Council (clamped 1.0..9.0)
-    const baseScore = wordCount >= 180 ? 7.0 : (wordCount >= 100 ? 6.0 : (wordCount >= 50 ? 5.0 : 4.0));
+    const targetWords = taskType === 'task1' ? 150 : 250;
+    const baseScore = wordCount >= (taskType === 'task1' ? 120 : 180) ? 7.0 : (wordCount >= 100 ? 6.0 : (wordCount >= 50 ? 5.0 : 4.0));
+    const taskAchievement = Math.max(1.0, Math.min(9.0, Math.round((baseScore + (wordCount >= targetWords ? 1.0 : (wordCount >= targetWords * 0.8 ? 0.5 : 0))) * 2) / 2));
     const taskResponse = Math.max(1.0, Math.min(9.0, Math.round((baseScore + (wordCount >= 250 ? 1.0 : (wordCount >= 200 ? 0.5 : 0))) * 2) / 2));
     const coherence = Math.max(1.0, Math.min(9.0, Math.round((baseScore + (foundLinking.length >= 3 ? 1.0 : (foundLinking.length >= 1 ? 0.5 : 0))) * 2) / 2));
     const lexical = Math.max(1.0, Math.min(9.0, Math.round((baseScore + (foundAcademic.length >= 3 ? 1.0 : (foundAcademic.length >= 1 ? 0.5 : 0))) * 2) / 2));
     const grammar = Math.max(1.0, Math.min(9.0, Math.round((baseScore + 0.5) * 2) / 2));
+    const criterionOne = taskType === 'task1' ? taskAchievement : taskResponse;
 
-    const rawOverall = (taskResponse + coherence + lexical + grammar) / 4;
+    const rawOverall = (criterionOne + coherence + lexical + grammar) / 4;
     const overallBand = Math.max(1.0, Math.min(9.0, Math.round(rawOverall * 2) / 2));
 
     const evaluationDoc = {
       studentId,
       studentName: req.user.fullName,
-      topic: topic || 'IELTS Academic Writing Task 2',
+      taskType,
+      topic: topic || `IELTS Academic Writing ${taskType.toUpperCase()}`,
       essayText: text,
       wordCount,
       overallBand,
-      criteria: {
-        taskResponse,
-        coherence,
-        lexical,
-        grammar
-      },
+      criteria: taskType === 'task1'
+        ? { taskAchievement, coherence, lexical, grammar }
+        : { taskResponse, coherence, lexical, grammar },
+      criteriaLabels: { criterion1: taskType === 'task1' ? 'Task Achievement (TA)' : 'Task Response (TR)', coherence: 'Coherence & Cohesion (CC)', lexical: 'Lexical Resource (LR)', grammar: 'Grammatical Range & Accuracy (GRA)' },
       foundLinking,
       foundAcademic,
       feedback: [
-        `Độ dài bài viết đạt ${wordCount} từ (${wordCount >= 250 ? 'Đạt chuẩn ≥250 từ của IELTS Task 2' : 'Khuyến nghị mở rộng thêm ví dụ thực tế để đạt mốc 250 từ'}).`,
+        `Độ dài bài viết đạt ${wordCount} từ (${wordCount >= targetWords ? `Đạt chuẩn ≥${targetWords} từ của IELTS ${taskType.toUpperCase()}` : `Khuyến nghị đạt mốc ${targetWords} từ`}).`,
+        ...(taskType === 'task1' ? [`Task Achievement (${taskAchievement}): Đánh giá overview, xu hướng số liệu và các phép so sánh nổi bật trong biểu đồ.`] : []),
         `Coherence & Cohesion (${coherence}): Đã sử dụng tốt các từ nối chuyển ý (${foundLinking.length > 0 ? foundLinking.join(', ') : 'cần bổ sung Furthermore, Nevertheless, Consequently'}).`,
         `Lexical Resource (${lexical}): Phát hiện ${foundAcademic.length} từ vựng học thuật Band 7.5+ (${foundAcademic.length > 0 ? foundAcademic.join(', ') : 'gợi ý dùng mitigate, ubiquitous, indispensable, foster'}).`,
         `Grammatical Range (${grammar}): Khuyến khích áp dụng thêm câu điều kiện đảo ngữ (Had + S + V3) và mệnh đề phân từ để chạm mốc Band 8.0+.`
@@ -359,6 +364,8 @@ router.post('/writing/evaluate', authenticateToken, async (req, res) => {
     if (db) {
       await db.collection('essays').insertOne(evaluationDoc);
     }
+    const draftKey = `draft:writing:${req.user.id || req.user.username}:${taskType}`;
+    await safeRedis.del(draftKey);
     memoryEssays.unshift(evaluationDoc);
 
     res.json({
@@ -946,6 +953,36 @@ router.get('/anti-cheat/status', async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
+});
+
+// --- SPRINT 4: WRITING DRAFT AUTOSAVE (TASK 1.9) ---
+router.post('/writing/draft', authenticateToken, async (req, res) => {
+  try {
+    const { taskType = 'task2', essay = '' } = req.body || {};
+    const normalizedTaskType = taskType === 'task1' ? 'task1' : 'task2';
+    const userId = req.user.id || req.user.username;
+    const redisKey = `draft:writing:${userId}:${normalizedTaskType}`;
+    await safeRedis.set(redisKey, String(essay), 'EX', 86400);
+    return res.json({ success: true, message: 'Đã lưu bản nháp vào Redis', savedAt: new Date().toISOString() });
+  } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
+});
+
+router.get('/writing/draft', authenticateToken, async (req, res) => {
+  try {
+    const taskType = req.query.taskType === 'task1' ? 'task1' : 'task2';
+    const userId = req.user.id || req.user.username;
+    const essay = await safeRedis.get(`draft:writing:${userId}:${taskType}`) || '';
+    return res.json({ success: true, essay });
+  } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
+});
+
+router.delete('/writing/draft', authenticateToken, async (req, res) => {
+  try {
+    const taskType = req.query.taskType === 'task1' ? 'task1' : 'task2';
+    const userId = req.user.id || req.user.username;
+    await safeRedis.del(`draft:writing:${userId}:${taskType}`);
+    return res.json({ success: true, message: 'Đã xóa bản nháp trên Redis' });
+  } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
 });
 
 module.exports = router;
