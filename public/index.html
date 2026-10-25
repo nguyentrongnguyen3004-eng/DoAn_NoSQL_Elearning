@@ -2683,31 +2683,7 @@
     </div>
   </div>
 
-  <!-- ============================================================== -->
-  <!-- 9. TRỢ LÝ GIA SƯ ẢO AI TUTOR CHATBOT WIDGET (TÍNH NĂNG 2)      -->
-  <!-- ============================================================== -->
-  <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-    
-    <!-- Khung trò chuyện Chat Window -->
-    <div id="ai-chat-window" class="hidden mb-4 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col h-[480px] animate-in fade-in slide-in-from-bottom-5 duration-200">
-      
-      <!-- Chat Header -->
-      <div class="p-4 bg-gradient-to-r from-brand-600 to-indigo-600 text-white flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
-            <i class="fa-solid fa-robot"></i>
-          </div>
-          <div>
-            <h4 class="font-bold text-sm leading-tight">EduPro AI Tutor</h4>
-            <span class="text-[10px] text-indigo-200 flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Trực tuyến 24/7
-            </span>
-          </div>
-        </div>
-        <button onclick="toggleAiChat()" class="text-white/80 hover:text-white w-7 h-7 rounded-lg hover:bg-white/10 flex items-center justify-center">
-          <i class="fa-solid fa-minus"></i>
-        </button>
-      </div>
+  <!-- TRỢ LÝ GIA SƯ ẢO ĐÃ ĐƯỢC HỢP NHẤT VÀO EDUPRO SMART AI COPILOT GÓC DƯỚI PHẢI -->
 
       <!-- Messages Stream -->
       <div id="ai-chat-messages" class="flex-grow p-4 overflow-y-auto space-y-3 text-xs">
@@ -3083,7 +3059,7 @@
   <!-- ============================================================== -->
   <!-- FLOATING SMART AI STUDY COPILOT (HỢP NHẤT 4 CSDL NOSQL)         -->
   <!-- ============================================================== -->
-  <button onclick="toggleCopilotWidget()" id="btn-floating-copilot" class="fixed bottom-20 right-6 z-40 w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 via-indigo-600 to-purple-600 text-white shadow-2xl flex items-center justify-center hover:scale-110 hover:shadow-indigo-500/40 transition-all border border-white/20 group" title="Trợ lý Học tập AI (4 NoSQL Powered)">
+  <button onclick="toggleCopilotWidget()" id="btn-floating-copilot" class="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 via-indigo-600 to-purple-600 text-white shadow-2xl flex items-center justify-center hover:scale-110 hover:shadow-indigo-500/40 transition-all border border-white/20 group" title="Trợ lý Học tập AI (4 NoSQL Powered)">
     <i class="fa-solid fa-robot text-lg group-hover:rotate-12 transition-transform"></i>
     <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-white dark:border-slate-900 animate-pulse"></span>
   </button>
@@ -3142,7 +3118,7 @@
     </form>
   </div>
 
-  <div id="floating-pomodoro-pill" class="fixed bottom-6 right-6 z-40 flex items-center gap-3 px-4 py-2.5 rounded-full bg-slate-900/95 dark:bg-slate-800/95 text-white shadow-2xl border border-indigo-500/40 backdrop-blur-md cursor-pointer hover:scale-105 transition-all" onclick="showSection('courses'); window.scrollTo({top: 400, behavior: 'smooth'});">
+  <div id="floating-pomodoro-pill" class="fixed bottom-6 right-22 sm:right-24 z-40 flex items-center gap-3 px-4 py-2.5 rounded-full bg-slate-900/95 dark:bg-slate-800/95 text-white shadow-2xl border border-indigo-500/40 backdrop-blur-md cursor-pointer hover:scale-105 transition-all" onclick="showSection('courses'); window.scrollTo({top: 400, behavior: 'smooth'});">
     <div class="relative flex items-center justify-center">
       <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping absolute"></span>
       <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
@@ -7716,6 +7692,7 @@
     // ==============================================================================
     let isCopilotOpen = false;
 
+    function toggleAiChat() { toggleCopilotWidget(); }
     function toggleCopilotWidget() {
       const card = document.getElementById('copilot-chat-card');
       if (!card) return;
