@@ -1434,7 +1434,27 @@
         <!-- Video Player Chính + Ghi chú Timestamp + Đánh giá 5 sao -->
         <div class="lg:col-span-8 space-y-6">
           <div class="bg-black rounded-3xl overflow-hidden shadow-2xl aspect-video relative group">
-            <iframe id="classroom-video-frame" class="w-full h-full" src="https://www.youtube.com/embed/0buKQHokLK8" title="Video Bài Học" allowfullscreen></iframe>
+            <iframe id="classroom-video-frame" class="w-full h-full" src="https://www.youtube-nocookie.com/embed/84jVz0D-KkY" title="Video Bài Học" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <video id="classroom-native-video" class="hidden w-full h-full object-cover" controls playsinline>
+              <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+              Trình duyệt của bạn không hỗ trợ thẻ video.
+            </video>
+          </div>
+
+          <!-- Trình chọn nguồn phát Video dự phòng -->
+          <div class="flex items-center justify-between text-xs px-1">
+            <div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span id="video-source-label" class="font-medium">Nguồn: YouTube Cloud Stream (HD 1080p)</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button type="button" onclick="switchVideoSource('youtube')" id="btn-src-yt" class="px-3 py-1 rounded-xl bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-indigo-400 font-bold border border-brand-200 dark:border-brand-800 text-[11px] transition-all">
+                <i class="fa-brands fa-youtube text-red-500 mr-1"></i> YouTube
+              </button>
+              <button type="button" onclick="switchVideoSource('html5')" id="btn-src-html5" class="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-200 dark:hover:bg-slate-700 text-[11px] transition-all">
+                <i class="fa-solid fa-server mr-1 text-sky-500"></i> Máy chủ EduPro (HTML5)
+              </button>
+            </div>
           </div>
 
           <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm">
@@ -1456,6 +1476,23 @@
               Phân tích chi tiết 4 kỹ năng Listening, Reading, Writing, Speaking và chiến thuật tối ưu điểm số theo chuẩn khảo thí quốc tế.
             </p>
           </div>
+
+          <!-- TÍNH NĂNG KIẾN TRÚC MỚI: PHÂN TÍCH TỶ LỆ GIỮ CHÂN VIDEO (APACHE CASSANDRA RETENTION CURVE) -->
+          <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm text-left">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+              <h4 class="font-extrabold text-slate-900 dark:text-white flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-chart-line text-brand-600"></i>
+                <span>Phân Tích Tỷ Lệ Giữ Chân Video (Cassandra Time-Series Analytics)</span>
+              </h4>
+              <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/40 text-brand-600 dark:text-indigo-400">
+                Chuỗi thời gian thực
+              </span>
+            </div>
+            <div id="video-retention-container" class="space-y-4">
+              <!-- Biểu đồ Retention nạp động từ Cassandra -->
+            </div>
+          </div>
+
 
           <!-- TÍNH NĂNG MỚI: GHI CHÚ BÀI GIẢNG THEO MỐC THỜI GIAN VIDEO (MONGODB) -->
           <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
@@ -1519,21 +1556,6 @@
             <div id="classroom-discussions-list" class="space-y-3 max-h-80 overflow-y-auto"></div>
           </div>
         </div>
-            <!-- TÍNH NĂNG KIẾN TRÚC MỚI: PHÂN TÍCH TỶ LỆ GIỮ CHÂN VIDEO (APACHE CASSANDRA RETENTION CURVE) -->
-            <div class="mt-8 bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm text-left">
-              <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
-                <h4 class="font-extrabold text-slate-900 dark:text-white flex items-center gap-2 text-sm">
-                  <i class="fa-solid fa-chart-line text-brand-600"></i>
-                  <span>Phân Tích Tỷ Lệ Giữ Chân Video (Cassandra Time-Series Analytics)</span>
-                </h4>
-                <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/40 text-brand-600 dark:text-indigo-400">
-                  Chuỗi thời gian thực
-                </span>
-              </div>
-              <div id="video-retention-container" class="space-y-4">
-                <!-- Biểu đồ Retention nạp động từ Cassandra -->
-              </div>
-            </div>
 
         <!-- Cột Danh mục bài giảng & Dòng sự kiện học tập + Gợi ý Neo4j -->
         <div class="lg:col-span-4 space-y-6">
@@ -3796,6 +3818,7 @@
           loadNeo4jCourseRecommendations(courseId);
           showSection('classroom');
           loadTelemetryLogs();
+          loadVideoRetentionAnalytics(courseId);
         }
       } catch (err) {
         alert('Lỗi vào lớp học: ' + err.message);
@@ -3823,6 +3846,43 @@
       container.innerHTML = html;
     }
 
+    
+    function switchVideoSource(source) {
+      const ytFrame = document.getElementById('classroom-video-frame');
+      const html5Video = document.getElementById('classroom-native-video');
+      const lbl = document.getElementById('video-source-label');
+      const btnYt = document.getElementById('btn-src-yt');
+      const btnHtml5 = document.getElementById('btn-src-html5');
+
+      if (source === 'html5') {
+        if (ytFrame) ytFrame.classList.add('hidden');
+        if (html5Video) {
+          html5Video.classList.remove('hidden');
+          html5Video.play().catch(() => {});
+        }
+        if (lbl) lbl.textContent = 'Nguồn: Máy chủ EduPro CDN (HTML5 Direct Stream)';
+        btnYt?.classList.replace('bg-brand-50', 'bg-slate-100');
+        btnYt?.classList.replace('text-brand-600', 'text-slate-600');
+        btnHtml5?.classList.replace('bg-slate-100', 'bg-brand-50');
+        btnHtml5?.classList.replace('text-slate-600', 'text-brand-600');
+      } else {
+        if (html5Video) {
+          html5Video.pause();
+          html5Video.classList.add('hidden');
+        }
+        if (ytFrame) ytFrame.classList.remove('hidden');
+        if (lbl) lbl.textContent = 'Nguồn: YouTube Cloud Stream (HD 1080p)';
+        btnHtml5?.classList.replace('bg-brand-50', 'bg-slate-100');
+        btnHtml5?.classList.replace('text-brand-600', 'text-slate-600');
+        btnYt?.classList.replace('bg-slate-100', 'bg-brand-50');
+        btnYt?.classList.replace('text-slate-600', 'text-brand-600');
+      }
+    }
+
+    function openClassroomModal(courseId) {
+      enterClassroom(courseId);
+    }
+
     function playLesson(lesson) {
       currentLessonId = lesson._id;
       document.getElementById('lesson-module-tag').textContent = `Bài ${lesson.order || 1} • Video bài giảng thực chiến`;
@@ -3832,10 +3892,10 @@
       const frame = document.getElementById('classroom-video-frame');
       // Tự động gán video minh họa chất lượng cao tương thích
       const sampleVideos = [
-        'https://www.youtube.com/embed/0buKQHokLK8',
-        'https://www.youtube.com/embed/W-b9KGwVOCc',
-        'https://www.youtube.com/embed/j_4d_j3nQe4',
-        'https://www.youtube.com/embed/8aGhZQkoFbQ'
+        'https://www.youtube-nocookie.com/embed/84jVz0D-KkY', // All English Tenses C1-Advanced
+        'https://www.youtube-nocookie.com/embed/QxQUapA-2w4', // Complete Guide to English Pronunciation
+        'https://www.youtube-nocookie.com/embed/iG9CE55wbtY', // Sir Ken Robinson TED Talk
+        'https://www.youtube-nocookie.com/embed/UF8uR6Z6KLc'  // Steve Jobs Stanford Address
       ];
       frame.src = sampleVideos[(lesson.order || 1) % sampleVideos.length];
 
