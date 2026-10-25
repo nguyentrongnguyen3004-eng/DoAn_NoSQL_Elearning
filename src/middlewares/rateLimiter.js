@@ -7,6 +7,11 @@ const { redisClient } = require('../config/db');
 function createRateLimiter({ windowSeconds = 60, maxRequests = 60, keyPrefix = 'ratelimit' } = {}) {
   return async (req, res, next) => {
     try {
+      // Neu Redis chua san sang thi bo qua de khong spam log va khong lam nghen he thong
+      if (!redisClient || redisClient.status !== 'ready') {
+        return next();
+      }
+
       const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
       const userKey = req.user ? req.user.username : clientIp;
       const redisKey = `${keyPrefix}:${userKey}`;

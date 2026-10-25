@@ -11,6 +11,7 @@ const authRoutes = require('./routes/authRoutes');
 const courseRoutes = require('./routes/courseRoutes');
 const examRoutes = require('./routes/examRoutes');
 const graphRoutes = require('./routes/graphRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -29,6 +30,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/exams', examRoutes);
 app.use('/api/graph', graphRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // KET NOI REDIS DEDICATED CHO PUB/SUB SU KIEN THOI GIAN THUC
 const redisSubscriber = new Redis({
@@ -42,12 +44,13 @@ const redisSubscriber = new Redis({
     return Math.min(times * 150, 1500);
   }
 });
+redisSubscriber.on('error', () => {});
 
 redisSubscriber.connect().then(() => {
-  // Subscribe kenh leaderboard update va kenh expired event cua Redis Keyspace Notifications
-  redisSubscriber.subscribe('leaderboard_update', '__keyevent@0__:expired', (err, count) => {
+  // Subscribe kenh leaderboard update, system notifications va kenh expired event cua Redis Keyspace Notifications
+  redisSubscriber.subscribe('leaderboard_update', 'system_notifications', '__keyevent@0__:expired', (err, count) => {
     if (err) console.error('[Redis Subscriber] Error subscribing:', err.message);
-    else console.log(`[Redis Pub/Sub & Keyspace] Da subscribe vao ${count} kenh (Leaderboard & Expired Events)`);
+    else console.log(`[Redis Pub/Sub & Keyspace] Da subscribe vao ${count} kenh (Leaderboard, Notifications & Expired Events)`);
   });
 }).catch(err => console.error('[Redis Subscriber Connect Error]:', err.message));
 
@@ -115,6 +118,8 @@ app.get('/api/events/live-stream', (req, res) => {
   const onMessage = (channel, message) => {
     if (channel === 'leaderboard_update') {
       res.write(`data: ${JSON.stringify({ type: 'LEADERBOARD_UPDATE', payload: JSON.parse(message) })}\n\n`);
+    } else if (channel === 'system_notifications') {
+      res.write(`data: ${JSON.stringify({ type: 'NOTIFICATION', payload: JSON.parse(message) })}\n\n`);
     }
   };
 
