@@ -5,6 +5,11 @@ const { getMongoDb, redisClient, cassandraClient } = require('../config/db');
 const { authenticateToken, authorizeRoles } = require('../middlewares/auth');
 
 const router = express.Router();
+router.use((req, res, next) => {
+  req.member2EnrollmentIds = username => Array.from(memoryEnrolledCourses.get(username) || []);
+  next();
+});
+router.use(require('./member2CourseRoutes').router);
 
 // BO NHO DEM IN-MEMORY CHO FLASHCARDS, NOTES & GAMIFICATION KHI REDIS/CASSANDRA OFFLINE
 const memoryFlashcardMastered = new Map(); // studentId -> Set(cardId)
@@ -406,71 +411,6 @@ router.post('/dictation/check', authenticateToken, async (req, res) => {
 });
 
 // A5. LAY HO SO GAMIFICATION (STUDY STREAK, XP, HUY HIEU & KHOA HOC DA DANG KY)
-router.get('/gamification/profile', authenticateToken, async (req, res) => {
-  try {
-    const studentId = req.user.username;
-    const db = getMongoDb();
-
-    // Dem so bai thi da lam trong MongoDB
-    const examResults = db ? await db.collection('results').find({ studentCode: studentId }).toArray() : [];
-    const maxScore = examResults.reduce((m, r) => Math.max(m, r.score || 0), 0);
-
-    // Dem so tu vung da thuoc
-    const memSet = memoryFlashcardMastered.get(studentId) || new Set(['FC_01', 'FC_05']);
-    const masteredVocab = memSet.size;
-
-    // Dem so su kien hoc tap tren Cassandra
-    const userLogs = memoryCassandraLogs.filter(l => l.student_id === studentId);
-    const totalStudyEvents = Math.max(userLogs.length, 3);
-
-    // Khoa hoc da dang ky
-    let enrolledIds = memoryEnrolledCourses.get(studentId);
-    if (!enrolledIds) {
-      enrolledIds = new Set(['670000000000000000000010', '670000000000000000000011', '670000000000000000000012']);
-      memoryEnrolledCourses.set(studentId, enrolledIds);
-    }
-
-    const courses = db ? await db.collection('courses').find({
-      _id: { $in: Array.from(enrolledIds).map(id => new ObjectId(id)) }
-    }).toArray() : [];
-
-    const enrolledCourses = courses.map((c, idx) => ({
-      _id: c._id,
-      title: c.title,
-      category: c.category,
-      thumbnail: c.thumbnail,
-      progressPercent: idx === 0 ? 85 : (idx === 1 ? 60 : 40)
-    }));
-
-    const xp = (examResults.length * 150) + (masteredVocab * 30) + (totalStudyEvents * 25) + 450;
-    const streakDays = 7;
-
-    const badges = [
-      { id: 'BADGE_STREAK', name: '7-Day Study Streak', icon: 'fa-fire', color: 'amber', unlocked: true, desc: 'Học Tiếng Anh liên tục 7 ngày' },
-      { id: 'BADGE_IELTS', name: 'IELTS Academic Explorer', icon: 'fa-compass', color: 'indigo', unlocked: true, desc: 'Tham gia lộ trình CEFR A1 ➔ C2' },
-      { id: 'BADGE_VOCAB', name: 'Vocabulary Collector', icon: 'fa-layer-group', color: 'emerald', unlocked: masteredVocab >= 2, desc: `Đã thuộc ${masteredVocab}/12 từ vựng học thuật` },
-      { id: 'BADGE_CHAMPION', name: 'English Exam Master', icon: 'fa-trophy', color: 'rose', unlocked: maxScore >= 8.0, desc: 'Đạt điểm thi thử từ 8.0/10 trở lên' }
-    ];
-
-    res.json({
-      success: true,
-      data: {
-        studentId,
-        streakDays,
-        xp,
-        levelTitle: xp >= 800 ? 'CEFR C1 Advanced Scholar' : 'CEFR B2 Upper-Intermediate',
-        masteredVocab,
-        totalExams: examResults.length,
-        maxScore,
-        badges,
-        enrolledCourses
-      }
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
 // ============================================================================
 // PHAN A2: 6 TINH NANG NANG CAO GIAI DOAN 2 (WORD ARENA, POPUP DICT, SRS, HEATMAP, Q&A)
 // ============================================================================
@@ -950,26 +890,13 @@ router.get('/:id', async (req, res) => {
   try {
     const db = getMongoDb();
     const courseId = new ObjectId(req.params.id);
-    const course = await db.collection('courses').findOne({ _id: courseId });
+    const course = await db.collection('courses').findOne({ _id: courseId, isDeleted: { $ne: true } });
     if (!course) {
       return res.status(404).json({ success: false, message: 'Khóa học không tồn tại' });
     }
 
-    const lessons = await db.collection('lessons').find({ courseId: courseId }).sort({ order: 1 }).toArray();
-    const defaultReviews = course.reviews && course.reviews.length > 0 ? course.reviews : [
-      {
-        userName: 'Nguyễn Trọng Nguyên (2001230589)',
-        rating: 5,
-        comment: 'Bài giảng cực kỳ chi tiết, chiến thuật làm bài IELTS/TOEIC áp dụng vào đề thi thật rất hiệu quả!',
-        createdAt: new Date(Date.now() - 86400000 * 2)
-      },
-      {
-        userName: 'Phạm Nguyễn Khôi Nguyên (2001230578)',
-        rating: 5,
-        comment: 'Tài liệu PDF đính kèm đầy đủ Collocations và công thức ngữ pháp dễ nhớ.',
-        createdAt: new Date(Date.now() - 86400000 * 5)
-      }
-    ];
+    const lessons = Array.isArray(course.lessons) ? course.lessons : await db.collection('lessons').find({ courseId: courseId }).sort({ order: 1 }).toArray();
+    const defaultReviews = course.reviews || [];
 
     res.json({ success: true, data: { ...course, lessons, reviews: defaultReviews } });
   } catch (err) {
@@ -978,7 +905,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // 2.1 THEM/CAP NHAT KHOA HOC & TU DONG XOA CACHE (CACHE INVALIDATION STRATEGY)
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, authorizeRoles('ADMIN', 'TEACHER'), async (req, res) => {
   try {
     const db = getMongoDb();
     const newCourse = {
@@ -1284,6 +1211,7 @@ router.post('/:id/reviews', authenticateToken, async (req, res) => {
     const { rating, comment } = req.body;
 
     const reviewObj = {
+      _id: new ObjectId(),
       userName: `${req.user.fullName} (${req.user.username})`,
       rating: Math.max(1, Math.min(5, Math.round(Number(rating) || 5))),
       comment: comment || 'Khóa học rất hữu ích và bám sát đề thi thực tế!',
@@ -1321,12 +1249,7 @@ router.get('/:id/discussions', async (req, res) => {
     if (db) {
       list = await db.collection('discussions').find({ courseId }).sort({ createdAt: -1 }).toArray();
     }
-    const merged = [...list, ...memoryDiscussions.filter(d => !list.some(l => String(l._id) === String(d._id)))].map(d => ({
-      ...d,
-      title: d.title || d.questionTitle || 'Thảo luận học thuật Tiếng Anh',
-      questionTitle: d.questionTitle || d.title || 'Thảo luận học thuật Tiếng Anh',
-      isVerified: Boolean(d.isVerified || d.verifiedAnswer)
-    }));
+    const merged = list.map(d => ({ ...d, title: d.title || d.questionTitle, isVerified: Boolean(d.isVerified || d.verifiedAnswer) }));
     res.json({
       success: true,
       source: 'MONGODB_AND_REDIS_UPVOTES',
@@ -1337,7 +1260,7 @@ router.get('/:id/discussions', async (req, res) => {
   }
 });
 
-router.post('/:id/discussions', async (req, res) => {
+router.post('/:id/discussions', authenticateToken, async (req, res) => {
   try {
     const courseId = req.params.id;
     const db = getMongoDb();

@@ -4273,7 +4273,7 @@
                   ${idx + 1}
                 </span>
                 <h3 class="font-extrabold text-slate-900 dark:text-white text-base sm:text-lg leading-snug">
-                  ${q.content}
+                  ${esc(q.content)}
                 </h3>
               </div>
               <div class="flex items-center gap-1.5 shrink-0">
@@ -4298,7 +4298,7 @@
               <span class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${isChosen ? 'bg-brand-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'}">
                 ${letter}
               </span>
-              <span class="text-sm flex-grow">${optText}</span>
+              <span class="text-sm flex-grow">${esc(optText)}</span>
               ${isChosen ? '<i class="fa-solid fa-circle-check text-brand-600 dark:text-indigo-400"></i>' : ''}
             </div>
           `;
@@ -5396,7 +5396,7 @@
 
           box.innerHTML = list.map(q => `
             <div class="p-3 rounded-2xl bg-rose-50/50 dark:bg-slate-800/70 border border-rose-200/70 dark:border-slate-700 text-xs">
-              <div class="font-bold text-slate-800 dark:text-slate-200 line-clamp-2 mb-1">${q.content}</div>
+              <div class="font-bold text-slate-800 dark:text-slate-200 line-clamp-2 mb-1">${esc(q.content)}</div>
               <div class="flex items-center justify-between text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
                 <span>Đáp án đúng: ${q.correctAnswer || q.correctOption}</span>
                 <button onclick="toggleQuestionBookmark('${q._id}')" class="text-rose-500 hover:underline">Bỏ lưu</button>
@@ -5611,7 +5611,8 @@
             <span class="font-bold text-slate-900 dark:text-white">${r.userName || r.studentName || 'Học viên EduPro'}</span>
             <span class="text-amber-500 font-bold">${'⭐'.repeat(r.rating || 5)}</span>
           </div>
-          <p class="text-slate-600 dark:text-slate-300">${r.comment}</p>
+          <p class="text-slate-600 dark:text-slate-300">${esc(r.comment)}</p>
+          ${m2Admin() && r._id ? m2Button("🗑 Xóa đánh giá", `m2Moderate('reviews','${r._id}')`) : ""}
         </div>
       `).join('');
     }
@@ -6050,7 +6051,8 @@
                   <i class="fa-solid fa-thumbs-up"></i> <span id="upvote-count-${d._id}">${d.upvotes || 0}</span>
                 </button>
               </div>
-              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${d.content}</p>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${esc(d.content)}</p>
+              ${m2Staff() ? m2Button("🗑 Xóa bình luận", `m2Moderate('discussions','${d._id}')`) : ""}
               ${Array.isArray(d.replies) && d.replies.length > 0 ? `
                 <div class="pl-3 border-l-2 border-emerald-500 space-y-1.5 pt-1">
                   ${d.replies.map(r => `
@@ -8135,6 +8137,7 @@
       bootstrapApplication();
     }
   </script>
+  <script src="/member2.js"></script>
 </body>
 </html>
 

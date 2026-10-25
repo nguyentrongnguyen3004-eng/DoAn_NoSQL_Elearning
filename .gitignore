@@ -1,6 +1,5 @@
 # Dependencies
 node_modules/
-package-lock.json
 
 # Environment variables
 .env
@@ -13,3 +12,5 @@ backups/
 *.log
 .DS_Store
 Thumbs.db
+
+.test-data/
