@@ -829,14 +829,29 @@
   <section id="section-writing" class="main-section hidden flex-grow py-8 sm:py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
 
-      <!-- Khối 1: Phòng Chấm Điểm IELTS Writing Task 2 Tự Động (MongoDB) -->
+      <!-- Khối 1: Phòng Chấm Điểm IELTS Writing Task 1 & 2 -->
       <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="mb-6 flex flex-wrap gap-3" role="tablist" aria-label="IELTS Writing task">
+          <button id="writing-tab-task1" onclick="switchWritingTask('task1')" class="rounded-xl border px-4 py-3 text-sm font-bold transition-all">📊 IELTS Writing Task 1 (Biểu đồ - 150 từ)</button>
+          <button id="writing-tab-task2" onclick="switchWritingTask('task2')" class="rounded-xl border px-4 py-3 text-sm font-bold transition-all">📝 IELTS Writing Task 2 (Bài luận - 250 từ)</button>
+        </div>
+        <div id="writing-task1-prompt" class="hidden mb-5 rounded-2xl border border-indigo-200 bg-indigo-50/70 p-4 dark:border-indigo-900 dark:bg-indigo-950/30">
+          <p class="font-bold text-slate-900 dark:text-white">The chart below shows the percentage of electricity generated from different energy sources in France between 2000 and 2020.</p>
+          <svg viewBox="0 0 640 250" role="img" aria-label="Illustrative line chart showing electricity generation by energy source in France, 2000 to 2020" class="mt-3 w-full rounded-xl bg-white p-3 dark:bg-slate-900">
+            <line x1="65" y1="25" x2="65" y2="205" stroke="#64748b"/><line x1="65" y1="205" x2="610" y2="205" stroke="#64748b"/>
+            <text x="30" y="35" font-size="12" fill="#64748b">50%</text><text x="30" y="115" font-size="12" fill="#64748b">25%</text><text x="38" y="207" font-size="12" fill="#64748b">0%</text>
+            <polyline points="75,100 200,90 330,80 460,66 590,55" fill="none" stroke="#4f46e5" stroke-width="4"/><polyline points="75,155 200,160 330,168 460,176 590,185" fill="none" stroke="#10b981" stroke-width="4"/><polyline points="75,185 200,180 330,178 460,170 590,160" fill="none" stroke="#f97316" stroke-width="4"/>
+            <text x="70" y="225" font-size="12" fill="#64748b">2000</text><text x="315" y="225" font-size="12" fill="#64748b">2010</text><text x="570" y="225" font-size="12" fill="#64748b">2020</text>
+            <text x="75" y="245" font-size="12" fill="#4f46e5">Nuclear</text><text x="175" y="245" font-size="12" fill="#10b981">Hydro</text><text x="255" y="245" font-size="12" fill="#f97316">Renewables</text>
+          </svg>
+          <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Summarise the information by selecting and reporting the main features, and make comparisons where relevant. Write at least 150 words.</p>
+        </div>
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <div>
-            <span class="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-widest"><i class="fa-solid fa-pen-fancy mr-1"></i> Chấm Điểm IELTS Writing Task 2</span>
+            <span id="writing-heading-label" class="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-widest"><i class="fa-solid fa-pen-fancy mr-1"></i> Chấm Điểm IELTS Writing Task 2</span>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-1">Phòng Luyện Viết & Chấm Điểm IELTS Writing Task 2</h2>
           </div>
-          <button onclick="insertSampleBand8Essay()" class="px-4 py-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-bold hover:bg-purple-100 transition-all shrink-0">
+          <button id="writing-sample-button" onclick="insertSampleBand8Essay()" class="px-4 py-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-bold hover:bg-purple-100 transition-all shrink-0">
             <i class="fa-solid fa-sparkles mr-1.5"></i> Chèn bài luận mẫu Band 8.0
           </button>
         </div>
@@ -844,7 +859,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <!-- Cột soạn thảo Essay -->
           <div class="lg:col-span-7 space-y-4">
-            <div>
+            <div id="writing-topic-wrapper">
               <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Chọn chủ đề IELTS Writing Task 2:</label>
               <select id="writing-topic-select" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 outline-none focus:border-brand-500">
                 <option value="Some people believe that artificial intelligence and online platforms will replace traditional classrooms in the near future. To what extent do you agree or disagree?">Chủ đề 1 (Education & AI): Online platforms & AI replacing traditional classrooms — Agree or Disagree?</option>
@@ -853,12 +868,14 @@
               </select>
             </div>
 
+            <div id="writing-draft-banner" class="hidden rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200"></div>
             <div class="relative">
-              <textarea id="writing-essay-input" oninput="updateEssayWordCount()" rows="10" placeholder="Nhập bài viết luận của bạn (tối thiểu 250 từ)..." class="w-full p-4 rounded-2xl bg-slate-50/70 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm leading-relaxed focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none dark:text-slate-100"></textarea>
+              <textarea id="writing-essay-input" oninput="handleWritingInput()" rows="10" placeholder="Nhập bài viết luận của bạn (tối thiểu 250 từ)..." class="w-full p-4 rounded-2xl bg-slate-50/70 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm leading-relaxed focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none dark:text-slate-100"></textarea>
               <div class="flex items-center justify-between mt-2 text-xs text-slate-500">
                 <span id="writing-word-count" class="font-mono font-bold text-brand-600 dark:text-indigo-400">Số từ: 0 words</span>
-                <span>Khuyến nghị: Tối thiểu 250 words cho Task 2</span>
+                <span id="writing-word-guidance">Khuyến nghị: Tối thiểu 250 words cho Task 2</span>
               </div>
+              <div id="writing-autosave-status" class="mt-2 text-right text-[11px] text-emerald-600 dark:text-emerald-400" aria-live="polite"></div>
             </div>
 
             <button onclick="evaluateIeltsWriting()" id="btn-evaluate-writing" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-sm shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2 transition-all">
@@ -880,7 +897,7 @@
 
               <div class="grid grid-cols-2 gap-3 mb-5">
                 <div class="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800">
-                  <div class="text-[11px] text-slate-400 font-semibold">Task Response</div>
+                  <div id="crit-task1-label" class="text-[11px] text-slate-400 font-semibold">Task Response</div>
                   <div class="text-lg font-black text-slate-900 dark:text-white" id="crit-tr">--</div>
                 </div>
                 <div class="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800">
@@ -3500,7 +3517,7 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
       if (sectionId === 'vocab') { loadFlashcards(); loadDictations(); loadWordArenaLeaderboard(); loadSrsDueQueue(); loadCollocationMindmap('problem'); loadClozeExercise(); loadAccentSamples(); loadVisualGrammarCards(); }
-      if (sectionId === 'writing') { updateEssayWordCount(); loadPvPSpeakingLeaderboard();
+      if (sectionId === 'writing') { updateEssayWordCount(); loadWritingDraft(currentWritingTask); loadPvPSpeakingLeaderboard();
       loadStudyBuddies(); }
       if (sectionId === 'exam') { startExam(); loadBookmarkedQuestions(); initAntiCheatMonitoring(); }
       if (sectionId === 'graph') { initKnowledgeGraph(); generateAdaptiveRoadmap(); loadSkillTreeData(); }
@@ -5200,6 +5217,9 @@
     // ==============================================================
     // 17. CỤM TÍNH NĂNG BỔ SUNG 2: AI IELTS WRITING & SPEAKING COACH
     // ==============================================================
+    let currentWritingTask = 'task2';
+    let writingDraftTimer = null;
+    let writingDrafts = { task1: '', task2: '' };
     function updateEssayWordCount() {
       const textarea = document.getElementById('writing-essay-input');
       const badge = document.getElementById('writing-word-count');
@@ -5208,17 +5228,84 @@
       const count = text ? text.split(/\s+/).length : 0;
       badge.textContent = `Số từ: ${count} words`;
     }
+    function handleWritingInput() {
+      updateEssayWordCount(); writingDrafts[currentWritingTask] = document.getElementById('writing-essay-input').value;
+      clearTimeout(writingDraftTimer);
+      const status = document.getElementById('writing-autosave-status'); if (status) status.textContent = 'Đang chờ lưu bản nháp…';
+      writingDraftTimer = setTimeout(saveWritingDraft, 2000);
+    }
+    async function saveWritingDraft() {
+      if (!currentToken) return;
+      const taskType = currentWritingTask;
+      const essay = document.getElementById('writing-essay-input').value;
+      try {
+        const response = await fetch(`${API_BASE}/exams/writing/draft`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + currentToken }, body: JSON.stringify({ taskType: currentWritingTask, essay }) });
+        const json = await response.json(); if (!response.ok || !json.success) throw new Error(json.message || 'Không thể lưu nháp');
+        if (taskType !== currentWritingTask || essay !== document.getElementById('writing-essay-input').value) return;
+        const time = new Date(json.savedAt || Date.now()).toLocaleTimeString('vi-VN', { hour12: false });
+        const status = document.getElementById('writing-autosave-status'); if (status) status.textContent = `🟢 Đã tự động lưu nháp lúc ${time}`;
+      } catch (err) { const status = document.getElementById('writing-autosave-status'); if (status) status.textContent = 'Không thể tự động lưu nháp'; }
+    }
+    async function loadWritingDraft(taskType = currentWritingTask) {
+      if (!currentToken) return;
+      try {
+        const response = await fetch(`${API_BASE}/exams/writing/draft?taskType=${encodeURIComponent(taskType)}`, { headers: { Authorization: 'Bearer ' + currentToken } });
+        const json = await response.json(); if (!response.ok || !json.success) return;
+        writingDrafts[taskType] = json.essay || '';
+        const banner = document.getElementById('writing-draft-banner');
+        if (taskType === currentWritingTask && banner) {
+          if (json.essay) banner.innerHTML = `📌 Bạn có bài viết nháp chưa nộp từ phiên trước. <button type="button" onclick="restoreWritingDraft()" class="font-bold underline">Khôi phục nội dung</button> <button type="button" onclick="discardWritingDraft()" class="font-bold underline">Bỏ qua/Xóa</button>`;
+          else banner.innerHTML = '';
+          banner.classList.toggle('hidden', !json.essay);
+        }
+      } catch (err) { /* Best-effort restore when offline. */ }
+    }
+    function restoreWritingDraft() {
+      document.getElementById('writing-essay-input').value = writingDrafts[currentWritingTask] || '';
+      updateEssayWordCount(); document.getElementById('writing-draft-banner').classList.add('hidden');
+      document.getElementById('writing-autosave-status').textContent = 'Bản nháp đã được khôi phục';
+      handleWritingInput();
+    }
+    async function discardWritingDraft() {
+      document.getElementById('writing-draft-banner').classList.add('hidden'); writingDrafts[currentWritingTask] = '';
+      if (currentToken) await fetch(`${API_BASE}/exams/writing/draft?taskType=${encodeURIComponent(currentWritingTask)}`, { method: 'DELETE', headers: { Authorization: 'Bearer ' + currentToken } }).catch(() => {});
+    }
+
+    async function switchWritingTask(taskType) {
+      clearTimeout(writingDraftTimer);
+      writingDrafts[currentWritingTask] = document.getElementById('writing-essay-input').value;
+      currentWritingTask = taskType === 'task1' ? 'task1' : 'task2';
+      const task1 = currentWritingTask === 'task1';
+      document.getElementById('writing-tab-task1').classList.toggle('bg-indigo-600', task1);
+      document.getElementById('writing-tab-task1').classList.toggle('text-white', task1);
+      document.getElementById('writing-tab-task2').classList.toggle('bg-indigo-600', !task1);
+      document.getElementById('writing-tab-task2').classList.toggle('text-white', !task1);
+      document.getElementById('writing-task1-prompt').classList.toggle('hidden', !task1);
+      document.getElementById('writing-topic-wrapper').classList.toggle('hidden', task1);
+      document.getElementById('writing-heading-label').innerHTML = `<i class="fa-solid fa-pen-fancy mr-1"></i> Chấm Điểm IELTS Writing ${task1 ? 'Task 1' : 'Task 2'}`;
+      document.getElementById('writing-topic-select').value = task1 ? 'The chart below shows the percentage of electricity generated from different energy sources in France between 2000 and 2020.' : document.getElementById('writing-topic-select').options[0].value;
+      document.getElementById('writing-essay-input').placeholder = `Nhập bài viết IELTS Task ${task1 ? '1 (mục tiêu 150 từ)' : '2 (mục tiêu 250 từ)'}...`;
+      document.getElementById('writing-word-guidance').textContent = `Khuyến nghị: Tối thiểu ${task1 ? 150 : 250} words cho Task ${task1 ? 1 : 2}`;
+      document.getElementById('crit-task1-label').textContent = task1 ? 'Task Achievement (TA)' : 'Task Response (TR)';
+      document.getElementById('writing-sample-button').classList.toggle('hidden', task1);
+      document.getElementById('writing-essay-input').value = writingDrafts[currentWritingTask] || '';
+      updateEssayWordCount(); await loadWritingDraft(currentWritingTask);
+    }
+    function initializeWritingDrafts() { switchWritingTask(currentWritingTask); }
+    document.addEventListener('DOMContentLoaded', initializeWritingDrafts);
+    window.addEventListener('hashchange', () => { if (location.hash === '#section-writing') loadWritingDraft(currentWritingTask); });
 
     function insertSampleBand8Essay() {
       const sample = `In the contemporary era, artificial intelligence and automated translation systems have revolutionized cross-border communication. While some people think that machine translation will render foreign language acquisition obsolete, I firmly believe that mastering a second language remains indispensable for cognitive development and deep cultural empathy.\n\nOn the one hand, it is undeniable that AI-powered translation tools offer unprecedented convenience. Travelers and international corporations can instantaneously decipher documents or hold basic conversations without spending years studying grammar and vocabulary. Nevertheless, relying solely on algorithms often strips communication of its subtle nuances, idioms, and emotional resonance.\n\nOn the other hand, learning a foreign language such as English cultivates critical thinking and executive brain function. Furthermore, in high-stakes diplomatic negotiations and academic leadership, speaking directly to counterparts fosters authentic trust that no electronic device can replicate. From a socioeconomic perspective, bilingual professionals consistently enjoy broader career prospects in the globalized workforce.\n\nIn conclusion, although translation technology serves as a valuable auxiliary tool, it cannot substitute the intellectual and interpersonal rewards of mastering a foreign language. Therefore, educational institutions should continue to prioritize comprehensive language curricula alongside digital literacy.`;
       document.getElementById('writing-essay-input').value = sample;
-      updateEssayWordCount();
+      handleWritingInput();
     }
 
     async function evaluateIeltsWriting() {
       if (!currentToken) { openLoginModal(); return; }
       const topicEl = document.getElementById('writing-topic-select') || document.getElementById('writing-prompt-select');
-      const topic = topicEl ? topicEl.value : 'IELTS Task 2';
+      const topic = topicEl ? topicEl.value : `IELTS Task ${currentWritingTask}`;
+      const taskType = currentWritingTask;
       const essayText = document.getElementById('writing-essay-input').value.trim();
       const btn = document.getElementById('btn-evaluate-writing');
 
@@ -5227,8 +5314,9 @@
         return;
       }
       const wordsCount = essayText.split(/\s+/).filter(Boolean).length;
-      if (wordsCount < 15) {
-        alert('Bài luận quá ngắn (tối thiểu 15 từ để phân tích 4 tiêu chí). Chuẩn thi IELTS Task 2 khuyến nghị từ 250 từ trở lên.');
+      const minimumWords = 15;
+      if (wordsCount < minimumWords) {
+        alert(`Bài viết quá ngắn (tối thiểu 15 từ để phân tích). IELTS Task ${taskType === 'task1' ? '1' : '2'} khuyến nghị ${taskType === 'task1' ? '150' : '250'} từ trở lên.`);
         return;
       }
 
@@ -5239,12 +5327,19 @@
         const res = await fetch(`${API_BASE}/exams/writing/evaluate`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
-          body: JSON.stringify({ topic, promptTopic: topic, essayText })
+          body: JSON.stringify({ topic, promptTopic: topic, essayText, taskType })
         });
         const json = await res.json();
+        if (!res.ok || !json.success) throw new Error(json.message || 'Không thể chấm bài viết');
         if (json.success && json.data) {
+          clearTimeout(writingDraftTimer);
+          await fetch(`${API_BASE}/exams/writing/draft?taskType=${encodeURIComponent(taskType)}`, { method: 'DELETE', headers: { Authorization: 'Bearer ' + currentToken } });
+          writingDrafts[taskType] = '';
+          const draftBanner = document.getElementById('writing-draft-banner'); if (taskType === currentWritingTask && draftBanner) draftBanner.classList.add('hidden');
+          const autosaveStatus = document.getElementById('writing-autosave-status'); if (autosaveStatus) autosaveStatus.textContent = 'Bản nháp đã được xóa sau khi nộp bài';
           const r = json.data;
-          const tr = r.criteria.taskResponse || 7.5;
+          document.getElementById('crit-task1-label').textContent = taskType === 'task1' ? 'Task Achievement (TA)' : 'Task Response (TR)';
+          const tr = r.criteria.taskAchievement ?? r.criteria.taskResponse ?? 7.5;
           const cc = r.criteria.coherence ?? r.criteria.coherenceCohesion ?? 7.5;
           const lr = r.criteria.lexical ?? r.criteria.lexicalResource ?? 7.5;
           const gra = r.criteria.grammar ?? r.criteria.grammaticalRange ?? 7.5;
