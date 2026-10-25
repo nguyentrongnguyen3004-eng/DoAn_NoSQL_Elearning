@@ -1050,6 +1050,107 @@ router.post('/:id/enroll', authenticateToken, async (req, res) => {
 });
 
 // 2.2B TAO DON HANG THANH TOAN VIETQR DONG (DYNAMIC VIETQR ORDER CHECKOUT)
+// Helpers and authenticated LMS progress APIs.
+function enrollmentUserFilter(user) {
+  const ids = [user.id, user.username].filter(Boolean);
+  return { $or: [{ userId: { $in: ids } }, { studentId: { $in: ids } }] };
+}
+function enrollmentCourseFilter(courseId) {
+  return ObjectId.isValid(courseId) ? { $or: [{ courseId }, { courseId: new ObjectId(courseId) }] } : { courseId };
+}
+async function courseLessonList(db, courseId) {
+  const filter = ObjectId.isValid(courseId) ? { $or: [{ courseId }, { courseId: new ObjectId(courseId) }] } : { courseId };
+  return db.collection('lessons').find(filter).sort({ order: 1 }).toArray();
+}
+
+router.post('/:id/lessons/:lessonIndex/toggle-complete', authenticateToken, async (req, res) => {
+  try {
+    const db = getMongoDb();
+    if (!db) return res.status(500).json({ success: false, message: 'MongoDB is not ready' });
+    const courseId = req.params.id;
+    const index = Number.parseInt(req.params.lessonIndex, 10);
+    if (!Number.isInteger(index) || index < 0) return res.status(400).json({ success: false, message: 'Invalid lesson index' });
+    const lessons = await courseLessonList(db, courseId);
+    if (index >= lessons.length) return res.status(404).json({ success: false, message: 'Lesson not found' });
+    const lessonKey = String(lessons[index]._id || index);
+    const userId = req.user.id || req.user.username;
+    const filter = { ...enrollmentUserFilter(req.user), ...enrollmentCourseFilter(courseId) };
+    const collection = db.collection('user_enrollments');
+    const enrollment = await collection.findOne(filter);
+    let completedLessons = enrollment && Array.isArray(enrollment.completedLessons) ? enrollment.completedLessons.map(String) : [];
+    const completed = typeof req.body.completed === 'boolean' ? req.body.completed : !completedLessons.includes(lessonKey);
+    completedLessons = completed ? [...new Set([...completedLessons, lessonKey])] : completedLessons.filter(id => id !== lessonKey);
+    await collection.updateOne(filter, { $set: { userId, studentId: req.user.username || userId, courseId, completedLessons, status: 'active', updatedAt: new Date() } }, { upsert: true });
+    const progressPercent = lessons.length ? Math.round(completedLessons.length / lessons.length * 100) : 0;
+    if (redisClient && redisClient.status === 'ready') await redisClient.set(`course:progress:${userId}:${courseId}`, String(progressPercent), 'EX', 86400).catch(() => {});
+    return res.json({ success: true, progressPercent, completedLessons });
+  } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
+});
+
+router.get('/:id/progress', authenticateToken, async (req, res) => {
+  try {
+    const courseId = req.params.id;
+    const userId = req.user.id || req.user.username;
+    const key = `course:progress:${userId}:${courseId}`;
+    if (redisClient && redisClient.status === 'ready') {
+      const cached = await redisClient.get(key).catch(() => null);
+      if (cached !== null) return res.json({ success: true, progressPercent: Number(cached) });
+    }
+    const db = getMongoDb();
+    if (!db) return res.status(500).json({ success: false, message: 'MongoDB is not ready' });
+    const [lessons, enrollment] = await Promise.all([
+      courseLessonList(db, courseId),
+      db.collection('user_enrollments').findOne({ ...enrollmentUserFilter(req.user), ...enrollmentCourseFilter(courseId) })
+    ]);
+    const completedLessons = enrollment && Array.isArray(enrollment.completedLessons) ? enrollment.completedLessons : [];
+    const progressPercent = lessons.length ? Math.round(completedLessons.length / lessons.length * 100) : 0;
+    if (redisClient && redisClient.status === 'ready') await redisClient.set(key, String(progressPercent), 'EX', 86400).catch(() => {});
+    return res.json({ success: true, progressPercent, completedLessons });
+  } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
+});
+
+router.get('/:id/lessons/:lessonIndex/resources', authenticateToken, async (req, res) => {
+  try {
+    const db = getMongoDb();
+    if (!db) return res.status(500).json({ success: false, message: 'MongoDB is not ready' });
+    const lessons = await courseLessonList(db, req.params.id);
+    const index = Number.parseInt(req.params.lessonIndex, 10);
+    if (!Number.isInteger(index) || index < 0 || index >= lessons.length) return res.status(404).json({ success: false, message: 'Lesson not found' });
+    const resources = Array.isArray(lessons[index].resources) && lessons[index].resources.length ? lessons[index].resources : [
+      { id: `slide-${index + 1}`, title: `Lecture slides ${index + 1}.pdf`, type: 'pdf', url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', size: '2.4 MB' },
+      { id: `audio-${index + 1}`, title: `Listening practice ${index + 1}.mp3`, type: 'audio', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', size: '5.1 MB' },
+      { id: `exercise-${index + 1}`, title: `Homework ${index + 1}.doc`, type: 'doc', url: 'https://file-examples.com/storage/fe1a2a5b9b4cbe/2017/02/file-sample_100kB.doc', size: '100 KB' }
+    ];
+    return res.json({ success: true, data: resources });
+  } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
+});
+
+router.delete('/:id/enroll', authenticateToken, async (req, res) => {
+  try {
+    const courseId = req.params.id;
+    const userId = req.user.id || req.user.username;
+    const db = getMongoDb();
+    if (db) await db.collection('user_enrollments').deleteOne({ ...enrollmentUserFilter(req.user), ...enrollmentCourseFilter(courseId) });
+    const set = memoryEnrolledCourses.get(req.user.username);
+    if (set) set.delete(courseId);
+    if (redisClient && redisClient.status === 'ready') await redisClient.del(`course:progress:${userId}:${courseId}`, `cache:user:enrolled:${userId}`, `cache:user:enrolled:${req.user.username}`).catch(() => {});
+    return res.json({ success: true, message: 'Hủy đăng ký khóa học thành công' });
+  } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
+});
+
+router.post('/:id/archive', authenticateToken, async (req, res) => {
+  try {
+    const db = getMongoDb();
+    if (!db) return res.status(500).json({ success: false, message: 'MongoDB is not ready' });
+    const result = await db.collection('user_enrollments').updateOne(
+      { ...enrollmentUserFilter(req.user), ...enrollmentCourseFilter(req.params.id) },
+      { $set: { status: 'archived', updatedAt: new Date() } }
+    );
+    if (!result.matchedCount) return res.status(404).json({ success: false, message: 'Enrollment not found' });
+    return res.json({ success: true, message: 'Course archived successfully' });
+  } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
+});
+
 router.post('/:id/checkout-order', authenticateToken, async (req, res) => {
   try {
     const courseId = req.params.id;

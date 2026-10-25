@@ -222,16 +222,19 @@
           </div>
 
           <div id="auth-logged" class="hidden flex items-center gap-2 sm:gap-3">
-            <div class="flex items-center gap-2 sm:gap-3 pl-1 sm:pl-2 sm:border-l sm:border-slate-200 dark:border-slate-800">
+            <button type="button" onclick="toggleAccountMenu()" aria-label="Mở menu tài khoản" class="flex items-center gap-2 sm:gap-3 pl-1 sm:pl-2 sm:border-l sm:border-slate-200 dark:border-slate-800 text-left">
               <img id="nav-user-avatar" src="" alt="Avatar" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover ring-2 ring-brand-500/20">
-              <div class="hidden sm:block text-left">
-                <div class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight" id="nav-user-name">Người dùng</div>
-                <div class="text-[11px] text-slate-400 dark:text-slate-500 font-medium" id="nav-user-role">Học viên</div>
-              </div>
-            </div>
-            <button onclick="logout()" title="Đăng xuất" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600 hover:border-rose-200 text-slate-500 flex items-center justify-center text-xs sm:text-sm transition-all">
-              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              <span class="hidden sm:block text-left">
+                <span class="block text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight" id="nav-user-name">Người dùng</span>
+                <span class="block text-[11px] text-slate-400 dark:text-slate-500 font-medium" id="nav-user-role">Học viên</span>
+              </span>
+              <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
             </button>
+            <div id="account-menu" class="hidden absolute right-4 top-full mt-2 z-50 w-52 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 shadow-xl">
+              <button onclick="openEditProfileModal()" class="w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-slate-100 dark:hover:bg-slate-800">✏️ Sửa hồ sơ</button>
+              <button onclick="openChangePasswordModal()" class="w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-slate-100 dark:hover:bg-slate-800">🔑 Đổi mật khẩu</button>
+              <button onclick="logout()" class="w-full rounded-lg px-3 py-2 text-left text-sm text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30">Đăng xuất</button>
+            </div>
           </div>
 
           <!-- NÚT HAMBURGER MOBILE MENU -->
@@ -1431,6 +1434,12 @@
           <button onclick="enrollCurrentCourse()" id="btn-enroll-course" class="px-4 py-1.5 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5">
             <i class="fa-solid fa-bookmark"></i> <span>Đăng ký khóa học này</span>
           </button>
+          <button onclick="confirmUnenrollCourse()" class="px-3 py-1.5 rounded-full border border-rose-400 text-rose-600 text-xs font-bold">Hủy đăng ký khóa học</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          </button>
         </div>
       </div>
 
@@ -1474,6 +1483,12 @@
                 </button>
               </div>
             </div>
+            <label class="flex items-center gap-2 mb-3 text-sm font-semibold text-emerald-700 dark:text-emerald-400"><input type="checkbox" id="chk-lesson-complete" onchange="toggleLessonComplete()" class="h-4 w-4 accent-emerald-600"> Đánh dấu đã hoàn thành bài học này</label>
+            <div id="course-progress-container" class="mb-4" aria-live="polite"></div>
+            <div class="flex gap-2 border-b border-slate-200 dark:border-slate-700 mb-4">
+              <button onclick="switchClassroomTab('notes')" class="px-3 py-2 text-sm font-semibold">Ghi chú</button><button onclick="switchClassroomTab('discussions')" class="px-3 py-2 text-sm font-semibold">Thảo luận</button><button onclick="switchClassroomTab('resources')" class="px-3 py-2 text-sm font-semibold">Tài liệu đính kèm</button>
+            </div>
+            <div id="lesson-resources-tab" class="hidden rounded-xl border p-4 mb-4"><div id="lesson-resources-list" class="space-y-3"></div></div>
             <h2 class="text-2xl font-black text-slate-900 dark:text-white mb-3" id="lesson-main-title">
               Bài 1: Tổng quan cấu trúc đề thi IELTS Academic & Tiêu chí chấm điểm Band 7.5+
             </h2>
@@ -4132,6 +4147,12 @@
 
     function playLesson(lesson) {
       currentLessonId = lesson._id;
+      currentLessonIndex = Math.max(0, Number(lesson.order || 1) - 1);
+      const completed = (window.courseCompletedLessons || []).map(String);
+      const lessonCheck = document.getElementById('chk-lesson-complete');
+      if (lessonCheck) lessonCheck.checked = completed.includes(String(lesson._id));
+      loadLessonResources(currentLessonIndex);
+      loadCourseProgress(currentClassroomCourseId);
       document.getElementById('lesson-module-tag').textContent = `Bài ${lesson.order || 1} • Video bài giảng thực chiến`;
       document.getElementById('lesson-main-title').textContent = lesson.title;
       document.getElementById('lesson-main-desc').textContent = lesson.content || lesson.description || 'Nội dung thực hành phân tích và tối ưu hóa hệ thống dữ liệu.';
@@ -8134,7 +8155,119 @@
     } else {
       bootstrapApplication();
     }
+    let currentLessonIndex = 0;
+    function renderCourseProgress(percent, completed = [], total = 0) {
+      window.courseCompletedLessons = completed;
+      const box = document.getElementById('course-progress-container');
+      if (box) box.innerHTML = `<div class="flex justify-between text-xs mb-1"><span>${completed.length}/${total} bài học</span><span>${percent}%</span></div><div class="h-2 rounded-full bg-slate-200 overflow-hidden"><div class="h-full bg-gradient-to-r from-emerald-500 to-indigo-500 transition-all duration-500" style="width:${percent}%"></div></div>`;
+    }
+    async function loadCourseProgress(courseId) {
+      if (!currentToken || !courseId) return;
+      try {
+        const r = await fetch(`${API_BASE}/courses/${courseId}/progress`, { headers: { Authorization: `Bearer ${currentToken}` } }), j = await r.json();
+        if (!j.success) return;
+        const d = await fetch(`${API_BASE}/courses/${courseId}`), c = await d.json();
+        renderCourseProgress(j.progressPercent || 0, j.completedLessons || [], (c.data && c.data.lessons || []).length);
+        window.courseCompletedLessons = j.completedLessons || [];
+        const cb = document.getElementById('chk-lesson-complete');
+        if (cb) cb.checked = (j.completedLessons || []).map(String).includes(String(currentLessonId));
+      } catch (e) { console.warn('Could not load progress', e); }
+    }
+    async function toggleLessonComplete() {
+      if (!currentToken) return openLoginModal();
+      const cb = document.getElementById('chk-lesson-complete');
+      try {
+        const r = await fetch(`${API_BASE}/courses/${currentClassroomCourseId}/lessons/${currentLessonIndex}/toggle-complete`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${currentToken}` }, body: JSON.stringify({ completed: cb.checked }) }), j = await r.json();
+        if (!r.ok || !j.success) throw new Error(j.message || 'Không thể cập nhật tiến độ');
+        const d = await fetch(`${API_BASE}/courses/${currentClassroomCourseId}`), c = await d.json();
+        renderCourseProgress(j.progressPercent, j.completedLessons || [], (c.data && c.data.lessons || []).length);
+        window.courseCompletedLessons = j.completedLessons || [];
+        showToast('Tiến độ bài học đã được cập nhật', 'success');
+      } catch (e) { cb.checked = !cb.checked; showToast(e.message, 'error'); }
+    }
+    async function loadLessonResources(index) {
+      const box = document.getElementById('lesson-resources-list'); if (!box || !currentToken) return;
+      try {
+        const r = await fetch(`${API_BASE}/courses/${currentClassroomCourseId}/lessons/${index}/resources`, { headers: { Authorization: `Bearer ${currentToken}` } }), j = await r.json();
+        if (!j.success) throw new Error(j.message || 'Không thể tải tài liệu');
+        const icons = { pdf: '📕', audio: '🎧', doc: '📘' };
+        box.innerHTML = (j.data || []).map(f => `<div class="flex justify-between gap-3 rounded-lg border p-3"><span>${icons[f.type] || '📄'} ${f.title} <small>${f.size || ''}</small></span><a href="${f.url}" download class="rounded bg-brand-600 px-3 py-1.5 text-xs text-white">Tải xuống</a></div>`).join('');
+      } catch (e) { box.textContent = e.message; }
+    }
+    function switchClassroomTab(tab) {
+      document.getElementById('lesson-resources-tab').classList.toggle('hidden', tab !== 'resources');
+      if (tab === 'resources') loadLessonResources(currentLessonIndex);
+      if (tab === 'notes') document.getElementById('note-content-input')?.focus();
+      if (tab === 'discussions') document.getElementById('qa-question-title')?.focus();
+    }
+    async function confirmUnenrollCourse() {
+      if (!confirm('Bạn có chắc chắn muốn hủy đăng ký khóa học này không? Tiến độ học tập sẽ bị xóa.')) return;
+      try {
+        const r = await fetch(`${API_BASE}/courses/${currentClassroomCourseId}/enroll`, { method: 'DELETE', headers: { Authorization: `Bearer ${currentToken}` } }), j = await r.json();
+        if (!r.ok || !j.success) throw new Error(j.message || 'Không thể hủy đăng ký');
+        showToast(j.message, 'success'); showSection('courses'); loadCoursesCatalog();
+      } catch (e) { showToast(e.message, 'error'); }
+    }
+    function toggleAccountMenu() { document.getElementById('account-menu').classList.toggle('hidden'); }
+    function openEditProfileModal() {
+      document.getElementById('account-menu').classList.add('hidden');
+      const u = currentUser || {};
+      document.getElementById('profile-full-name').value = u.fullName || '';
+      document.getElementById('profile-phone').value = u.phone || '';
+      document.getElementById('profile-school').value = u.school || '';
+      document.getElementById('profile-target-band').value = u.targetBand || '';
+      document.getElementById('profile-avatar-url').value = u.avatar || '';
+      updateProfileAvatarPreview();
+      document.getElementById('modal-edit-profile').classList.remove('hidden');
+    }
+    function closeEditProfileModal() { document.getElementById('modal-edit-profile').classList.add('hidden'); }
+    function updateProfileAvatarPreview() {
+      const url = document.getElementById('profile-avatar-url').value.trim();
+      document.getElementById('profile-avatar-preview').src = url || (currentUser && currentUser.avatar) || '';
+    }
+    async function saveUserProfile(e) {
+      e.preventDefault();
+      const phone = document.getElementById('profile-phone').value.trim();
+      if (phone && !/^(0|\+84)[3|5|7|8|9][0-9]{8}$/.test(phone)) return showToast('Số điện thoại không đúng định dạng Việt Nam', 'error');
+      const body = { fullName: document.getElementById('profile-full-name').value, phone, school: document.getElementById('profile-school').value, targetBand: document.getElementById('profile-target-band').value, avatarUrl: document.getElementById('profile-avatar-url').value.trim() };
+      try {
+        const r = await fetch(`${API_BASE}/auth/profile`, { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${currentToken}` }, body: JSON.stringify(body) });
+        const j = await r.json(); if (!r.ok || !j.success) throw new Error(j.message || 'Không thể cập nhật hồ sơ');
+        currentUser = { ...currentUser, ...j.data.user }; localStorage.setItem('edupro_user', JSON.stringify(currentUser)); syncUserUI(); closeEditProfileModal(); showToast(j.message, 'success');
+      } catch (err) { showToast(err.message || 'Lỗi kết nối máy chủ', 'error'); }
+    }
+    function openChangePasswordModal() { document.getElementById('account-menu').classList.add('hidden'); document.getElementById('form-change-password').reset(); document.getElementById('modal-change-password').classList.remove('hidden'); }
+    function closeChangePasswordModal() { document.getElementById('form-change-password').reset(); document.getElementById('modal-change-password').classList.add('hidden'); }
+    function togglePasswordVisibility(id, btn) { const input = document.getElementById(id); input.type = input.type === 'password' ? 'text' : 'password'; btn.querySelector('i').className = input.type === 'password' ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'; }
+    async function submitChangePassword(e) {
+      e.preventDefault();
+      const oldPassword = document.getElementById('pw-old').value, newPassword = document.getElementById('pw-new').value, confirmPassword = document.getElementById('pw-confirm').value;
+      if (!oldPassword || !newPassword || !confirmPassword) return showToast('Vui lòng nhập đầy đủ các thông tin mật khẩu', 'error');
+      if (newPassword.length < 6) return showToast('Mật khẩu mới phải có tối thiểu 6 ký tự', 'error');
+      if (newPassword !== confirmPassword) return showToast('Xác nhận mật khẩu mới không khớp', 'error');
+      try {
+        const r = await fetch(`${API_BASE}/auth/change-password`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${currentToken}` }, body: JSON.stringify({ oldPassword, newPassword, confirmPassword }) });
+        const j = await r.json(); if (!r.ok || !j.success) throw new Error(j.message || 'Không thể đổi mật khẩu');
+        showToast(j.message, 'success'); closeChangePasswordModal();
+      } catch (err) { showToast(err.message || 'Lỗi kết nối máy chủ', 'error'); }
+    }
   </script>
+  <div id="modal-edit-profile" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 p-4"><form onsubmit="saveUserProfile(event)" class="w-full max-w-lg rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between"><h2 class="text-xl font-bold">Chỉnh sửa hồ sơ</h2><button type="button" onclick="closeEditProfileModal()">✕</button></div>
+    <label class="block text-sm font-semibold">Họ tên<input id="profile-full-name" required maxlength="100" class="mt-1 w-full rounded-lg border p-2 dark:bg-slate-800" /></label>
+    <label class="block text-sm font-semibold">Số điện thoại<input id="profile-phone" type="tel" class="mt-1 w-full rounded-lg border p-2 dark:bg-slate-800" /></label>
+    <label class="block text-sm font-semibold">Trường học / Đơn vị<input id="profile-school" class="mt-1 w-full rounded-lg border p-2 dark:bg-slate-800" /></label>
+    <label class="block text-sm font-semibold">Mục tiêu Band điểm<select id="profile-target-band" class="mt-1 w-full rounded-lg border p-2 dark:bg-slate-800"><option value="">Chọn mục tiêu</option><option>A2 Cơ bản</option><option>B1</option><option>B2</option><option>C1</option><option>IELTS 6.5+</option><option>IELTS 7.5+</option><option>TOEIC 800+</option></select></label>
+    <label class="block text-sm font-semibold">Link Avatar<input id="profile-avatar-url" type="url" oninput="updateProfileAvatarPreview()" class="mt-1 w-full rounded-lg border p-2 dark:bg-slate-800" /></label><img id="profile-avatar-preview" alt="Xem trước avatar" class="h-16 w-16 rounded-full object-cover" />
+    <div class="flex justify-end gap-2"><button type="button" onclick="closeEditProfileModal()" class="rounded-lg border px-4 py-2">Hủy</button><button class="rounded-lg bg-brand-600 px-4 py-2 text-white">Lưu hồ sơ</button></div>
+  </form></div>
+  <div id="modal-change-password" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 p-4"><form id="form-change-password" onsubmit="submitChangePassword(event)" class="w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-2xl space-y-4">
+    <div class="flex justify-between"><h2 class="text-xl font-bold">Đổi mật khẩu</h2><button type="button" onclick="closeChangePasswordModal()">✕</button></div>
+    <label class="block text-sm font-semibold">Mật khẩu hiện tại<div class="mt-1 flex"><input id="pw-old" type="password" required autocomplete="current-password" class="min-w-0 flex-1 rounded-l-lg border p-2 dark:bg-slate-800" /><button type="button" onclick="togglePasswordVisibility('pw-old', this)" class="rounded-r-lg border px-3"><i class="fa-solid fa-eye"></i></button></div></label>
+    <label class="block text-sm font-semibold">Mật khẩu mới<div class="mt-1 flex"><input id="pw-new" type="password" required autocomplete="new-password" class="min-w-0 flex-1 rounded-l-lg border p-2 dark:bg-slate-800" /><button type="button" onclick="togglePasswordVisibility('pw-new', this)" class="rounded-r-lg border px-3"><i class="fa-solid fa-eye"></i></button></div></label>
+    <label class="block text-sm font-semibold">Nhập lại mật khẩu mới<div class="mt-1 flex"><input id="pw-confirm" type="password" required autocomplete="new-password" class="min-w-0 flex-1 rounded-l-lg border p-2 dark:bg-slate-800" /><button type="button" onclick="togglePasswordVisibility('pw-confirm', this)" class="rounded-r-lg border px-3"><i class="fa-solid fa-eye"></i></button></div></label>
+    <div class="flex justify-end gap-2"><button type="button" onclick="closeChangePasswordModal()" class="rounded-lg border px-4 py-2">Hủy</button><button class="rounded-lg bg-brand-600 px-4 py-2 text-white">Đổi mật khẩu</button></div>
+  </form></div>
 </body>
 </html>
 
