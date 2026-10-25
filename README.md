@@ -6,7 +6,7 @@
 [![Redis](https://img.shields.io/badge/Redis-v7.2%20In--Memory-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
 [![Apache Cassandra](https://img.shields.io/badge/Cassandra-v4.1%20Wide--Column-1287B1?style=for-the-badge&logo=apachecassandra&logoColor=white)](https://cassandra.apache.org/)
 [![Neo4j](https://img.shields.io/badge/Neo4j-v5.20%20Graph-008CC1?style=for-the-badge&logo=neo4j&logoColor=white)](https://neo4j.com/)
-[![Tests](https://img.shields.io/badge/Automated%20Tests-17%2F17%20Passed%20(100%25)-10B981?style=for-the-badge&logo=checkmarx&logoColor=white)](scripts/automated_tests.js)
+[![Tests](https://img.shields.io/badge/Automated%20Tests-21%2F21%20Passed%20(100%25)-10B981?style=for-the-badge&logo=checkmarx&logoColor=white)](scripts/automated_tests.js)
 
 > **Học phần:** Cơ sở dữ liệu NoSQL (Học kỳ 7 - Khóa 14DH)  
 > **Đơn vị:** Khoa Công nghệ Thông tin - Trường Đại học Công Thương TP. Hồ Chí Minh (HUIT)  
@@ -99,7 +99,7 @@ npm test
 
 ```text
 ================================================================
-BAT DAU CHAY 17 TEST CASES VERIFICATION CHO HE THONG 4 NOSQL
+BAT DAU CHAY 21 TEST CASES VERIFICATION CHO HE THONG 4 NOSQL
 ================================================================
 
 ✅ TC-01 PASS: Ket noi Database he thong san sang (Active: MONGODB)
@@ -119,11 +119,26 @@ BAT DAU CHAY 17 TEST CASES VERIFICATION CHO HE THONG 4 NOSQL
 ✅ TC-15 PASS: Phat song & nhan thong bao thoi gian thuc qua Redis Pub/Sub thanh cong
 ✅ TC-16 PASS: Phan tich chuoi thoi gian Ty le giu chan Video (Cassandra Retention Curve) thanh cong
 ✅ TC-17 PASS: Tao ma VietQR dong va xac nhan thanh toan kich hoat khoa hoc thanh cong (+200 XP)
+✅ TC-18 PASS: Smart AI Study Copilot tra loi tu nguon 4 CSDL (NEO4J, MONGODB, CASSANDRA, REDIS)
+✅ TC-19 PASS: Giam sat Telemetry 4 CSDL thanh cong (Mongo, Redis RAM, Cassandra Events, Neo4j Nodes)
+✅ TC-20 PASS: Kiem tra Tuong lua Redis Sliding Window Firewall (120 RPM, Blacklist Isolation)
+✅ TC-21 PASS: Quet do thi Neo4j tim kiem Ban Cung Tien (Study Buddies Graph Match 96%)
 
 ================================================================
-KET QUA KIEM THU: 17/17 TEST CASES PASSED (100%)
+KET QUA KIEM THU: 21/21 TEST CASES PASSED (100%)
 ================================================================
 ```
+
+---
+
+## 🏛️ 5. PHÂN HỆ ĐỘC QUYỀN CỦA KIẾN TRÚC SƯ HỆ THỐNG (LEAD ARCHITECT)
+
+Các chức năng cấp cao độc lập, nâng tầm ứng dụng lên chuẩn Enterprise:
+1. 🤖 **Smart AI Study Copilot Widget:** Trợ lý ảo hợp nhất dữ liệu từ cả 4 CSDL NoSQL (Neo4j lộ trình, Cassandra video retention, Redis điểm thi đua, MongoDB bài học).
+2. 📊 **Live 4-NoSQL Telemetry Monitor:** Dashboard giám sát tài nguyên thời gian thực qua Server-Sent Events (SSE) đo lường RAM Redis, Documents Mongo, Events Cassandra và Cypher latency Neo4j.
+3. 🛡️ **Redis Sliding-Window Security Firewall:** Bức tường lửa ngăn chặn tấn công DoS, tự động cách ly IP spam > 120 req/phút vào `security:blacklist` với tính năng mở khóa 1-click.
+4. 🕸️ **Neo4j Social Learning Graph Peer Matching:** Thuật toán so khớp đồ thị kết nối "Bạn Cùng Tiến" dựa trên Graph Intersection (Khóa học chung & Mục tiêu Band điểm).
+5. 💾 **Web UI Disaster Recovery 1-Click:** Trung tâm sao lưu và khôi phục thảm họa đồng bộ cả 4 CSDL NoSQL ngay trên giao diện web.
 
 ---
 

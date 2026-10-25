@@ -12,6 +12,10 @@ const courseRoutes = require('./routes/courseRoutes');
 const examRoutes = require('./routes/examRoutes');
 const graphRoutes = require('./routes/graphRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const copilotRoutes = require('./routes/copilotRoutes');
+const telemetryRoutes = require('./routes/telemetryRoutes');
+const peerRoutes = require('./routes/peerRoutes');
+const backupRoutes = require('./routes/backupRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -31,6 +35,10 @@ app.use('/api/courses', courseRoutes);
 app.use('/api/exams', examRoutes);
 app.use('/api/graph', graphRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/copilot', copilotRoutes);
+app.use('/api/telemetry', telemetryRoutes);
+app.use('/api/peers', peerRoutes);
+app.use('/api/backups', backupRoutes);
 
 // KET NOI REDIS DEDICATED CHO PUB/SUB SU KIEN THOI GIAN THUC
 const redisSubscriber = new Redis({

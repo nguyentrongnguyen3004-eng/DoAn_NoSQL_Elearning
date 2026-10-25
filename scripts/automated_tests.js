@@ -50,11 +50,11 @@ function request(method, path, body = null, token = null) {
 
 async function runTests() {
   console.log('================================================================');
-  console.log('BAT DAU CHAY 17 TEST CASES VERIFICATION CHO HE THONG 4 NOSQL');
+  console.log('BAT DAU CHAY 21 TEST CASES VERIFICATION CHO HE THONG 4 NOSQL');
   console.log('================================================================\n');
 
   let passed = 0;
-  let total = 17;
+  let total = 21;
 
   let studentToken = null;
   let teacherToken = null;
@@ -319,6 +319,60 @@ async function runTests() {
     }
   } catch (e) {
     console.log('❌ TC-17 ERROR:', e.message);
+  }
+
+  // TC-18: Smart AI Study Copilot (Multi-NoSQL Aggregator)
+  try {
+    const copilotRes = await request('POST', '/api/copilot/ask', { question: 'Lộ trình học IELTS 7.5+ đề xuất cho tôi?' }, studentToken);
+    if (copilotRes.status === 200 && copilotRes.data.success && copilotRes.data.sources && copilotRes.data.sources.length > 0) {
+      const srcList = copilotRes.data.sources.map(s => s.db).join(', ');
+      console.log(`✅ TC-18 PASS: Smart AI Study Copilot tra loi tu nguon 4 CSDL (${srcList}) thanh cong (${copilotRes.data.suggestedActions?.length} hanh dong goi y)`);
+      passed++;
+    } else {
+      console.log('❌ TC-18 FAIL:', copilotRes.data);
+    }
+  } catch (e) {
+    console.log('❌ TC-18 ERROR:', e.message);
+  }
+
+  // TC-19: Live 4-NoSQL Real-Time Telemetry & Resource Monitor
+  try {
+    const telemRes = await request('GET', '/api/telemetry/live-metrics');
+    if (telemRes.status === 200 && telemRes.data.success && telemRes.data.data) {
+      const m = telemRes.data.data;
+      console.log(`✅ TC-19 PASS: Giam sat Telemetry 4 CSDL thanh cong (Mongo: ${m.mongodb.totalDocs} docs, Redis: ${m.redis.usedMemory}, Cas: ${m.cassandra.totalEvents} events, Neo4j: ${m.neo4j.nodesCount} nodes, Host RAM: ${m.system.nodeMemoryMb}MB)`);
+      passed++;
+    } else {
+      console.log('❌ TC-19 FAIL:', telemRes.data);
+    }
+  } catch (e) {
+    console.log('❌ TC-19 ERROR:', e.message);
+  }
+
+  // TC-20: Redis Sliding-Window Security Firewall & Blacklist
+  try {
+    const fwRes = await request('GET', '/api/telemetry/security/firewall');
+    if (fwRes.status === 200 && fwRes.data.success && fwRes.data.firewall) {
+      console.log(`✅ TC-20 PASS: Kiem tra Tuong lua Redis Sliding Window Firewall thanh cong (${fwRes.data.firewall.activeRateLimit}, ${fwRes.data.firewall.blacklistedCount} IP bi cach ly)`);
+      passed++;
+    } else {
+      console.log('❌ TC-20 FAIL:', fwRes.data);
+    }
+  } catch (e) {
+    console.log('❌ TC-20 ERROR:', e.message);
+  }
+
+  // TC-21: Neo4j Social Learning Graph Peer Matching (Study Buddies)
+  try {
+    const peersRes = await request('GET', '/api/peers/study-buddies', null, studentToken);
+    if (peersRes.status === 200 && peersRes.data.success && peersRes.data.data && peersRes.data.data.length > 0) {
+      console.log(`✅ TC-21 PASS: Quet do thi Neo4j tim kiem Ban Cung Tien (Study Buddies) thanh cong (${peersRes.data.data.length} ban hoc tim thay, Match top 1: ${peersRes.data.data[0].matchPercent}%)`);
+      passed++;
+    } else {
+      console.log('❌ TC-21 FAIL:', peersRes.data);
+    }
+  } catch (e) {
+    console.log('❌ TC-21 ERROR:', e.message);
   }
 
   console.log('\n================================================================');
