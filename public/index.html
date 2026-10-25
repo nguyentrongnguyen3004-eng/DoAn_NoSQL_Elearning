@@ -2289,6 +2289,108 @@
   <!-- LIVE TOAST CONTAINER CHO THÔNG BÁO THỜI GIAN THỰC -->
   <div id="live-toast-container" class="fixed top-20 right-4 z-50 space-y-3 pointer-events-none"></div>
 
+  
+  <!-- ============================================================== -->
+  <!-- 8B. MODAL THANH TOÁN VIETQR ĐỘNG (NAPAS 247 DYNAMIC QR)         -->
+  <!-- ============================================================== -->
+  <div id="modal-vietqr-checkout" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-6 border-b border-slate-100 dark:border-slate-800 pb-4 text-left">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-brand-600 text-white flex items-center justify-center text-lg shadow-md shadow-brand-500/20 shrink-0">
+            <i class="fa-solid fa-qrcode"></i>
+          </div>
+          <div>
+            <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-tight">Thanh Toán Khóa Học Qua VietQR</h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Chuẩn thanh toán liên ngân hàng NAPAS 247 chuyển khoản tức thời</p>
+          </div>
+        </div>
+        <button onclick="closeVietQRModal()" class="w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-all">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Content 2 cột -->
+      <div class="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center">
+        <!-- Cột trái: Ảnh QR & Đếm ngược -->
+        <div class="sm:col-span-6 flex flex-col items-center text-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/80">
+          <div class="relative p-2 bg-white rounded-2xl shadow-md border border-slate-200 mb-3 group">
+            <img id="vietqr-image" src="" alt="Mã VietQR Thanh Toán" class="w-52 h-52 sm:w-56 sm:h-56 object-contain rounded-xl">
+            <div class="absolute inset-0 rounded-2xl ring-2 ring-brand-500/40 pointer-events-none animate-pulse"></div>
+          </div>
+          <div class="flex items-center gap-1.5 text-xs font-bold text-rose-500 mb-1">
+            <i class="fa-regular fa-clock"></i>
+            <span>Thời gian giữ đơn: <span id="vietqr-countdown" class="font-mono text-sm">09:59</span></span>
+          </div>
+          <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-tight max-w-[200px]">
+            Mở app ngân hàng bất kỳ quét mã. Thông tin chuyển khoản sẽ tự động được điền sẵn.
+          </p>
+        </div>
+
+        <!-- Cột phải: Thông tin đơn hàng & chuyển khoản -->
+        <div class="sm:col-span-6 space-y-3.5 text-left text-xs">
+          <div>
+            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Khóa học đăng ký</div>
+            <div id="vietqr-course-title" class="text-sm font-bold text-slate-900 dark:text-white mt-0.5 leading-snug">IELTS Masterclass 7.5+</div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-brand-50/70 dark:bg-brand-950/30 border border-brand-200/60 dark:border-brand-800/50">
+            <div class="text-[11px] font-semibold text-brand-700 dark:text-indigo-300">Tổng thanh toán</div>
+            <div id="vietqr-amount" class="text-xl font-black text-brand-600 dark:text-indigo-400 mt-0.5">699.000 ₫</div>
+          </div>
+
+          <div class="space-y-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500 dark:text-slate-400">Ngân hàng:</span>
+              <span class="font-bold text-slate-800 dark:text-slate-200" id="vietqr-bank">MB Bank</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500 dark:text-slate-400">Số tài khoản:</span>
+              <div class="flex items-center gap-1.5 font-mono font-bold text-slate-800 dark:text-slate-200">
+                <span id="vietqr-account-no">0348888999</span>
+                <button onclick="copyVietQRField('vietqr-account-no', 'Số tài khoản')" class="text-brand-600 hover:text-brand-700 text-[11px]" title="Sao chép">
+                  <i class="fa-regular fa-copy"></i>
+                </button>
+              </div>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500 dark:text-slate-400">Chủ tài khoản:</span>
+              <span class="font-bold text-slate-800 dark:text-slate-200" id="vietqr-account-name">EDUPRO ACADEMY</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500 dark:text-slate-400">Cú pháp chuyển:</span>
+              <div class="flex items-center gap-1.5 font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                <span id="vietqr-order-code">EDUPRO 8849</span>
+                <button onclick="copyVietQRField('vietqr-order-code', 'Nội dung chuyển khoản')" class="text-brand-600 hover:text-brand-700 text-[11px]" title="Sao chép">
+                  <i class="fa-regular fa-copy"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 text-[11px]">
+            <i class="fa-solid fa-gift text-sm shrink-0"></i>
+            <span>Tặng ngay <strong>+200 XP</strong> vào tài khoản sau khi hoàn tất đơn hàng.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-2.5 mt-6 border-t border-slate-100 dark:border-slate-800 pt-4">
+        <button onclick="closeVietQRModal()" class="w-full sm:w-1/3 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs transition-all">
+          Hủy bỏ
+        </button>
+        <button id="btn-confirm-vietqr" onclick="confirmVietQRPayment()" class="w-full sm:w-2/3 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs shadow-lg shadow-emerald-500/25 transition-all flex items-center justify-center gap-2">
+          <i class="fa-solid fa-circle-check"></i>
+          <span id="btn-confirm-vietqr-text">Tôi Đã Chuyển Khoản Thành Công</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <div id="certificate-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
     <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-3xl w-full p-4 sm:p-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
       
@@ -5003,7 +5105,127 @@
     // ==============================================================
     // 19. CỤM TÍNH NĂNG BỔ SUNG 4: ENROLL, NOTES, REVIEWS & NEO4J RECS
     // ==============================================================
-    async function enrollCurrentCourse() {
+    async 
+    // ==============================================================================
+    // TÍNH NĂNG THƯƠNG MẠI: CỔNG THANH TOÁN VIETQR ĐỘNG (NAPAS 247)
+    // ==============================================================================
+    let currentVietQROrder = null;
+    let vietqrCountdownInterval = null;
+
+    async function openVietQRCheckout(courseId = '670000000000000000000010') {
+      try {
+        const token = localStorage.getItem('edupro_token');
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+
+        showCustomAlert('Đang khởi tạo mã VietQR thanh toán...');
+        const res = await fetch('/api/courses/' + courseId + '/checkout-order', {
+          method: 'POST',
+          headers
+        });
+        const data = await res.json();
+
+        if (data.success && data.data) {
+          currentVietQROrder = data.data;
+
+          const imgEl = document.getElementById('vietqr-image');
+          if (imgEl) imgEl.src = data.data.qrUrl;
+          document.getElementById('vietqr-course-title').textContent = data.data.courseTitle;
+          document.getElementById('vietqr-amount').textContent = data.data.formattedAmount || (data.data.amount.toLocaleString('vi-VN') + ' ₫');
+          document.getElementById('vietqr-bank').textContent = data.data.bankName;
+          document.getElementById('vietqr-account-no').textContent = data.data.accountNo;
+          document.getElementById('vietqr-account-name').textContent = data.data.accountName;
+          document.getElementById('vietqr-order-code').textContent = data.data.orderId;
+
+          // Bắt đầu đếm ngược 10 phút
+          startVietQRTimer(10 * 60);
+
+          document.getElementById('modal-vietqr-checkout')?.classList.remove('hidden');
+        } else {
+          showCustomAlert(data.message || 'Không thể tạo đơn hàng thanh toán.');
+        }
+      } catch (e) {
+        showCustomAlert('Lỗi mạng khi tạo mã VietQR: ' + e.message);
+      }
+    }
+
+    function startVietQRTimer(seconds) {
+      if (vietqrCountdownInterval) clearInterval(vietqrCountdownInterval);
+      let timeLeft = seconds;
+      const el = document.getElementById('vietqr-countdown');
+
+      vietqrCountdownInterval = setInterval(() => {
+        if (timeLeft <= 0) {
+          clearInterval(vietqrCountdownInterval);
+          if (el) el.textContent = 'HẾT HẠN';
+          return;
+        }
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+        const s = (timeLeft % 60).toString().padStart(2, '0');
+        if (el) el.textContent = `${m}:${s}`;
+      }, 1000);
+    }
+
+    function closeVietQRModal() {
+      if (vietqrCountdownInterval) clearInterval(vietqrCountdownInterval);
+      document.getElementById('modal-vietqr-checkout')?.classList.add('hidden');
+    }
+
+    async function confirmVietQRPayment() {
+      if (!currentVietQROrder) return;
+      const btn = document.getElementById('btn-confirm-vietqr');
+      const btnText = document.getElementById('btn-confirm-vietqr-text');
+
+      if (btn) btn.disabled = true;
+      if (btnText) btnText.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Đang xác thực biến động số dư ngân hàng...';
+
+      try {
+        const token = localStorage.getItem('edupro_token');
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+
+        // Mô phỏng 1.2s độ trễ xác thực ngân hàng
+        await new Promise(r => setTimeout(r, 1200));
+
+        const res = await fetch('/api/courses/orders/' + currentVietQROrder.orderId + '/confirm', {
+          method: 'POST',
+          headers
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          closeVietQRModal();
+          showCustomAlert('🎉 Thanh toán thành công! Khóa học đã được kích hoạt (+200 XP)');
+          if (typeof loadRecentNotifications === 'function') loadRecentNotifications();
+          // Mở giao diện lớp học ngay
+          setTimeout(() => {
+            openClassroomModal(currentVietQROrder.courseId);
+          }, 800);
+        } else {
+          showCustomAlert(data.message || 'Xác nhận thanh toán chưa thành công.');
+        }
+      } catch (e) {
+        showCustomAlert('Lỗi kết nối xác nhận: ' + e.message);
+      } finally {
+        if (btn) btn.disabled = false;
+        if (btnText) btnText.textContent = 'Tôi Đã Chuyển Khoản Thành Công';
+      }
+    }
+
+    function copyVietQRField(elementId, labelName) {
+      const text = document.getElementById(elementId)?.textContent?.trim();
+      if (text) {
+        navigator.clipboard.writeText(text);
+        showCustomAlert(`Đã sao chép ${labelName}: ${text}`);
+      }
+    }
+
+    function enrollCurrentCourse() {
+      if (currentClassroomCourseId) {
+        openVietQRCheckout(currentClassroomCourseId);
+        return;
+      }
       if (!currentToken) { openLoginModal(); return; }
       if (!currentCourseId) return;
       try {

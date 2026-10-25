@@ -1049,6 +1049,167 @@ router.post('/:id/enroll', authenticateToken, async (req, res) => {
   }
 });
 
+// 2.2B TAO DON HANG THANH TOAN VIETQR DONG (DYNAMIC VIETQR ORDER CHECKOUT)
+router.post('/:id/checkout-order', authenticateToken, async (req, res) => {
+  try {
+    const courseId = req.params.id;
+    const studentId = req.user ? req.user.username : 'student_nguyen';
+    const db = getMongoDb();
+
+    let courseTitle = 'Khóa Học Tiếng Anh Chuẩn Quốc Tế';
+    let amount = 699000;
+
+    if (db) {
+      try {
+        const { ObjectId } = require('mongodb');
+        let course = null;
+        if (ObjectId.isValid(courseId)) {
+          course = await db.collection('courses').findOne({ _id: new ObjectId(courseId) });
+        }
+        if (!course) {
+          course = await db.collection('courses').findOne({ id: courseId });
+        }
+        if (course) {
+          courseTitle = course.title || course.name || courseTitle;
+          if (course.price) {
+            amount = typeof course.price === 'number' ? course.price : parseInt(course.price.toString().replace(/\D/g, '')) || 699000;
+          }
+        }
+      } catch (e) {}
+    }
+
+    const orderId = 'EDUPRO_' + Math.floor(1000 + Math.random() * 9000);
+    const bankCode = 'MB';
+    const accountNo = '0348888999';
+    const accountName = 'EDUPRO ACADEMY';
+
+    // Tạo URL ảnh VietQR chuẩn NAPAS 247
+    const qrUrl = `https://img.vietqr.io/image/${bankCode}-${accountNo}-compact2.png?amount=${amount}&addInfo=${orderId}&accountName=${encodeURIComponent(accountName)}`;
+
+    const orderRecord = {
+      orderId,
+      studentId,
+      courseId,
+      courseTitle,
+      amount,
+      formattedAmount: new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount),
+      bankCode,
+      bankName: 'MB Bank (Ngân Hàng Quân Đội)',
+      accountNo,
+      accountName,
+      qrUrl,
+      status: 'PENDING',
+      createdAt: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString()
+    };
+
+    // Lưu vào MongoDB
+    if (db) {
+      try {
+        await db.collection('orders').insertOne({ ...orderRecord });
+      } catch (e) {}
+    }
+
+    // Cache đơn hàng vào Redis với TTL 10 phút (600s)
+    if (redisClient && redisClient.status === 'ready') {
+      try {
+        await redisClient.setex(`order:${orderId}`, 600, JSON.stringify(orderRecord));
+      } catch (e) {}
+    }
+
+    res.json({
+      success: true,
+      message: 'Đã tạo đơn hàng VietQR thành công',
+      data: orderRecord
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// 2.2C XAC NHAN GIAO DICH THANH TOAN VIETQR (WEBHOOK SIMULATOR & ENROLL)
+router.post('/orders/:orderId/confirm', authenticateToken, async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const studentId = req.user ? req.user.username : 'student_nguyen';
+    const db = getMongoDb();
+
+    let courseId = '670000000000000000000010';
+    let courseTitle = 'IELTS Masterclass 7.5+';
+    let amount = 699000;
+
+    // Tìm đơn hàng từ Redis hoặc MongoDB
+    if (redisClient && redisClient.status === 'ready') {
+      try {
+        const cached = await redisClient.get(`order:${orderId}`);
+        if (cached) {
+          const ord = JSON.parse(cached);
+          courseId = ord.courseId;
+          courseTitle = ord.courseTitle;
+          amount = ord.amount;
+        }
+      } catch (e) {}
+    }
+
+    if (db) {
+      try {
+        const ord = await db.collection('orders').findOne({ orderId });
+        if (ord) {
+          courseId = ord.courseId;
+          courseTitle = ord.courseTitle;
+          amount = ord.amount;
+          await db.collection('orders').updateOne({ orderId }, { $set: { status: 'COMPLETED', paidAt: new Date().toISOString() } });
+        }
+      } catch (e) {}
+    }
+
+    // Tự động kích hoạt ghi danh khóa học (Enroll)
+    let set = memoryEnrolledCourses.get(studentId);
+    if (!set) {
+      set = new Set(['670000000000000000000010', '670000000000000000000011', '670000000000000000000012']);
+      memoryEnrolledCourses.set(studentId, set);
+    }
+    set.add(courseId);
+
+    // Ghi nhận telemetry Cassandra
+    await recordCassandraEvent(studentId, 'COURSE_ENROLL_PAID', courseId, 'VIETQR_PAYMENT', 0, { orderId, amount, status: 'PAID' });
+
+    // Đẩy thông báo thời gian thực qua Redis Pub/Sub
+    const notifPayload = {
+      id: 'notif_' + Date.now(),
+      title: 'Thanh toán khóa học thành công!',
+      message: `Đơn hàng ${orderId} (${courseTitle}) đã hoàn tất. Bạn được tặng +200 XP thưởng!`,
+      type: 'achievement',
+      icon: '💳',
+      link: '#section-classroom',
+      createdAt: new Date().toISOString(),
+      isRead: false
+    };
+
+    if (redisClient && redisClient.status === 'ready') {
+      try {
+        await redisClient.lpush('notifications:all', JSON.stringify(notifPayload));
+        await redisClient.publish('system_notifications', JSON.stringify(notifPayload));
+        await redisClient.del(`order:${orderId}`);
+      } catch (e) {}
+    }
+
+    res.json({
+      success: true,
+      message: 'Xác nhận thanh toán thành công! Khóa học đã được kích hoạt.',
+      data: {
+        orderId,
+        courseId,
+        courseTitle,
+        rewardXp: 200,
+        enrolledCoursesCount: set.size
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // 2.3 GHI CHU BAI GIANG THEO MOC THOI GIAN VIDEO (TIMESTAMPED NOTES)
 router.get('/:id/notes', authenticateToken, async (req, res) => {
   try {

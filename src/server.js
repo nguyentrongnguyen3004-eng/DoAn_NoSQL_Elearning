@@ -270,7 +270,7 @@ app.get('/api/databases/status', async (req, res) => {
 });
 
 // Khoi dong server
-app.listen(PORT, async () => {
+app.listen(PORT, '0.0.0.0', async () => {
   console.log(`==============================================================================`);
   console.log(`Backend API E-learning dang khoi chay tren: http://localhost:${PORT}`);
   console.log(`==============================================================================`);
