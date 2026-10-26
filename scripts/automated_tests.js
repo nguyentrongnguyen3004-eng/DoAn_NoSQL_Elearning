@@ -50,11 +50,11 @@ function request(method, path, body = null, token = null) {
 
 async function runTests() {
   console.log('================================================================');
-  console.log('BAT DAU CHAY 21 TEST CASES VERIFICATION CHO HE THONG 4 NOSQL');
+  console.log('BAT DAU CHAY 22 TEST CASES VERIFICATION CHO HE THONG 4 NOSQL & FRONTEND');
   console.log('================================================================\n');
 
   let passed = 0;
-  let total = 21;
+  let total = 22;
 
   let studentToken = null;
   let teacherToken = null;
@@ -373,6 +373,29 @@ async function runTests() {
     }
   } catch (e) {
     console.log('❌ TC-21 ERROR:', e.message);
+  }
+
+  // TC-22: Modular Frontend Architecture Verification (5 Separation-of-Concerns JS Modules)
+  try {
+    const modules = ['core.js', 'classroom.js', 'study.js', 'telemetry.js', 'copilot.js'];
+    let allLoaded = true;
+    let totalBytes = 0;
+    for (const m of modules) {
+      const res = await request('GET', `/js/${m}`);
+      if (res.status !== 200 || typeof res.data !== 'string' || res.data.length < 500) {
+        allLoaded = false;
+        break;
+      }
+      totalBytes += res.data.length;
+    }
+    if (allLoaded) {
+      console.log(`✅ TC-22 PASS: Kien truc Modular Frontend thanh cong (5/5 JS Modules: core, classroom, study, telemetry, copilot - Tong ${Math.round(totalBytes/1024)} KB)`);
+      passed++;
+    } else {
+      console.log('❌ TC-22 FAIL: Mot so file module JS khong tra ve HTTP 200');
+    }
+  } catch (e) {
+    console.log('❌ TC-22 ERROR:', e.message);
   }
 
   console.log('\n================================================================');

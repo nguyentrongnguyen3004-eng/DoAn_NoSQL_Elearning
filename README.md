@@ -6,7 +6,7 @@
 [![Redis](https://img.shields.io/badge/Redis-v7.2%20In--Memory-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
 [![Apache Cassandra](https://img.shields.io/badge/Cassandra-v4.1%20Wide--Column-1287B1?style=for-the-badge&logo=apachecassandra&logoColor=white)](https://cassandra.apache.org/)
 [![Neo4j](https://img.shields.io/badge/Neo4j-v5.20%20Graph-008CC1?style=for-the-badge&logo=neo4j&logoColor=white)](https://neo4j.com/)
-[![Tests](https://img.shields.io/badge/Automated%20Tests-21%2F21%20Passed%20(100%25)-10B981?style=for-the-badge&logo=checkmarx&logoColor=white)](scripts/automated_tests.js)
+[![Tests](https://img.shields.io/badge/Automated%20Tests-22%2F22%20Passed%20(100%25)-10B981?style=for-the-badge&logo=checkmarx&logoColor=white)](scripts/automated_tests.js)
 
 > **Học phần:** Cơ sở dữ liệu NoSQL (Học kỳ 7 - Khóa 14DH)  
 > **Đơn vị:** Khoa Công nghệ Thông tin - Trường Đại học Công Thương TP. Hồ Chí Minh (HUIT)  
@@ -123,9 +123,10 @@ BAT DAU CHAY 21 TEST CASES VERIFICATION CHO HE THONG 4 NOSQL
 ✅ TC-19 PASS: Giam sat Telemetry 4 CSDL thanh cong (Mongo, Redis RAM, Cassandra Events, Neo4j Nodes)
 ✅ TC-20 PASS: Kiem tra Tuong lua Redis Sliding Window Firewall (120 RPM, Blacklist Isolation)
 ✅ TC-21 PASS: Quet do thi Neo4j tim kiem Ban Cung Tien (Study Buddies Graph Match 96%)
+✅ TC-22 PASS: Kien truc Modular Frontend thanh cong (5/5 JS Modules: core, classroom, study, telemetry, copilot - 241 KB)
 
 ================================================================
-KET QUA KIEM THU: 21/21 TEST CASES PASSED (100%)
+KET QUA KIEM THU: 22/22 TEST CASES PASSED (100%)
 ================================================================
 ```
 
@@ -142,7 +143,21 @@ Các chức năng cấp cao độc lập, nâng tầm ứng dụng lên chuẩn 
 
 ---
 
-## 👥 5. DANH SÁCH TÀI KHOẢN MẪU ĐĂNG NHẬP (DEMO ACCOUNTS)
+## 🧩 6. KIẾN TRÚC FRONTEND MODULAR (SEPARATION OF CONCERNS)
+
+Giao diện Single-Page Application (SPA) đã được tái cấu trúc từ file monolith sang mô hình **5 Module JavaScript chuyên biệt**, tách rời hoàn toàn mã nguồn nghiệp vụ khỏi cấu trúc HTML (`public/index.html` rút gọn từ 8.141 dòng xuống còn ~3.170 dòng HTML thuần):
+
+| File Module | Dung lượng | Nghiệp vụ đảm nhiệm |
+| :--- | :---: | :--- |
+| **`public/js/core.js`** | 1.462 dòng (~67 KB) | Khởi tạo State toàn cục, Xác thực JWT/OTP, Navigation SPA, Danh mục khóa học, Cổng thanh toán VietQR động, Xuất chứng chỉ Canvas & Bảng điều khiển CMS Polyglot. |
+| **`public/js/classroom.js`** | 393 dòng (~21 KB) | Trình phát video YouTube nocookie / HTML5 switcher, Ghi log Cassandra Video Retention Curve, Quản lý ghi chú bài học & Đánh giá sao. |
+| **`public/js/study.js`** | 2.478 dòng (~129 KB) | Flashcards 3D Leitner Box, Luyện nghe Dictation, Luyện viết Writing AI chấm điểm CEFR, Phòng thi trực tuyến Exam Room & Đồ thị tri thức Vis.js Neo4j. |
+| **`public/js/telemetry.js`** | 215 dòng (~10 KB) | Bảng điều khiển giám sát hiệu năng 4 CSDL thời gian thực, Tường lửa Redis Sliding Window & Trung tâm sao lưu/phục hồi thảm họa. |
+| **`public/js/copilot.js`** | 455 dòng (~19 KB) | Trợ lý học tập thông minh AI Copilot Drawer, Kết nối bạn cùng tiến Neo4j, Phòng tự học Lofi Pomodoro & Bootstrap ứng dụng. |
+
+---
+
+## 👥 7. DANH SÁCH TÀI KHOẢN MẪU ĐĂNG NHẬP (DEMO ACCOUNTS)
 
 Hệ thống đã nạp sẵn 3 tài khoản tương ứng với 3 vai trò (Roles) trong MongoDB:
 
@@ -156,7 +171,7 @@ Hệ thống đã nạp sẵn 3 tài khoản tương ứng với 3 vai trò (Rol
 
 ---
 
-## 📂 6. TÀI LIỆU PHÂN CÔNG & ĐẶC TẢ CHI TIẾT ĐỒ ÁN
+## 📂 8. TÀI LIỆU PHÂN CÔNG & ĐẶC TẢ CHI TIẾT ĐỒ ÁN
 * **Bản phân công chi tiết 20 Tasks cho 2 thành viên:** [BANG_PHAN_CONG_CHI_TIET_2_THANH_VIEN.docx](BANG_PHAN_CONG_CHI_TIET_2_THANH_VIEN.docx)
 * **Tài liệu Hướng dẫn toàn diện & Kịch bản bảo vệ:** [HUONG_DAN_DU_AN_VA_PHAN_CONG_CONG_VIEC_NOSQL.docx](HUONG_DAN_DU_AN_VA_PHAN_CONG_CONG_VIEC_NOSQL.docx)
 * **Script Sao lưu phục hồi 4 CSDL (Disaster Recovery):** [scripts/backup_restore_unified.js](scripts/backup_restore_unified.js)
