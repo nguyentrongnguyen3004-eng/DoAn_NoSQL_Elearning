@@ -222,7 +222,9 @@ const m2LoadAnalytics = loadAnalyticsData;
 loadAnalyticsData = async function () { if (!m2Staff()) return; await m2LoadAnalytics(); await m2LoadCMS(); };
 function m2Init() {
   document.head.insertAdjacentHTML('beforeend', '<link rel="stylesheet" href="/member2.css">');
-  document.getElementById('nav-user-name').insertAdjacentHTML('afterend', '<span id="m2-nav-xp" class="text-xs font-bold"></span>');
+  if (!document.getElementById('m2-nav-xp') && document.getElementById('nav-user-name')) {
+    document.getElementById('nav-user-name').insertAdjacentHTML('afterend', '<span id="m2-nav-xp" class="text-xs font-bold"></span>');
+  }
   document.getElementById('exam-result-card').insertAdjacentHTML('beforeend', m2Button('🔄 Làm lại đề thi này', 'retakeCurrentExam()'));
   document.getElementById('anti-cheat-modal-btn').insertAdjacentHTML('afterend', m2Button('🔄 Làm lại đề thi này', 'retakeCurrentExam()'));
   const history = document.getElementById('history-table-body').closest('table');
@@ -231,7 +233,9 @@ function m2Init() {
   document.querySelector('#section-history > div').insertAdjacentHTML('beforeend', '<div class="m2-card"><h2>🎁 Cửa hàng đổi quà điểm thưởng XP</h2><p>Số dư: <strong id="m2-shop-balance">0 XP</strong></p><div id="m2-shop-items" class="m2-grid"></div><h3>Kho đồ cá nhân</h3><p id="m2-inventory"></p></div>');
   document.querySelector('#section-analytics > div').insertAdjacentHTML('beforeend', '<div class="m2-card"><h2>Quản lý khóa học</h2><div id="m2-cms-courses" style="overflow:auto"></div><h2>Quản lý ngân hàng câu hỏi đề thi</h2><label>Chọn đề thi <select id="m2-cms-exam" onchange="m2LoadQuestions()"></select></label><div id="m2-cms-questions"></div></div>');
   document.getElementById('certificate-content').insertAdjacentHTML('beforeend', '<div class="m2-card"><img id="m2-certificate-qr" alt="Mã QR tra cứu chứng chỉ" width="140" height="140" style="margin:auto"><a id="m2-certificate-link" target="_blank" rel="noopener" style="overflow-wrap:anywhere"></a></div>');
-  document.querySelector('nav').insertAdjacentHTML('beforeend', m2Button('Tra cứu chứng chỉ', 'm2OpenVerify()'));
+  if (!document.getElementById('nav-btn-verify-cert') && document.querySelector('nav')) {
+    document.querySelector('nav').insertAdjacentHTML('beforeend', m2Button('Tra cứu chứng chỉ', 'm2OpenVerify()'));
+  }
   const certId = new URLSearchParams(location.search).get('certId'); if (certId) m2OpenVerify(certId);
 }
 m2Init();

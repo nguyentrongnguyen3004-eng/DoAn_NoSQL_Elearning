@@ -121,11 +121,11 @@
   <!-- 1. NAVIGATION BAR CHUẨN THƯƠNG MẠI (DARK/LIGHT + LOGO)          -->
   <!-- ============================================================== -->
   <nav class="sticky top-0 z-40 glass-nav border-b border-slate-200/80 dark:border-slate-800/80 transition-all">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16 sm:h-20">
+    <div class="max-w-[1600px] w-full mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 sm:h-[70px] gap-2 lg:gap-4">
         
         <!-- Logo & Thương hiệu -->
-        <div class="flex items-center gap-8">
+        <div class="flex items-center gap-4 lg:gap-6 shrink-0">
           <a href="#" onclick="showSection('courses')" class="flex items-center gap-3 group">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/25 group-hover:scale-105 transition-transform">
               <i class="fa-solid fa-graduation-cap text-lg"></i>
@@ -137,7 +137,7 @@
           </a>
 
           <!-- Menu Danh mục (Desktop) -->
-          <div class="hidden lg:flex items-center gap-1">
+          <div class="hidden lg:flex items-center gap-1 xl:gap-1.5">
             <button onclick="showSection('courses')" id="nav-btn-courses" class="nav-item-btn whitespace-nowrap px-3 py-2 rounded-xl text-xs font-bold text-brand-600 dark:text-indigo-400 bg-brand-50 dark:bg-brand-900/30 transition-all">
               <i class="fa-solid fa-compass mr-1.5"></i> Khóa học
             </button>
@@ -156,6 +156,9 @@
             <button onclick="showSection('history')" id="nav-btn-history" class="nav-item-btn whitespace-nowrap px-3 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
               <i class="fa-solid fa-fire mr-1.5 text-orange-500"></i> Hồ sơ
             </button>
+            <button onclick="m2OpenVerify()" id="nav-btn-verify-cert" title="Tra cứu tính hợp lệ của chứng chỉ công khai (Task 2.7)" class="nav-item-btn whitespace-nowrap px-3 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex items-center gap-1.5">
+              <i class="fa-solid fa-certificate mr-1 text-amber-500"></i> Tra cứu
+            </button>
             <button onclick="showSection('analytics')" id="nav-btn-analytics" class="nav-item-btn hidden whitespace-nowrap px-3 py-2 rounded-xl text-xs font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-all">
               <i class="fa-solid fa-sliders mr-1.5"></i> Quản trị
             </button>
@@ -168,25 +171,25 @@
         </div>
 
         <!-- Thanh tìm kiếm nhanh & User Controls -->
-        <div class="flex items-center gap-2 sm:gap-3">
+        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
           
           <!-- Search input thời gian thực (Tính năng 3) -->
-          <div class="hidden xl:flex items-center relative w-48 2xl:w-60">
-            <i class="fa-solid fa-magnifying-glass absolute left-3.5 text-slate-400 text-sm"></i>
-            <input type="text" id="global-search-input" oninput="handleInstantSearch(this.value)" placeholder="Tìm khóa học..." class="w-full pl-10 pr-4 py-2 bg-slate-100/80 dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-xl text-sm focus:bg-white dark:focus:bg-slate-900 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-800 dark:text-slate-200">
+          <div class="hidden xl:flex items-center relative w-40 2xl:w-56 shrink-0">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 text-slate-400 text-xs"></i>
+            <input type="text" id="global-search-input" oninput="handleInstantSearch(this.value)" placeholder="Tìm khóa học..." class="w-full pl-8 pr-3 py-1.5 bg-slate-100/90 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl text-xs focus:bg-white dark:focus:bg-slate-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/15 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-800 dark:text-slate-200">
           </div>
 
           <!-- Nút chuyển đổi Dark Mode (Tính năng 4) -->
-          <button onclick="toggleDarkMode()" id="theme-toggle-btn" title="Chuyển chế độ Giao diện" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center transition-all">
-            <i class="fa-solid fa-moon dark:hidden text-indigo-600 text-sm sm:text-base"></i>
-            <i class="fa-solid fa-sun hidden dark:inline text-amber-400 text-sm sm:text-base"></i>
+          <button onclick="toggleDarkMode()" id="theme-toggle-btn" title="Chuyển chế độ Giao diện" class="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center transition-all shrink-0">
+            <i class="fa-solid fa-moon dark:hidden text-indigo-600 text-sm"></i>
+            <i class="fa-solid fa-sun hidden dark:inline text-amber-400 text-sm"></i>
           </button>
 
           <!-- Trung tâm thông báo thời gian thực (Redis Pub/Sub & SSE) -->
-          <div class="relative">
-            <button onclick="toggleNotificationDropdown()" id="notification-bell-btn" title="Thông báo thời gian thực" class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center transition-all">
-              <i class="fa-solid fa-bell text-sm sm:text-base"></i>
-              <span id="notification-badge" class="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white rounded-full text-[10px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-slate-900">2</span>
+          <div class="relative shrink-0">
+            <button onclick="toggleNotificationDropdown()" id="notification-bell-btn" title="Thông báo thời gian thực" class="relative w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center transition-all">
+              <i class="fa-solid fa-bell text-sm"></i>
+              <span id="notification-badge" class="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 bg-rose-500 text-white rounded-full text-[10px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-slate-900">2</span>
             </button>
 
             <!-- Dropdown menu thông báo -->
@@ -212,7 +215,7 @@
           </div>
 
           <!-- User Widget -->
-          <div id="auth-unlogged" class="flex items-center gap-1.5 sm:gap-2">
+          <div id="auth-unlogged" class="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button onclick="openLoginModal('login')" class="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
               Đăng nhập
             </button>
@@ -221,21 +224,27 @@
             </button>
           </div>
 
-          <div id="auth-logged" class="hidden flex items-center gap-2 sm:gap-3">
-            <div class="flex items-center gap-2 sm:gap-3 pl-1 sm:pl-2 sm:border-l sm:border-slate-200 dark:border-slate-800">
-              <img id="nav-user-avatar" src="" alt="Avatar" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover ring-2 ring-brand-500/20">
+          <div id="auth-logged" class="hidden flex items-center gap-2 sm:gap-3 shrink-0">
+            <div class="flex items-center gap-2.5 pl-2 sm:border-l sm:border-slate-200 dark:border-slate-800">
+              <div class="relative shrink-0">
+                <img id="nav-user-avatar" src="" alt="Avatar" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover ring-2 ring-brand-500/20 shadow-sm">
+                <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900"></span>
+              </div>
               <div class="hidden sm:block text-left">
-                <div class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight" id="nav-user-name">Người dùng</div>
-                <div class="text-[11px] text-slate-400 dark:text-slate-500 font-medium" id="nav-user-role">Học viên</div>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight truncate max-w-[120px] 2xl:max-w-[160px]" id="nav-user-name">Người dùng</span>
+                  <span id="m2-nav-xp" class="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-extrabold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/60 leading-none"></span>
+                </div>
+                <div class="text-[10px] text-slate-400 dark:text-slate-500 font-medium" id="nav-user-role">Học viên</div>
               </div>
             </div>
-            <button onclick="logout()" title="Đăng xuất" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600 hover:border-rose-200 text-slate-500 flex items-center justify-center text-xs sm:text-sm transition-all">
+            <button onclick="logout()" title="Đăng xuất" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600 hover:border-rose-200 text-slate-500 flex items-center justify-center text-xs sm:text-sm transition-all shrink-0">
               <i class="fa-solid fa-arrow-right-from-bracket"></i>
             </button>
           </div>
 
           <!-- NÚT HAMBURGER MOBILE MENU -->
-          <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-900 text-slate-700 dark:text-slate-200 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-800 transition-all focus:outline-none" aria-label="Toggle menu">
+          <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="lg:hidden w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-900 text-slate-700 dark:text-slate-200 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-800 transition-all focus:outline-none" aria-label="Toggle menu">
             <i id="mobile-menu-icon" class="fa-solid fa-bars text-base"></i>
           </button>
 
@@ -293,6 +302,13 @@
           <i class="fa-solid fa-fire text-sm"></i>
         </div>
         <span>Hồ sơ Gamification & Chứng chỉ</span>
+      </button>
+
+      <button onclick="m2OpenVerify(); toggleMobileMenu()" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600 transition-all text-left">
+        <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+          <i class="fa-solid fa-certificate text-sm"></i>
+        </div>
+        <span>Tra cứu & Xác thực Chứng chỉ</span>
       </button>
 
       <button onclick="showSection('analytics'); toggleMobileMenu()" id="mobile-nav-btn-analytics" class="hidden w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600 transition-all text-left">
