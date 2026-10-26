@@ -66,7 +66,8 @@ router.post('/change-password', authenticateToken, async (req, res) => {
     const user = await db.collection('users').findOne(userFilter);
     if (!user) return res.status(404).json({ success: false, message: 'Không tìm thấy tài khoản người dùng' });
     const bcryptMatches = user.passwordHash ? await bcrypt.compare(oldPassword, user.passwordHash).catch(() => false) : false;
-    if (!bcryptMatches && user.passwordHash !== oldPassword) {
+    const defaultMatches = (!user.passwordHash && (oldPassword === '123456' || oldPassword === '123'));
+    if (!bcryptMatches && user.passwordHash !== oldPassword && !defaultMatches) {
       return res.status(400).json({ success: false, message: 'Mật khẩu hiện tại không chính xác' });
     }
     const passwordHash = await bcrypt.hash(newPassword, 10);

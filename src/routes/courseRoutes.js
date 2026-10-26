@@ -1182,6 +1182,8 @@ router.post('/orders/:orderId/confirm', authenticateToken, async (req, res) => {
           courseTitle = ord.courseTitle;
           amount = ord.amount;
           await db.collection('orders').updateOne({ orderId }, { $set: { status: 'COMPLETED', paidAt: new Date().toISOString() } });
+          const uFilter = ObjectId.isValid(studentId) ? { _id: new ObjectId(studentId) } : { username: studentId };
+          await db.collection('users').updateOne(uFilter, { $inc: { xp: 200 } });
         }
       } catch (e) {}
     }
