@@ -854,18 +854,23 @@ var API_BASE = window.API_BASE;
       }
     }
 
-    // 9. TRỢ LÝ GIA SƯ ẢO AI TUTOR CHATBOT (TÍNH NĂNG 2)
+    // 9. TRỢ LÝ GIA SƯ ẢO AI COPILOT (DELEGATE TO 4-NOSQL COPILOT)
     function toggleAiChat() {
-      const win = document.getElementById('ai-chat-window');
-      win.classList.toggle('hidden');
-      if (!win.classList.contains('hidden')) {
-        document.getElementById('ai-chat-input').focus();
+      if (typeof toggleCopilotWidget === 'function') {
+        toggleCopilotWidget();
       }
     }
 
     function sendQuickPrompt(promptText) {
-      document.getElementById('ai-chat-input').value = promptText;
-      sendChatMessage();
+      if (typeof toggleCopilotWidget === 'function') {
+        const card = document.getElementById('copilot-chat-card');
+        if (card && card.classList.contains('hidden')) {
+          toggleCopilotWidget();
+        }
+      }
+      if (typeof sendCopilotMessage === 'function') {
+        sendCopilotMessage(promptText);
+      }
     }
 
     function sendChatMessage() {

@@ -2702,49 +2702,6 @@
     </div>
   </div>
 
-  <!-- TRỢ LÝ GIA SƯ ẢO ĐÃ ĐƯỢC HỢP NHẤT VÀO EDUPRO SMART AI COPILOT GÓC DƯỚI PHẢI -->
-
-      <!-- Messages Stream -->
-      <div id="ai-chat-messages" class="flex-grow p-4 overflow-y-auto space-y-3 text-xs">
-        <div class="flex gap-2.5 items-start">
-          <div class="w-7 h-7 rounded-lg bg-brand-100 dark:bg-brand-950 text-brand-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
-            <i class="fa-solid fa-robot"></i>
-          </div>
-          <div class="p-3 rounded-2xl rounded-tl-sm bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 leading-relaxed max-w-[85%]">
-            Xin chào! Mình là <strong>EduPro English AI Tutor</strong>. Bạn cần hỗ trợ gì về lộ trình luyện thi IELTS/TOEIC, ngữ pháp 12 thì, từ vựng học thuật hay kiến trúc hệ thống hôm nay?
-          </div>
-        </div>
-      </div>
-
-      <!-- Quick prompts -->
-      <div class="px-3 py-2 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-100 dark:border-slate-800 flex gap-1.5 overflow-x-auto text-[11px]">
-        <button onclick="sendQuickPrompt('Lộ trình học IELTS 7.5+ và TOEIC 850+ gồm những gì?')" class="px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 whitespace-nowrap hover:border-brand-500">
-          Lộ trình IELTS 7.5+?
-        </button>
-        <button onclick="sendQuickPrompt('Mẹo phân biệt 12 thì và đảo ngữ câu điều kiện?')" class="px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 whitespace-nowrap hover:border-brand-500">
-          Ngữ pháp 12 thì & Đảo ngữ?
-        </button>
-        <button onclick="sendQuickPrompt('Cách nhận chứng chỉ Tiếng Anh quốc tế?')" class="px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 whitespace-nowrap hover:border-brand-500">
-          Nhận chứng chỉ thế nào?
-        </button>
-      </div>
-
-      <!-- Chat Input -->
-      <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center gap-2">
-        <input type="text" id="ai-chat-input" onkeypress="if(event.key==='Enter') sendChatMessage()" placeholder="Hỏi AI bất kỳ điều gì..." class="flex-grow py-2 px-3 bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-100">
-        <button onclick="sendChatMessage()" class="w-8 h-8 rounded-xl bg-brand-600 text-white flex items-center justify-center hover:bg-brand-700 transition-all shrink-0">
-          <i class="fa-solid fa-paper-plane text-xs"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Floating Toggle Button -->
-    <button onclick="toggleAiChat()" id="ai-chat-toggle-btn" class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-500 text-white shadow-xl shadow-brand-500/30 flex items-center justify-center text-xl hover:scale-105 active:scale-95 transition-all relative">
-      <i class="fa-solid fa-comment-dots"></i>
-      <span class="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white dark:border-slate-950 rounded-full"></span>
-    </button>
-  </div>
-
   <!-- ============================================================== -->
   <!-- 10. MODAL ĐĂNG NHẬP, ĐĂNG KÝ & QUÊN MẬT KHẨU (OTP GMAIL)         -->
   <!-- ============================================================== -->
