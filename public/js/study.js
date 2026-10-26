@@ -1051,7 +1051,8 @@
                   <i class="fa-solid fa-thumbs-up"></i> <span id="upvote-count-${d._id}">${d.upvotes || 0}</span>
                 </button>
               </div>
-              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${d.content}</p>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${typeof esc === 'function' ? esc(d.content) : d.content}</p>
+              ${typeof m2Staff === 'function' && m2Staff() ? m2Button("🗑 Xóa bình luận", `m2Moderate('discussions','${d._id}')`) : ""}
               ${Array.isArray(d.replies) && d.replies.length > 0 ? `
                 <div class="pl-3 border-l-2 border-emerald-500 space-y-1.5 pt-1">
                   ${d.replies.map(r => `
@@ -2475,4 +2476,183 @@
       }
     }
 
-    // ==============================================================
+    // ==============================================================
+
+// ==============================================================================
+// VOCABULARY CREATOR, AUTOPLAY & WRITING LAB (TASK 1.6 - 1.10)
+// ==============================================================================
+function openAddFlashcardModal() {
+  const modal = document.getElementById('modal-add-flashcard');
+  if (modal) modal.classList.remove('hidden');
+}
+
+function closeAddFlashcardModal() {
+  const modal = document.getElementById('modal-add-flashcard');
+  if (modal) modal.classList.add('hidden');
+}
+
+async function addNewCustomFlashcard(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  if (!currentToken) { openLoginModal(); return; }
+  const word = document.getElementById('vocab-word').value.trim();
+  const phonetic = document.getElementById('vocab-phonetic').value.trim();
+  const meaning = document.getElementById('vocab-meaning').value.trim();
+  const example = document.getElementById('vocab-example').value.trim();
+  const category = document.getElementById('vocab-category').value;
+
+  try {
+    const res = await fetch(`${API_BASE}/courses/flashcards/custom`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${currentToken}` },
+      body: JSON.stringify({ word, phonetic, meaning, example, category })
+    });
+    const json = await res.json();
+    if (!res.ok || !json.success) throw new Error(json.message || 'Thêm từ vựng thất bại');
+    const form = document.querySelector('#modal-add-flashcard form');
+    if (form) form.reset();
+    closeAddFlashcardModal();
+    showToast(json.message || 'Đã thêm từ vựng mới vào kho lưu trữ!', 'success');
+    loadFlashcardDeck();
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+var isAutoplayingVocab = false;
+var vocabAutoplayTimer = null;
+
+function stopVocabAutoplay() {
+  isAutoplayingVocab = false;
+  if (vocabAutoplayTimer) clearTimeout(vocabAutoplayTimer);
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  const btn = document.getElementById('btn-vocab-autoplay');
+  if (btn) btn.innerHTML = '🎧 Tự động phát (Autoplay)';
+}
+
+function toggleVocabAutoplay() {
+  if (isAutoplayingVocab) { stopVocabAutoplay(); return; }
+  if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
+    showToast('Trình duyệt không hỗ trợ đọc âm thanh Web Speech API', 'error');
+    return;
+  }
+  const cards = (typeof allFlashcards !== 'undefined' && allFlashcards.length) ? allFlashcards : [];
+  if (!cards.length) { showToast('Chưa có từ vựng nào để tự động phát', 'warning'); return; }
+
+  isAutoplayingVocab = true;
+  const btn = document.getElementById('btn-vocab-autoplay');
+  if (btn) btn.innerHTML = '⏹️ Dừng phát';
+
+  const wait = ms => new Promise(r => { vocabAutoplayTimer = setTimeout(r, ms); });
+  const say = (text, lang) => new Promise(resolve => {
+    if (!isAutoplayingVocab) return resolve();
+    const utt = new SpeechSynthesisUtterance(String(text || ''));
+    utt.lang = lang;
+    utt.onend = resolve;
+    utt.onerror = resolve;
+    window.speechSynthesis.speak(utt);
+  });
+
+  (async () => {
+    for (const card of cards) {
+      if (!isAutoplayingVocab) break;
+      const cardEl = document.getElementById(`fc-card-${card.id}`);
+      if (cardEl) {
+        cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        cardEl.classList.add('ring-4', 'ring-brand-500');
+      }
+      await say(card.word, 'en-US');
+      if (!isAutoplayingVocab) break;
+      await wait(1500);
+      if (typeof toggleFlashcardMeaning === 'function') toggleFlashcardMeaning(card.id, true);
+      await say(card.meaning || card.meaningVi || '', 'vi-VN');
+      if (!isAutoplayingVocab) break;
+      await wait(1800);
+      if (cardEl) cardEl.classList.remove('ring-4', 'ring-brand-500');
+    }
+    if (isAutoplayingVocab) stopVocabAutoplay();
+  })();
+}
+
+async function exportVocabCsv() {
+  if (!currentToken) { openLoginModal(); return; }
+  try {
+    const res = await fetch(`${API_BASE}/courses/flashcards/export`, {
+      headers: { Authorization: `Bearer ${currentToken}` }
+    });
+    if (!res.ok) throw new Error('Không thể xuất file từ vựng');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'EduPro_Vocabulary.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast('Đã tải xuống file từ vựng EduPro_Vocabulary.csv!', 'success');
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+// IELTS WRITING LAB EXTENSIONS (TASK 1.9 & 1.10)
+var currentWritingTask = 'task2';
+var writingDrafts = { task1: '', task2: '' };
+var writingAutosaveTimer = null;
+
+function switchWritingTask(type) {
+  currentWritingTask = type === 'task1' ? 'task1' : 'task2';
+  const isTask1 = currentWritingTask === 'task1';
+  const task1Btn = document.getElementById('btn-task1-tab');
+  const task2Btn = document.getElementById('btn-task2-tab');
+  if (task1Btn) task1Btn.className = isTask1 ? 'px-4 py-2 rounded-xl bg-brand-600 text-white font-bold text-xs shadow-md' : 'px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs';
+  if (task2Btn) task2Btn.className = !isTask1 ? 'px-4 py-2 rounded-xl bg-brand-600 text-white font-bold text-xs shadow-md' : 'px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs';
+
+  const chartBox = document.getElementById('writing-task1-chart');
+  if (chartBox) chartBox.classList.toggle('hidden', !isTask1);
+
+  const topicInput = document.getElementById('writing-topic-input');
+  if (topicInput) {
+    topicInput.value = isTask1
+      ? 'The graph below shows the proportion of the population aged 65 and over between 1940 and 2040 in three countries (USA, Sweden, Japan).'
+      : 'Some people believe that unpaid community service should be a compulsory part of high school programmes. To what extent do you agree or disagree?';
+  }
+  loadWritingDraft(currentWritingTask);
+}
+
+async function loadWritingDraft(taskType = currentWritingTask) {
+  if (!currentToken) return;
+  try {
+    const res = await fetch(`${API_BASE}/exams/writing/draft?taskType=${taskType}`, {
+      headers: { Authorization: `Bearer ${currentToken}` }
+    });
+    const json = await res.json();
+    if (json.success && json.essay && json.essay.trim()) {
+      writingDrafts[taskType] = json.essay;
+      const banner = document.getElementById('writing-draft-banner');
+      if (banner) banner.classList.remove('hidden');
+    }
+  } catch (e) {}
+}
+
+function restoreWritingDraft() {
+  const essayInput = document.getElementById('writing-essay-input') || document.getElementById('ielts-writing-input');
+  if (essayInput && writingDrafts[currentWritingTask]) {
+    essayInput.value = writingDrafts[currentWritingTask];
+    showToast('Đã khôi phục bài viết từ bản nháp Redis!', 'success');
+  }
+  const banner = document.getElementById('writing-draft-banner');
+  if (banner) banner.classList.add('hidden');
+}
+
+async function discardWritingDraft() {
+  const banner = document.getElementById('writing-draft-banner');
+  if (banner) banner.classList.add('hidden');
+  writingDrafts[currentWritingTask] = '';
+  if (currentToken) {
+    await fetch(`${API_BASE}/exams/writing/draft?taskType=${currentWritingTask}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${currentToken}` }
+    }).catch(() => {});
+  }
+}

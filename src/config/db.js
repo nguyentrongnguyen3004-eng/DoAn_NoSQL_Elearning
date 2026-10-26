@@ -93,5 +93,6 @@ module.exports = {
   redisClient,
   cassandraClient,
   neo4jDriver,
-  connectAllDatabases
+  connectAllDatabases,
+  connectMongoDB
 };

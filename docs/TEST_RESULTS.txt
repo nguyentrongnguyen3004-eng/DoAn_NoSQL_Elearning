@@ -1,0 +1,38 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> nosql-elearning-backend@1.0.0 test
+> node --test tests/*.test.js
+
+✔ 2.8 UI: flag toggles orange navigation and blocks submission on cancel (338.70437ms)
+✔ 2.1 UI: retake resets flags, answers, modal and active state without reload (165.542301ms)
+✔ 2.3/2.4 UI: current balance, inventory, disabled purchase and snowflake (174.822945ms)
+✔ 2.2/2.10 UI: review text is escaped; review delete shown only to admin (123.115665ms)
+✔ 2.5/2.6 UI: course and question editor prefill current values (165.063097ms)
+[Redis]     Da ket noi thanh cong
+[MongoDB]   Da ket noi thanh cong
+✔ 2.1: mutation requires authentication (518.390469ms)
+✔ 2.1: unknown exam rejected; no answer key leaks on start (41.510576ms)
+✔ 2.1: identity is taken from token; 3 violations force zero and preserve history (45.204066ms)
+✔ 2.1: retake clears answers, violations and timer without deleting result (16.664876ms)
+✔ 2.2: invalid choices rejected; repeated submissions have one result and one XP award (32.138111ms)
+✔ 2.2: review is private and retains question snapshot after edits/deletion (5.841996ms)
+✔ 2.3: 1450 XP redeems 500 XP into one inventory item; persists across profile loads (28.453368ms)
+✔ 2.3: concurrent purchases cannot overspend or duplicate free rewards (9.778315ms)
+✔ 2.4: missed yesterday consumes exactly one freeze and awards check-in once (15.397723ms)
+✔ 2.4: missing two days or missing freeze restarts at one; Vietnam calendar crosses years (8.251939ms)
+✔ 2.5: staff can edit course; student and teacher delete are forbidden; reject negative price (12.334295ms)
+✔ 2.6: exams have independent question banks; edits preserve old submissions (21.42655ms)
+✔ 2.7: public verification and QR succeed; changed hash and revoked cert fail (27.868053ms)
+✔ 2.9: 12 matching records paginate 5/5/2; categories and ownership enforced (18.85562ms)
+✔ 2.10: moderation permissions enforced and deleted content never reappears (29.519125ms)
+✔ 2.5: admin soft delete removes course from catalog and direct detail (16.313421ms)
+✔ Redis: bitmap and reset reflect the durable attempt and streak (16.211862ms)
+✔ Migration is repeatable and preserves XP, results and revoked certificates (82.296061ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1335.078373

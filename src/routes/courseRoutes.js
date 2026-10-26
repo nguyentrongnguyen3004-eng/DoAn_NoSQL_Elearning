@@ -10,6 +10,29 @@ const router = express.Router();
 const memoryFlashcardMastered = new Map(); // studentId -> Set(cardId)
 const memoryCourseNotes = [];
 const memoryEnrolledCourses = new Map(); // studentId -> Set(courseId)
+
+router.use((req, res, next) => {
+  req.member2EnrollmentIds = username => Array.from(memoryEnrolledCourses.get(username) || []);
+  next();
+});
+router.use(require('./member2CourseRoutes').router);
+
+function enrollmentUserFilter(user) {
+  const ids = [user.id, user.username].filter(Boolean);
+  const objectIds = ids.filter(i => ObjectId.isValid(i)).map(i => new ObjectId(i));
+  return { $or: [{ userId: { $in: [...ids, ...objectIds] } }, { studentId: { $in: [...ids, ...objectIds] } }] };
+}
+
+function enrollmentCourseFilter(courseId) {
+  const values = [courseId, ObjectId.isValid(courseId) ? new ObjectId(courseId) : null].filter(Boolean);
+  return { $or: [{ courseId: { $in: values } }, { 'course._id': { $in: values } }] };
+}
+
+async function courseLessonList(db, courseId) {
+  const c = await db.collection('courses').findOne({ _id: ObjectId.isValid(courseId) ? new ObjectId(courseId) : courseId });
+  if (c && Array.isArray(c.lessons) && c.lessons.length) return c.lessons;
+  return db.collection('lessons').find({ courseId: ObjectId.isValid(courseId) ? new ObjectId(courseId) : courseId }).sort({ order: 1 }).toArray();
+}
 const memorySrsQueue = new Map(); // studentId -> Map(cardId -> { nextReview, rating, intervalLabel })
 const memoryArenaLeaderboard = new Map([
   ['Nguyen Trong Nguyen (2001230589)', 480],
@@ -950,13 +973,13 @@ router.get('/:id', async (req, res) => {
   try {
     const db = getMongoDb();
     const courseId = new ObjectId(req.params.id);
-    const course = await db.collection('courses').findOne({ _id: courseId });
+    const course = await db.collection('courses').findOne({ _id: courseId, isDeleted: { $ne: true } });
     if (!course) {
       return res.status(404).json({ success: false, message: 'Khóa học không tồn tại' });
     }
 
-    const lessons = await db.collection('lessons').find({ courseId: courseId }).sort({ order: 1 }).toArray();
-    const defaultReviews = course.reviews && course.reviews.length > 0 ? course.reviews : [
+    const lessons = Array.isArray(course.lessons) && course.lessons.length ? course.lessons : await db.collection('lessons').find({ courseId: courseId }).sort({ order: 1 }).toArray();
+    const defaultReviews = course.reviews || [
       {
         userName: 'Nguyễn Trọng Nguyên (2001230589)',
         rating: 5,
@@ -978,7 +1001,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // 2.1 THEM/CAP NHAT KHOA HOC & TU DONG XOA CACHE (CACHE INVALIDATION STRATEGY)
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, authorizeRoles('ADMIN', 'TEACHER'), async (req, res) => {
   try {
     const db = getMongoDb();
     const newCourse = {
@@ -1284,6 +1307,7 @@ router.post('/:id/reviews', authenticateToken, async (req, res) => {
     const { rating, comment } = req.body;
 
     const reviewObj = {
+      _id: new ObjectId(),
       userName: `${req.user.fullName} (${req.user.username})`,
       rating: Math.max(1, Math.min(5, Math.round(Number(rating) || 5))),
       comment: comment || 'Khóa học rất hữu ích và bám sát đề thi thực tế!',
@@ -1321,7 +1345,7 @@ router.get('/:id/discussions', async (req, res) => {
     if (db) {
       list = await db.collection('discussions').find({ courseId }).sort({ createdAt: -1 }).toArray();
     }
-    const merged = [...list, ...memoryDiscussions.filter(d => !list.some(l => String(l._id) === String(d._id)))].map(d => ({
+    const merged = list.map(d => ({
       ...d,
       title: d.title || d.questionTitle || 'Thảo luận học thuật Tiếng Anh',
       questionTitle: d.questionTitle || d.title || 'Thảo luận học thuật Tiếng Anh',
@@ -1337,7 +1361,7 @@ router.get('/:id/discussions', async (req, res) => {
   }
 });
 
-router.post('/:id/discussions', async (req, res) => {
+router.post('/:id/discussions', authenticateToken, async (req, res) => {
   try {
     const courseId = req.params.id;
     const db = getMongoDb();
@@ -2099,6 +2123,143 @@ router.post('/pomodoro/finish-session', async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+
+// ==============================================================================
+// MEMBER 1 SPRINT 4: LMS PROGRESS, RESOURCES, ENROLLMENT & FLASHCARDS EXPORT
+// ==============================================================================
+
+router.get('/:id/progress', authenticateToken, async (req, res) => {
+  try {
+    const courseId = req.params.id;
+    const userId = req.user.id || req.user.username;
+    const key = `course:progress:${userId}:${courseId}`;
+    if (redisClient && redisClient.status === 'ready') {
+      const cached = await redisClient.get(key).catch(() => null);
+      if (cached !== null && cached !== undefined) {
+        return res.json({ success: true, progressPercent: Number(cached), source: 'REDIS_CACHE' });
+      }
+    }
+    const db = getMongoDb();
+    if (!db) return res.status(500).json({ success: false, message: 'MongoDB chưa sẵn sàng' });
+    const [lessons, enrollment] = await Promise.all([
+      courseLessonList(db, courseId),
+      db.collection('user_enrollments').findOne({ ...enrollmentUserFilter(req.user), ...enrollmentCourseFilter(courseId) })
+    ]);
+    const completedLessons = enrollment && Array.isArray(enrollment.completedLessons) ? enrollment.completedLessons : [];
+    const progressPercent = lessons.length ? Math.round(completedLessons.length / lessons.length * 100) : 0;
+    if (redisClient && redisClient.status === 'ready') await redisClient.set(key, String(progressPercent), 'EX', 86400).catch(() => {});
+    return res.json({ success: true, progressPercent, completedLessons });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.post('/:id/lessons/:lessonIndex/toggle-complete', authenticateToken, async (req, res) => {
+  try {
+    const courseId = req.params.id;
+    const lessonIndex = Number.parseInt(req.params.lessonIndex, 10);
+    const db = getMongoDb();
+    if (!db) return res.status(500).json({ success: false, message: 'MongoDB chưa sẵn sàng' });
+    const lessons = await courseLessonList(db, courseId);
+    if (!Number.isInteger(lessonIndex) || lessonIndex < 0 || lessonIndex >= lessons.length) {
+      return res.status(404).json({ success: false, message: 'Bài học không tồn tại' });
+    }
+    const userFilter = enrollmentUserFilter(req.user);
+    const courseFilter = enrollmentCourseFilter(courseId);
+    const enrollments = db.collection('user_enrollments');
+    let enrollment = await enrollments.findOne({ ...userFilter, ...courseFilter });
+    if (!enrollment) {
+      await enrollments.insertOne({
+        userId: req.user.id, studentId: req.user.username, courseId: ObjectId.isValid(courseId) ? new ObjectId(courseId) : courseId,
+        enrolledAt: new Date(), completedLessons: [], status: 'active'
+      });
+      enrollment = await enrollments.findOne({ ...userFilter, ...courseFilter });
+    }
+    const completedSet = new Set(Array.isArray(enrollment.completedLessons) ? enrollment.completedLessons : []);
+    let isCompleted = false;
+    if (completedSet.has(lessonIndex)) completedSet.delete(lessonIndex);
+    else { completedSet.add(lessonIndex); isCompleted = true; }
+    const completedLessons = Array.from(completedSet).sort((a, b) => a - b);
+    const progressPercent = lessons.length ? Math.round(completedLessons.length / lessons.length * 100) : 0;
+    await enrollments.updateOne({ _id: enrollment._id }, { $set: { completedLessons, progressPercent, updatedAt: new Date() } });
+    const userId = req.user.id || req.user.username;
+    if (redisClient && redisClient.status === 'ready') {
+      await redisClient.set(`course:progress:${userId}:${courseId}`, String(progressPercent), 'EX', 86400).catch(() => {});
+    }
+    return res.json({ success: true, progressPercent, isCompleted, completedLessons });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.get('/:id/lessons/:lessonIndex/resources', authenticateToken, async (req, res) => {
+  try {
+    const db = getMongoDb();
+    if (!db) return res.status(500).json({ success: false, message: 'MongoDB chưa sẵn sàng' });
+    const lessons = await courseLessonList(db, req.params.id);
+    const index = Number.parseInt(req.params.lessonIndex, 10);
+    if (!Number.isInteger(index) || index < 0 || index >= lessons.length) return res.status(404).json({ success: false, message: 'Bài học không tồn tại' });
+    const resources = Array.isArray(lessons[index].resources) && lessons[index].resources.length ? lessons[index].resources : [
+      { id: `slide-${index + 1}`, title: `Lecture slides ${index + 1}.pdf`, type: 'pdf', url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', size: '2.4 MB' },
+      { id: `audio-${index + 1}`, title: `Listening practice ${index + 1}.mp3`, type: 'audio', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', size: '5.1 MB' },
+      { id: `exercise-${index + 1}`, title: `Homework ${index + 1}.doc`, type: 'doc', url: 'https://file-examples.com/storage/fe1a2a5b9b4cbe/2017/02/file-sample_100kB.doc', size: '100 KB' }
+    ];
+    return res.json({ success: true, data: resources });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.delete('/:id/enroll', authenticateToken, async (req, res) => {
+  try {
+    const courseId = req.params.id;
+    const userId = req.user.id || req.user.username;
+    const db = getMongoDb();
+    if (db) await db.collection('user_enrollments').deleteOne({ ...enrollmentUserFilter(req.user), ...enrollmentCourseFilter(courseId) });
+    const set = memoryEnrolledCourses.get(req.user.username);
+    if (set) set.delete(courseId);
+    if (redisClient && redisClient.status === 'ready') await redisClient.del(`course:progress:${userId}:${courseId}`, `cache:user:enrolled:${userId}`, `cache:user:enrolled:${req.user.username}`).catch(() => {});
+    return res.json({ success: true, message: 'Hủy đăng ký khóa học thành công' });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.post('/:id/archive', authenticateToken, async (req, res) => {
+  try {
+    const db = getMongoDb();
+    if (!db) return res.status(500).json({ success: false, message: 'MongoDB chưa sẵn sàng' });
+    const result = await db.collection('user_enrollments').updateOne(
+      { ...enrollmentUserFilter(req.user), ...enrollmentCourseFilter(req.params.id) },
+      { $set: { status: 'archived', updatedAt: new Date() } }
+    );
+    if (!result.matchedCount) return res.status(404).json({ success: false, message: 'Không tìm thấy thông tin đăng ký khóa học' });
+    return res.json({ success: true, message: 'Đã chuyển khóa học vào mục Lưu trữ thành công' });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.get('/flashcards/export', authenticateToken, async (req, res) => {
+  try {
+    const db = getMongoDb();
+    if (!db) return res.status(500).json({ success: false, message: 'MongoDB chưa sẵn sàng' });
+    const userId = req.user.id || req.user.username;
+    const [systemCards, customCards] = await Promise.all([
+      db.collection('flashcards').find({}).limit(200).toArray().catch(() => []),
+      db.collection('custom_flashcards').find({ userId }).toArray().catch(() => [])
+    ]);
+    const quote = value => '"' + String(value == null ? '' : value).replace(/"/g, '""') + '"';
+    const rows = ['"Từ vựng","Phiên âm","Nghĩa tiếng Việt","Ví dụ","Danh mục"'];
+    for (const card of [...customCards, ...systemCards]) rows.push([card.word, card.phonetic || card.ipa, card.meaning || card.meaningVi, card.example, card.category || 'Chung'].map(quote).join(','));
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="EduPro_Vocabulary.csv"');
+    return res.send('\uFEFF' + rows.join('\r\n'));
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
   }
 });
 

@@ -1459,4 +1459,123 @@ var API_BASE = window.API_BASE;
       }
     }
 
-    // ==============================================================
+    // ==============================================================
+
+// ==============================================================================
+// PROFILE & PASSWORD MANAGEMENT (TASK 1.1 & 1.2)
+// ==============================================================================
+function toggleAccountMenu() {
+  const menu = document.getElementById('account-menu');
+  if (menu) menu.classList.toggle('hidden');
+}
+
+function openEditProfileModal() {
+  const menu = document.getElementById('account-menu');
+  if (menu) menu.classList.add('hidden');
+  const u = currentUser || {};
+  const nameEl = document.getElementById('profile-full-name');
+  const phoneEl = document.getElementById('profile-phone');
+  const schoolEl = document.getElementById('profile-school');
+  const bandEl = document.getElementById('profile-target-band');
+  const avatarEl = document.getElementById('profile-avatar-url');
+  if (nameEl) nameEl.value = u.fullName || '';
+  if (phoneEl) phoneEl.value = u.phone || '';
+  if (schoolEl) schoolEl.value = u.school || '';
+  if (bandEl) bandEl.value = u.targetBand || '';
+  if (avatarEl) avatarEl.value = u.avatar || '';
+  updateProfileAvatarPreview();
+  const modal = document.getElementById('modal-edit-profile');
+  if (modal) modal.classList.remove('hidden');
+}
+
+function closeEditProfileModal() {
+  const modal = document.getElementById('modal-edit-profile');
+  if (modal) modal.classList.add('hidden');
+}
+
+function updateProfileAvatarPreview() {
+  const avatarEl = document.getElementById('profile-avatar-url');
+  const previewEl = document.getElementById('profile-avatar-preview');
+  if (previewEl && avatarEl) {
+    const url = avatarEl.value.trim();
+    previewEl.src = url || (currentUser && currentUser.avatar) || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150';
+  }
+}
+
+async function saveUserProfile(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  if (!currentToken) { openLoginModal(); return; }
+  const fullName = document.getElementById('profile-full-name').value.trim();
+  const phone = document.getElementById('profile-phone').value.trim();
+  const school = document.getElementById('profile-school').value.trim();
+  const targetBand = document.getElementById('profile-target-band').value;
+  const avatarUrl = document.getElementById('profile-avatar-url').value.trim();
+
+  try {
+    const res = await fetch(`${API_BASE}/auth/profile`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${currentToken}` },
+      body: JSON.stringify({ fullName, phone, school, targetBand, avatarUrl })
+    });
+    const json = await res.json();
+    if (!res.ok || !json.success) throw new Error(json.message || 'Cập nhật thất bại');
+    currentUser = { ...currentUser, ...json.data.user };
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    updateUserInterface();
+    closeEditProfileModal();
+    showToast(json.message || 'Đã cập nhật hồ sơ thành công!', 'success');
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+function openChangePasswordModal() {
+  const menu = document.getElementById('account-menu');
+  if (menu) menu.classList.add('hidden');
+  const form = document.getElementById('form-change-password');
+  if (form) form.reset();
+  const modal = document.getElementById('modal-change-password');
+  if (modal) modal.classList.remove('hidden');
+}
+
+function closeChangePasswordModal() {
+  const form = document.getElementById('form-change-password');
+  if (form) form.reset();
+  const modal = document.getElementById('modal-change-password');
+  if (modal) modal.classList.add('hidden');
+}
+
+function togglePasswordVisibility(fieldId, btn) {
+  const input = document.getElementById(fieldId);
+  if (!input) return;
+  const isPw = input.type === 'password';
+  input.type = isPw ? 'text' : 'password';
+  if (btn) btn.innerHTML = isPw ? '<i class="fa-solid fa-eye-slash"></i>' : '<i class="fa-solid fa-eye"></i>';
+}
+
+async function submitChangePassword(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  if (!currentToken) { openLoginModal(); return; }
+  const oldPassword = document.getElementById('pw-old').value;
+  const newPassword = document.getElementById('pw-new').value;
+  const confirmPassword = document.getElementById('pw-confirm').value;
+
+  if (newPassword !== confirmPassword) {
+    showToast('Xác nhận mật khẩu mới không khớp!', 'warning');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/auth/change-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${currentToken}` },
+      body: JSON.stringify({ oldPassword, newPassword, confirmPassword })
+    });
+    const json = await res.json();
+    if (!res.ok || !json.success) throw new Error(json.message || 'Đổi mật khẩu thất bại');
+    closeChangePasswordModal();
+    showToast(json.message, 'success');
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}

@@ -331,7 +331,8 @@
             <span class="font-bold text-slate-900 dark:text-white">${r.userName || r.studentName || 'Học viên EduPro'}</span>
             <span class="text-amber-500 font-bold">${'⭐'.repeat(r.rating || 5)}</span>
           </div>
-          <p class="text-slate-600 dark:text-slate-300">${r.comment}</p>
+          <p class="text-slate-600 dark:text-slate-300">${typeof esc === 'function' ? esc(r.comment) : r.comment}</p>
+          ${typeof m2Admin === 'function' && m2Admin() && r._id ? m2Button("🗑 Xóa đánh giá", `m2Moderate('reviews','${r._id}')`) : ""}
         </div>
       `).join('');
     }
@@ -390,4 +391,86 @@
       }
     }
 
-    // ==============================================================
+    // ==============================================================
+
+// ==============================================================================
+// LESSON PROGRESS, RESOURCES & UNENROLL (TASK 1.3, 1.4, 1.5)
+// ==============================================================================
+async function toggleLessonComplete() {
+  if (!currentToken || !currentClassroomCourseId) return;
+  try {
+    const r = await fetch(`${API_BASE}/courses/${currentClassroomCourseId}/lessons/${currentLessonIndex}/toggle-complete`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${currentToken}` }
+    });
+    const j = await r.json();
+    if (!r.ok || !j.success) throw new Error(j.message || 'Không thể cập nhật tiến độ');
+    showToast(j.isCompleted ? '✅ Đã hoàn thành bài học này!' : 'Đã bỏ hoàn thành bài học', 'success');
+    loadCourseProgress(currentClassroomCourseId);
+  } catch (e) {
+    showToast(e.message, 'error');
+  }
+}
+
+async function loadCourseProgress(courseId) {
+  if (!currentToken || !courseId) return;
+  try {
+    const r = await fetch(`${API_BASE}/courses/${courseId}/progress`, {
+      headers: { Authorization: `Bearer ${currentToken}` }
+    });
+    const j = await r.json();
+    if (j.success && Array.isArray(j.completedLessons)) {
+      const chk = document.getElementById('chk-lesson-complete');
+      if (chk) chk.checked = j.completedLessons.includes(currentLessonIndex);
+    }
+  } catch (e) {}
+}
+
+async function loadLessonResources(index) {
+  const box = document.getElementById('lesson-resources-list');
+  if (!box || !currentToken || !currentClassroomCourseId) return;
+  try {
+    const r = await fetch(`${API_BASE}/courses/${currentClassroomCourseId}/lessons/${index}/resources`, {
+      headers: { Authorization: `Bearer ${currentToken}` }
+    });
+    const j = await r.json();
+    const list = j.data || [];
+    if (!list.length) {
+      box.innerHTML = '<p class="text-sm text-slate-500">Chưa có tài liệu đính kèm cho bài học này.</p>';
+      return;
+    }
+    box.innerHTML = list.map(item => `
+      <div class="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid ${item.type === 'pdf' ? 'fa-file-pdf text-rose-500' : (item.type === 'audio' ? 'fa-file-audio text-indigo-500' : 'fa-file-word text-blue-500')} text-xl"></i>
+          <div>
+            <div class="font-bold text-sm text-slate-900 dark:text-white">${item.title}</div>
+            <div class="text-xs text-slate-500 font-mono">${item.size || 'Tài liệu học tập'}</div>
+          </div>
+        </div>
+        <a href="${item.url}" target="_blank" download class="px-3 py-1.5 rounded-lg bg-brand-50 dark:bg-slate-700 hover:bg-brand-600 hover:text-white text-brand-600 dark:text-indigo-400 font-bold text-xs flex items-center gap-1.5 transition-all">
+          <i class="fa-solid fa-download"></i> Tải xuống
+        </a>
+      </div>
+    `).join('');
+  } catch (e) {
+    box.innerHTML = '<p class="text-sm text-rose-500">Lỗi khi tải tài liệu đính kèm.</p>';
+  }
+}
+
+async function confirmUnenrollCourse() {
+  if (!confirm('Bạn có chắc chắn muốn hủy đăng ký khóa học này không? Tiến độ học tập sẽ bị xóa.')) return;
+  try {
+    const r = await fetch(`${API_BASE}/courses/${currentClassroomCourseId}/enroll`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${currentToken}` }
+    });
+    const j = await r.json();
+    if (!r.ok || !j.success) throw new Error(j.message || 'Không thể hủy đăng ký');
+    showToast(j.message, 'success');
+    showSection('courses');
+    loadCoursesCatalog();
+  } catch (e) {
+    showToast(e.message, 'error');
+  }
+}

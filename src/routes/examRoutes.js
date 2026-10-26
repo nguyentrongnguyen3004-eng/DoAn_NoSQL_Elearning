@@ -1,9 +1,10 @@
 const express = require('express');
 const { ObjectId } = require('mongodb');
 const { getMongoDb, redisClient } = require('../config/db');
-const { authenticateToken } = require('../middlewares/auth');
+const { authenticateToken, authorizeRoles } = require('../middlewares/auth');
 
 const router = express.Router();
+router.use(require('./member2ExamRoutes').router);
 
 // BO NHO DEM IN-MEMORY FALLBACK KHI REDIS OFFLINE/DOCKER CHUA START
 const memoryStore = {
@@ -946,6 +947,36 @@ router.get('/anti-cheat/status', async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
+});
+
+// --- SPRINT 4: WRITING DRAFT AUTOSAVE (TASK 1.9) ---
+router.post('/writing/draft', authenticateToken, async (req, res) => {
+  try {
+    const { taskType = 'task2', essay = '' } = req.body || {};
+    const normalizedTaskType = taskType === 'task1' ? 'task1' : 'task2';
+    const userId = req.user.id || req.user.username;
+    const redisKey = `draft:writing:${userId}:${normalizedTaskType}`;
+    await safeRedis.set(redisKey, String(essay), 'EX', 86400);
+    return res.json({ success: true, message: 'Đã lưu bản nháp vào Redis', savedAt: new Date().toISOString() });
+  } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
+});
+
+router.get('/writing/draft', authenticateToken, async (req, res) => {
+  try {
+    const taskType = req.query.taskType === 'task1' ? 'task1' : 'task2';
+    const userId = req.user.id || req.user.username;
+    const essay = await safeRedis.get(`draft:writing:${userId}:${taskType}`) || '';
+    return res.json({ success: true, essay });
+  } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
+});
+
+router.delete('/writing/draft', authenticateToken, async (req, res) => {
+  try {
+    const taskType = req.query.taskType === 'task1' ? 'task1' : 'task2';
+    const userId = req.user.id || req.user.username;
+    await safeRedis.del(`draft:writing:${userId}:${taskType}`);
+    return res.json({ success: true, message: 'Đã xóa bản nháp trên Redis' });
+  } catch (err) { return res.status(500).json({ success: false, message: err.message }); }
 });
 
 module.exports = router;

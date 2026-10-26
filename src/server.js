@@ -25,6 +25,7 @@ app.use(express.json());
 
 // Giao dien Web Client tinh (phuc vu truc tiep giao dien demo E-learning)
 app.use(express.static('public'));
+app.get('/verify', (req, res) => res.sendFile(require('path').resolve('public/index.html')));
 
 // Ap dung Redis Rate Limiter toan cuc (bao ve API chong tan cong DoS)
 app.use(createRateLimiter({ windowSeconds: 60, maxRequests: 120 }));

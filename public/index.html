@@ -3173,6 +3173,128 @@
   <script src="/js/study.js?v=2.0.0"></script>
   <script src="/js/telemetry.js?v=2.0.0"></script>
   <script src="/js/copilot.js?v=2.0.0"></script>
+  <script src="/member2.js"></script>
+
+  <!-- MODAL: CHINH SUA HO SO HOC VIEN (TASK 1.1) -->
+  <div id="modal-edit-profile" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 p-4">
+    <form onsubmit="saveUserProfile(event)" class="w-full max-w-lg rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white"><i class="fa-solid fa-user-pen text-brand-600 mr-2"></i>Chỉnh Sửa Hồ Sơ Cá Nhân</h2>
+        <button type="button" onclick="closeEditProfileModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">✕</button>
+      </div>
+      <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+        Họ và tên (*)
+        <input id="profile-full-name" required maxlength="100" class="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 p-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white" />
+      </label>
+      <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+        Số điện thoại (Định dạng VN: 03x/05x/07x/08x/09x)
+        <input id="profile-phone" type="tel" placeholder="0901234567" class="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 p-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white" />
+      </label>
+      <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+        Trường học / Đơn vị công tác
+        <input id="profile-school" placeholder="ĐH Công Thương TP.HCM (HUIT)" class="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 p-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white" />
+      </label>
+      <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+        Mục tiêu Band điểm
+        <select id="profile-target-band" class="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 p-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+          <option value="">Chọn mục tiêu học tập</option>
+          <option value="A2">CEFR A2 Cơ bản</option>
+          <option value="B1">CEFR B1 Trung cấp</option>
+          <option value="B2">CEFR B2 Đạt chuẩn đầu ra</option>
+          <option value="C1">CEFR C1 Nâng cao</option>
+          <option value="IELTS 6.5+">IELTS 6.5+ Academic</option>
+          <option value="IELTS 7.5+">IELTS 7.5+ Masterclass</option>
+          <option value="TOEIC 800+">TOEIC 800+ Thương mại</option>
+        </select>
+      </label>
+      <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+        Link ảnh đại diện (Avatar URL)
+        <input id="profile-avatar-url" type="url" oninput="updateProfileAvatarPreview()" placeholder="https://..." class="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 p-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white" />
+      </label>
+      <div class="flex items-center gap-3">
+        <img id="profile-avatar-preview" alt="Xem trước avatar" class="h-14 w-14 rounded-full object-cover border border-slate-200 dark:border-slate-700 bg-slate-100" />
+        <span class="text-xs text-slate-500">Xem trước ảnh đại diện</span>
+      </div>
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+        <button type="button" onclick="closeEditProfileModal()" class="rounded-xl border border-slate-300 dark:border-slate-700 px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300">Hủy</button>
+        <button type="submit" class="rounded-xl bg-brand-600 hover:bg-brand-700 px-5 py-2 text-sm font-bold text-white shadow-lg shadow-brand-500/20">Lưu Hồ Sơ</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- MODAL: DOI MAT KHAU TRONG PHIEN (TASK 1.2) -->
+  <div id="modal-change-password" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 p-4">
+    <form id="form-change-password" onsubmit="submitChangePassword(event)" class="w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-2xl space-y-4">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white"><i class="fa-solid fa-key text-brand-600 mr-2"></i>Đổi Mật Khẩu</h2>
+        <button type="button" onclick="closeChangePasswordModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">✕</button>
+      </div>
+      <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+        Mật khẩu hiện tại
+        <div class="mt-1 flex">
+          <input id="pw-old" type="password" required autocomplete="current-password" class="min-w-0 flex-1 rounded-l-lg border border-slate-300 dark:border-slate-700 p-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white" />
+          <button type="button" onclick="togglePasswordVisibility('pw-old', this)" class="rounded-r-lg border border-l-0 border-slate-300 dark:border-slate-700 px-3 bg-slate-50 dark:bg-slate-800 text-slate-500"><i class="fa-solid fa-eye"></i></button>
+        </div>
+      </label>
+      <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+        Mật khẩu mới (Tối thiểu 6 ký tự)
+        <div class="mt-1 flex">
+          <input id="pw-new" type="password" required minlength="6" autocomplete="new-password" class="min-w-0 flex-1 rounded-l-lg border border-slate-300 dark:border-slate-700 p-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white" />
+          <button type="button" onclick="togglePasswordVisibility('pw-new', this)" class="rounded-r-lg border border-l-0 border-slate-300 dark:border-slate-700 px-3 bg-slate-50 dark:bg-slate-800 text-slate-500"><i class="fa-solid fa-eye"></i></button>
+        </div>
+      </label>
+      <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+        Nhập lại mật khẩu mới
+        <div class="mt-1 flex">
+          <input id="pw-confirm" type="password" required minlength="6" autocomplete="new-password" class="min-w-0 flex-1 rounded-l-lg border border-slate-300 dark:border-slate-700 p-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white" />
+          <button type="button" onclick="togglePasswordVisibility('pw-confirm', this)" class="rounded-r-lg border border-l-0 border-slate-300 dark:border-slate-700 px-3 bg-slate-50 dark:bg-slate-800 text-slate-500"><i class="fa-solid fa-eye"></i></button>
+        </div>
+      </label>
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+        <button type="button" onclick="closeChangePasswordModal()" class="rounded-xl border border-slate-300 dark:border-slate-700 px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300">Hủy</button>
+        <button type="submit" class="rounded-xl bg-brand-600 hover:bg-brand-700 px-5 py-2 text-sm font-bold text-white shadow-lg shadow-brand-500/20">Xác Nhận Đổi Mật Khẩu</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- MODAL: THEM BO THE TU VUNG CA NHAN (TASK 1.6) -->
+  <div id="modal-add-flashcard" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 p-4">
+    <form onsubmit="addNewCustomFlashcard(event)" class="w-full max-w-lg rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white"><i class="fa-solid fa-layer-group text-brand-600 mr-2"></i>Thêm Thẻ Từ Vựng Cá Nhân</h2>
+        <button type="button" onclick="closeAddFlashcardModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">✕</button>
+      </div>
+      <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+        Từ tiếng Anh (*)
+        <input id="vocab-word" required maxlength="50" placeholder="e.g. Resilience" class="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 p-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white" />
+      </label>
+      <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+        Phiên âm IPA
+        <input id="vocab-phonetic" placeholder="/rɪˈzɪl.jəns/" class="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 p-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white" />
+      </label>
+      <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+        Nghĩa tiếng Việt (*)
+        <input id="vocab-meaning" required placeholder="Khả năng phục hồi, kiên cường vượt khó" class="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 p-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white" />
+      </label>
+      <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+        Câu ví dụ
+        <textarea id="vocab-example" rows="2" placeholder="Building emotional resilience helps you succeed in university." class="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 p-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"></textarea>
+      </label>
+      <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+        Danh mục
+        <select id="vocab-category" class="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 p-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+          <option value="IELTS">IELTS Academic</option>
+          <option value="TOEIC">TOEIC Thương mại</option>
+          <option value="Daily" selected>Giao tiếp Hàng ngày</option>
+        </select>
+      </label>
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+        <button type="button" onclick="closeAddFlashcardModal()" class="rounded-xl border border-slate-300 dark:border-slate-700 px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300">Hủy</button>
+        <button type="submit" class="rounded-xl bg-brand-600 hover:bg-brand-700 px-5 py-2 text-sm font-bold text-white shadow-lg shadow-brand-500/20">Lưu Từ Vựng</button>
+      </div>
+    </form>
+  </div>
+
 </body>
 </html>
 
