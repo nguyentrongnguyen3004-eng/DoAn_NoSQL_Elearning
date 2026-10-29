@@ -9,7 +9,7 @@
     "seed:mongo": "node scripts/mongo_seed.js",
     "seed:all": "node scripts/seed_all_4_nosql.js",
     "demo:redis": "node scripts/redis_demo.js",
-    "test": "node scripts/automated_tests.js && node --test tests/*.test.js",
+    "test": "node ../03_Tai_Lieu_Do_An/05_Tai_Lieu_Kiem_Thu/automated_tests.js && node --test tests/*.test.js",
     "test:legacy": "node scripts/automated_tests.js",
     "test:member2": "node --test tests/*.test.js",
     "migrate:member2": "node scripts/migrate_member2.js"

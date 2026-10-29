@@ -11,6 +11,7 @@ var API_BASE = window.API_BASE;
     var sseLiveSource = null;
 
     function initSSELiveStream() {
+      if (window.location.search.includes('screenshot=1')) return;
       if (sseLiveSource) return;
       try {
         sseLiveSource = new EventSource('/api/events/live-stream');
@@ -1124,6 +1125,7 @@ var API_BASE = window.API_BASE;
 
     // 14. KET NOI REAL-TIME SERVER-SENT EVENTS (SSE) QUA REDIS PUB/SUB
     function initLiveEventStream() {
+      if (window.location.search.includes('screenshot=1')) return;
       try {
         const eventSource = new EventSource(`${API_BASE}/events/live-stream`);
         eventSource.onmessage = (event) => {

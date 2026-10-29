@@ -446,6 +446,74 @@
       loadClozeExercise();
       loadWeaknessDiagnosticData();
       loadPvPSpeakingLeaderboard();
+
+      // DEEP-LINKING & URL PARAMETER ROUTING (FOR SCREENSHOTS & DIRECT ACCESS)
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // Auto-login if requested (student or admin or teacher)
+        const autoLogin = urlParams.get('login');
+        if (autoLogin) {
+          const userMap = { student: 'student_nguyen', teacher: 'instructor_alex', admin: 'admin' };
+          const targetUser = userMap[autoLogin] || autoLogin;
+          fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: targetUser })
+          }).then(r => r.json()).then(res => {
+            if (res.success && res.data) {
+              currentToken = res.data.token;
+              currentUser = res.data.user;
+              localStorage.setItem('edupro_token', currentToken);
+              localStorage.setItem('edupro_user', JSON.stringify(currentUser));
+              syncUserUI();
+              loadUserHistory();
+              loadTelemetryLogs();
+            }
+          }).catch(() => {});
+        }
+
+        // Dark mode parameter
+        if (urlParams.get('dark') === '1') {
+          document.documentElement.classList.add('dark');
+        }
+
+        // Section parameter
+        const sec = urlParams.get('section');
+        if (sec) {
+          if (sec === 'classroom') {
+            if (typeof enterClassroom === 'function') enterClassroom('670000000000000000000010');
+          } else if (typeof showSection === 'function') {
+            showSection(sec);
+            if (sec === 'graph' && typeof loadStudyBuddies === 'function') loadStudyBuddies();
+          }
+        }
+
+        // Modal parameter
+        const modal = urlParams.get('modal');
+        if (modal === 'login') {
+          if (typeof openLoginModal === 'function') openLoginModal();
+        } else if (modal === 'cert') {
+          if (typeof openCertificateModal === 'function') openCertificateModal();
+        }
+
+        // Copilot parameter
+        if (urlParams.get('copilot') === '1') {
+          if (typeof toggleCopilotWidget === 'function') toggleCopilotWidget();
+        }
+
+        // Anti-cheat modal parameter
+        if (urlParams.get('anticheat') === '1') {
+          const m = document.getElementById('anti-cheat-modal');
+          if (m) {
+            const countEl = document.getElementById('anti-cheat-modal-count');
+            if (countEl) countEl.innerText = '1/3';
+            m.classList.remove('hidden');
+          }
+        }
+      } catch (e) {
+        console.error('URL Routing error:', e);
+      }
     }
 
     if (document.readyState === 'loading') {
