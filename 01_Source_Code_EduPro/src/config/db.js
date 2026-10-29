@@ -2,7 +2,8 @@ const { MongoClient } = require('mongodb');
 const Redis = require('ioredis');
 const cassandra = require('cassandra-driver');
 const neo4j = require('neo4j-driver');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
 // 1. MONGODB CLIENT
 const mongoClient = new MongoClient(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/elearning_nosql');

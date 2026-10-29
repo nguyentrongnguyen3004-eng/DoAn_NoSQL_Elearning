@@ -172,6 +172,49 @@ Hệ thống đã nạp sẵn 3 tài khoản tương ứng với 3 vai trò (Rol
 ---
 
 ## 📂 8. TÀI LIỆU PHÂN CÔNG & ĐẶC TẢ CHI TIẾT ĐỒ ÁN
-* **Bản phân công chi tiết 20 Tasks cho 2 thành viên:** [BANG_PHAN_CONG_CHI_TIET_2_THANH_VIEN.docx](BANG_PHAN_CONG_CHI_TIET_2_THANH_VIEN.docx)
-* **Tài liệu Hướng dẫn toàn diện & Kịch bản bảo vệ:** [HUONG_DAN_DU_AN_VA_PHAN_CONG_CONG_VIEC_NOSQL.docx](HUONG_DAN_DU_AN_VA_PHAN_CONG_CONG_VIEC_NOSQL.docx)
-* **Script Sao lưu phục hồi 4 CSDL (Disaster Recovery):** [scripts/backup_restore_unified.js](scripts/backup_restore_unified.js)
+* **Bản phân công chi tiết 20 Tasks cho 2 thành viên:** [`03_Tai_Lieu_Do_An/04_Dac_Ta_Thiet_Ke_Phan_Mem/BANG_PHAN_CONG_CHI_TIET_2_THANH_VIEN.docx`](03_Tai_Lieu_Do_An/04_Dac_Ta_Thiet_Ke_Phan_Mem/BANG_PHAN_CONG_CHI_TIET_2_THANH_VIEN.docx)
+* **Tài liệu Đặc tả Yêu cầu Phần mềm (SRS):** [`03_Tai_Lieu_Do_An/03_Dac_Ta_Yeu_Cau_SRS/Nhom_18_SRS_Elearning.docx`](03_Tai_Lieu_Do_An/03_Dac_Ta_Yeu_Cau_SRS/Nhom_18_SRS_Elearning.docx)
+* **Báo cáo Kết quả Thực hiện Đồ án HUIT:** [`03_Tai_Lieu_Do_An/06_Bao_Cao_Ket_Qua_Do_An/BAO_CAO_DO_AN_NOSQL_HUIT.docx`](03_Tai_Lieu_Do_An/06_Bao_Cao_Ket_Qua_Do_An/BAO_CAO_DO_AN_NOSQL_HUIT.docx)
+* **Script Sao lưu phục hồi 4 CSDL (Disaster Recovery):** [`02_Scripts_CSDL_NoSQL/backup_restore_unified.js`](02_Scripts_CSDL_NoSQL/backup_restore_unified.js)
+* **Kịch bản kiểm thử tự động 22 Test Cases:** [`03_Tai_Lieu_Do_An/05_Tai_Lieu_Kiem_Thu/automated_tests.js`](03_Tai_Lieu_Do_An/05_Tai_Lieu_Kiem_Thu/automated_tests.js)
+
+---
+
+## 🗂️ 9. CẤU TRÚC THƯ MỤC DỰ ÁN (CHUẨN HÓA DANH MỤC NỘP BÀI)
+
+Toàn bộ đồ án đã được quy hoạch thành các thư mục độc lập, khớp 1-1 với biểu mẫu **Danh mục hồ sơ nhóm phải nộp** của Khoa CNTT - HUIT:
+
+```text
+📁 D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\
+│
+├── 📁 01_Source_Code_EduPro/             # [MỤC 1] Mã nguồn đầy đủ (Node.js/Express Backend & 5 Modules Frontend)
+│   ├── src/                             # Backend API routes, controllers, middlewares
+│   ├── public/                          # Frontend SPA UI & 5 JS modules (core, classroom, study, telemetry, copilot)
+│   ├── node_modules/                    # Thư viện phụ thuộc
+│   ├── docker-compose.yml               # Cấu hình container 4 CSDL NoSQL
+│   └── package.json                     # Cấu hình dự án nguồn
+│
+├── 📁 02_Scripts_CSDL_NoSQL/            # [MỤC 2] Script khởi tạo, ràng buộc & Seed data cho cả 4 CSDL NoSQL
+│   ├── mongo_seed.js                    # Script tạo dữ liệu MongoDB
+│   ├── redis_demo.js                    # Script cấu hình Redis structures
+│   ├── cassandra_schema.cql             # Schema Time-Series Cassandra
+│   ├── neo4j_graph.cypher               # Cypher script Graph Database
+│   ├── seed_all_4_nosql.js              # Script khởi tạo đồng thời 4 NoSQL
+│   └── backup_restore_unified.js        # Script sao lưu & phục hồi thảm họa
+│
+├── 📁 03_Tai_Lieu_Do_An/                 # [MỤC 3, 4, 5, 6] Toàn bộ hồ sơ tài liệu học thuật Word & PDF
+│   ├── 📁 03_Dac_Ta_Yeu_Cau_SRS/        # [MỤC 3] Đặc tả yêu cầu phần mềm SRS (Nhom_18_SRS_Elearning.docx)
+│   ├── 📁 04_Dac_Ta_Thiet_Ke_Phan_Mem/  # [MỤC 4] Mô hình CSDL NoSQL, Phân công 20 tasks, Hướng dẫn kiến trúc
+│   ├── 📁 05_Tai_Lieu_Kiem_Thu/         # [MỤC 5] Kịch bản kiểm thử tự động 22 Test Cases, E2E tests & logs
+│   ├── 📁 06_Bao_Cao_Ket_Qua_Do_An/     # [MỤC 6] Báo cáo đồ án Word HUIT & các script xuất báo cáo
+│   └── 📁 Tai_Lieu_Tham_Khao_HUIT/      # Quy định đề tài & thang điểm của giảng viên
+│
+├── 📁 07_Video_Demo/                     # [MỤC 7] Hướng dẫn kịch bản quay & File chứa liên kết video demo
+│   ├── HUONG_DAN_QUAY_VIDEO_DEMO.md     # Kịch bản thuyết minh video 5-10 phút chi tiết
+│   └── LINK_VIDEO_DEMO.txt              # Nơi dán link video YouTube / Google Drive
+│
+├── ⚡ Chay_He_Thong.bat                  # 1-Click khởi động server ngay lập tức
+├── 🧪 Kiem_Thu_He_Thong.bat              # 1-Click chạy toàn bộ 22 bài test tự động
+├── 📄 package.json                      # Proxy runner cho lệnh npm start / npm test
+└── 📄 README.md                         # Báo cáo tổng quan dự án
+```

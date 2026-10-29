@@ -1,0 +1,8 @@
+DANH MỤC HỒ SƠ NỘP BÀI - MỤC 7: VIDEO DEMO SẢN PHẨM
+Đề tài: Nền tảng E-learning & Khảo sát năng lực Đa cơ sở dữ liệu NoSQL
+Nhóm thực hiện: Nhóm 18 (HUIT)
+Thành viên: Nguyễn Trọng Nguyên
+
+ĐƯỜNG DẪN VIDEO DEMO (YOUTUBE / GOOGLE DRIVE):
+[Dán link video demo của bạn tại đây sau khi quay xong]
+Ví dụ: https://youtu.be/xxxxxxxxxxx hoặc https://drive.google.com/file/d/xxxxxxxxx/view

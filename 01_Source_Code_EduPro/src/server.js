@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const { connectAllDatabases, getMongoDb, redisClient, cassandraClient, neo4jDriver } = require('./config/db');
 
@@ -24,8 +25,9 @@ app.use(cors());
 app.use(express.json());
 
 // Giao dien Web Client tinh (phuc vu truc tiep giao dien demo E-learning)
-app.use(express.static('public'));
-app.get('/verify', (req, res) => res.sendFile(require('path').resolve('public/index.html')));
+const publicDir = path.join(__dirname, '../public');
+app.use(express.static(publicDir));
+app.get('/verify', (req, res) => res.sendFile(path.join(publicDir, 'index.html')));
 
 // Ap dung Redis Rate Limiter toan cuc (bao ve API chong tan cong DoS)
 app.use(createRateLimiter({ windowSeconds: 60, maxRequests: 120 }));
