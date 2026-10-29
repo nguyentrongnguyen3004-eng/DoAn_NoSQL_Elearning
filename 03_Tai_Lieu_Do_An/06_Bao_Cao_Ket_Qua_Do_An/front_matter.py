@@ -250,38 +250,33 @@ def add_cover_page(doc, helpers, is_main_cover=True):
     r_loc.font.color.rgb = BLACK
 
 def add_acknowledgements(doc, helpers):
-    """Tạo trang LỜI CẢM ƠN trang trọng, xúc động chuẩn học thuật"""
+    """Tạo trang LỜI CẢM ƠN trang trọng, súc tích chuẩn học thuật HUIT"""
     helpers['add_heading_chapter'](doc, "LỜI CẢM ƠN")
     
     helpers['add_paragraph_huit'](doc, 
-        "Lời đầu tiên, nhóm sinh viên thực hiện đề tài xin được bày tỏ lòng tri ân sâu sắc nhất tới Ban Giám hiệu Trường Đại học Công Thương TP. Hồ Chí Minh (HUIT) cùng Ban Chủ nhiệm Khoa Công nghệ Thông tin đã kiến tạo một môi trường học tập năng động, chuyên nghiệp và trang bị hệ thống phòng thực hành máy tính hiện đại, tạo nền tảng vững chắc cho chúng em trong suốt quá trình theo học và nghiên cứu.",
-        "Tri ân Nhà trường và Khoa Công nghệ Thông tin: "
+        "Sau thời gian học tập, nghiên cứu và nỗ lực triển khai thực tế, đồ án học phần Dữ liệu NoSQL với đề tài \"Nền tảng E-Learning & Khảo sát năng lực tiếng Anh thực chiến tích hợp đa mô hình NoSQL (EduPro Academy)\" đã được nhóm sinh viên hoàn thiện. Để đạt được kết quả này, bên cạnh sự nỗ lực cố gắng của các thành viên trong nhóm, chúng em đã may mắn nhận được sự quan tâm giúp đỡ quý báu, sự tận tâm giảng dạy từ Quý Thầy Cô, cùng sự ủng hộ to lớn từ Gia đình và Bạn bè."
     )
     
     helpers['add_paragraph_huit'](doc, 
-        "Đặc biệt, nhóm chúng em xin gửi lời cảm ơn chân thành, sâu sắc và lòng kính trọng nhất tới TS. Nguyễn Thị Định – giảng viên trực tiếp phụ trách giảng dạy và định hướng học phần Dữ liệu NoSQL (Mã HP: 01201073). Trong suốt thời gian diễn ra học phần, Cô đã luôn dành trọn tâm huyết để truyền đạt cho chúng em những nền tảng tri thức chuyên sâu về thế giới cơ sở dữ liệu phi quan hệ, từ các nguyên lý phân tán dữ liệu cốt lõi (Định lý CAP, Định lý PACELC, mô hình BASE), kỹ thuật băm nhất quán (Consistent Hashing), đến tư duy mô hình hóa dữ liệu hướng mẫu truy cập (Access Pattern-driven Data Modeling). Những buổi trao đổi học thuật, lời chỉ dẫn ân cần cùng những góp ý sắc bén, thực tiễn của Cô chính là kim chỉ nam soi sáng giúp nhóm vượt qua các rào cản kỹ thuật phức tạp, hoàn thiện đề tài đúng tiến độ và đạt chuẩn học thuật.",
-        "Lòng biết ơn sâu sắc gửi tới Giảng viên hướng dẫn: "
+        "Trước hết, nhóm chúng em xin gửi lời cảm ơn chân thành, sâu sắc và lòng kính trọng nhất tới TS. Nguyễn Thị Định – giảng viên trực tiếp giảng dạy và tận tâm hướng dẫn học phần Dữ liệu NoSQL (Mã HP: 01201073). Trong suốt quá trình thực hiện đồ án, Cô đã luôn dành nhiều thời gian quý báu để định hướng phương pháp tiếp cận đề tài, truyền đạt những nền tảng tri thức chuyên sâu về cơ sở dữ liệu phi quan hệ và các kiến trúc phân tán hiện đại. Những lời góp ý khoa học, thực tiễn và sự chỉ dẫn ân cần của Cô chính là kim chỉ nam giúp nhóm vượt qua các rào cản kỹ thuật phức tạp, hoàn thiện sản phẩm đúng tiến độ và nâng cao chất lượng học thuật của toàn bộ công trình."
     )
     
     helpers['add_paragraph_huit'](doc, 
-        "Nhóm tác giả cũng xin chân thành cảm ơn các Thầy, Cô giáo trong Bộ môn Cơ sở Dữ liệu và toàn thể Quý Thầy, Cô thuộc Khoa Công nghệ Thông tin - Trường Đại học Công Thương TP. Hồ Chí Minh đã tận tình dạy dỗ, truyền cảm hứng và trang bị cho chúng em hành trang kiến thức công nghệ thông tin vững vàng trong những năm tháng đại học.",
-        "Tri ân Quý Thầy Cô Bộ môn: "
+        "Nhóm tác giả cũng xin trân trọng gửi lời cảm ơn đến Ban Giám hiệu Trường Đại học Công Thương TP. Hồ Chí Minh (HUIT), Ban Chủ nhiệm Khoa Công nghệ Thông tin cùng toàn thể Quý Thầy, Cô giáo thuộc Bộ môn Cơ sở Dữ liệu. Quý Thầy, Cô đã luôn tâm huyết truyền dạy cho chúng em hành trang kiến thức công nghệ thông tin vững chắc, xây dựng môi trường học thuật chuyên nghiệp và trang bị hệ thống phòng thực hành máy tính hiện đại, tạo nền tảng tối ưu cho việc nghiên cứu và thực nghiệm đề tài."
     )
     
     helpers['add_paragraph_huit'](doc, 
-        "Chúng con xin gửi lời cảm ơn vô hạn đến Cha Mẹ và Gia đình – hậu phương vững chắc luôn yêu thương, động viên, thấu hiểu và tạo mọi điều kiện tốt nhất để chúng con an tâm học tập, nghiên cứu và theo đuổi đam mê công nghệ. Đồng thời, nhóm cũng xin gửi lời cảm ơn đến tất cả các bạn sinh viên tập thể lớp 14DHTH đã luôn đồng hành, chia sẻ tài liệu, trao đổi kinh nghiệm và hỗ trợ nhóm trong quá trình thực nghiệm, kiểm thử phần mềm.",
-        "Cảm ơn Gia đình và Bạn bè: "
+        "Chúng con xin bày tỏ lòng biết ơn vô hạn đến Cha Mẹ và Gia đình – điểm tựa tinh thần vững chắc nhất, đã luôn thương yêu, thấu hiểu, động viên và tạo mọi điều kiện tốt nhất để chúng con an tâm học tập, nghiên cứu và theo đuổi đam mê. Đồng thời, nhóm cũng xin gửi lời cảm ơn chân thành tới các bạn sinh viên tập thể lớp 14DHTH đã luôn đồng hành, chia sẻ kinh nghiệm học tập và tích cực hỗ trợ nhóm trong các đợt kiểm thử thực tế hệ thống phần mềm."
     )
     
     helpers['add_paragraph_huit'](doc, 
-        "Mặc dù các thành viên trong nhóm đã dành trọn tâm huyết, nỗ lực hết mình và nghiêm túc đầu tư nghiên cứu cả về mặt lý thuyết lẫn ứng dụng thực tế, song do giới hạn về mặt thời gian và kinh nghiệm thực tiễn, đồ án chắc chắn khó tránh khỏi những thiếu sót nhất định. Nhóm sinh viên thực hiện kính mong nhận được những lời chỉ bảo, nhận xét chân tình và những góp ý quý báu từ Cô cùng Quý Thầy/Cô trong Hội đồng phản biện để đề tài 'Nền tảng E-Learning & Khảo sát năng lực tiếng Anh thực chiến tích hợp đa mô hình NoSQL' ngày càng hoàn thiện, nâng cao chất lượng và có khả năng ứng dụng thực tế cao hơn.",
-        "Lời kết và tinh thần cầu thị: "
+        "Mặc dù các thành viên trong nhóm đã dành trọn tâm huyết và làm việc với tinh thần nghiêm túc cao nhất, song do giới hạn về mặt thời gian và kinh nghiệm thực tiễn, đồ án chắc chắn khó tránh khỏi những thiếu sót nhất định. Nhóm sinh viên thực hiện rất mong nhận được những lời chỉ bảo, đánh giá chân thành và những ý kiến đóng góp quý báu từ Quý Thầy, Cô trong Hội đồng chấm điểm để đề tài tiếp tục được hoàn thiện và phát triển hơn nữa trong tương lai."
     )
     
     # Chữ ký nhóm tác giả
     p_sign = doc.add_paragraph()
     p_sign.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    p_sign.paragraph_format.space_before = Pt(18)
+    p_sign.paragraph_format.space_before = Pt(16)
     p_sign.paragraph_format.space_after = Pt(2)
     p_sign.paragraph_format.first_line_indent = Cm(0)
     p_sign.paragraph_format.line_spacing = 1.3
@@ -292,7 +287,7 @@ def add_acknowledgements(doc, helpers):
     r_date.italic = True
     r_date.font.color.rgb = BLACK
     
-    r_team = p_sign.add_run("Nhóm sinh viên thực hiện đề tài (Nhóm 18)\n\n\n\n")
+    r_team = p_sign.add_run("Nhóm sinh viên thực hiện (Nhóm 18)\n\n\n\n")
     r_team.font.name = 'Times New Roman'
     r_team.font.size = Pt(13)
     r_team.bold = True
