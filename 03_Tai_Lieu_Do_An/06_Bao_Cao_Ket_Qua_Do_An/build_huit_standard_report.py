@@ -20,6 +20,11 @@ sys.stdout.reconfigure(encoding='utf-8')
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from chapter_3_srs import add_chapter_3
 from chapter_4_sds import add_chapter_4
+from chapter_5_gui import add_chapter_5
+from chapter_6_app_demo import add_chapter_6
+from chapter_7_testing import add_chapter_7
+from chapter_8_conclusion import add_chapter_8
+from references import add_references
 
 import docx
 from docx.shared import Inches, Pt, RGBColor, Cm
@@ -166,6 +171,20 @@ def add_table_title(doc, text):
     run.bold = True
     run.font.color.rgb = BLACK
     return p
+
+def add_figure_huit(doc, img_path, caption, width_cm=13.5):
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.paragraph_format.space_before = Pt(8)
+    p.paragraph_format.space_after = Pt(2)
+    p.paragraph_format.first_line_indent = Cm(0)
+    if os.path.exists(img_path):
+        run = p.add_run()
+        run.add_picture(img_path, width=Cm(width_cm))
+    else:
+        run = p.add_run(f'[{caption}]')
+        run.italic = True
+    add_figure_title(doc, caption)
 
 def add_figure_title(doc, text):
     """Đề mục hình: đặt phía dưới hình, canh giữa, màu đen"""
@@ -891,6 +910,8 @@ def generate_full_document(output_paths):
         'add_bullet_level1': add_bullet_level1,
         'add_bullet_level2': add_bullet_level2,
         'create_huit_table': create_huit_table,
+        'add_figure_huit': add_figure_huit,
+        'assets_dir': r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\03_Tai_Lieu_Do_An\06_Bao_Cao_Ket_Qua_Do_An\report_assets'
     }
     add_chapter_3(doc, helpers)
 
@@ -898,6 +919,31 @@ def generate_full_document(output_paths):
     # CHƯƠNG 4: ĐẶC TẢ THIẾT KẾ PHẦN MỀM (SDS) - IEEE 1016
     # =============================================================
     add_chapter_4(doc, helpers)
+
+    # =============================================================
+    # CHƯƠNG 5: XÂY DỰNG CSDL VÀ TRUY VẤN TRÊN GUI TOOL
+    # =============================================================
+    add_chapter_5(doc, helpers)
+
+    # =============================================================
+    # CHƯƠNG 6: KẾT NỐI ỨNG DỤNG VÀ DEMO
+    # =============================================================
+    add_chapter_6(doc, helpers)
+
+    # =============================================================
+    # CHƯƠNG 7: KIỂM THỬ VÀ ĐÁNH GIÁ HIỆU NĂNG
+    # =============================================================
+    add_chapter_7(doc, helpers)
+
+    # =============================================================
+    # CHƯƠNG 8: KẾT QUẢ ĐẠT ĐƯỢC VÀ TỔNG KẾT HOẠT ĐỘNG NHÓM
+    # =============================================================
+    add_chapter_8(doc, helpers)
+
+    # =============================================================
+    # TÀI LIỆU THAM KHẢO
+    # =============================================================
+    add_references(doc, helpers)
 
 
     # Lưu ra cả 2 thư mục: TÀI LIỆU FINAL và 03_Tai_Lieu_Do_An
@@ -912,11 +958,9 @@ def generate_full_document(output_paths):
 
 if __name__ == '__main__':
     paths = [
+        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\TÀI LIỆU FINAL\BAO_CAO_NOSQL_TOAN_VAN_CHUAN_HUIT.docx',
+        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\03_Tai_Lieu_Do_An\06_Bao_Cao_Ket_Qua_Do_An\BAO_CAO_NOSQL_TOAN_VAN_CHUAN_HUIT.docx',
         r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\TÀI LIỆU FINAL\BAO_CAO_NOSQL_CHUONG_1_2_3_4.docx',
-        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\03_Tai_Lieu_Do_An\06_Bao_Cao_Ket_Qua_Do_An\BAO_CAO_NOSQL_CHUONG_1_2_3_4.docx',
-        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\TÀI LIỆU FINAL\BAO_CAO_NOSQL_CHUONG_1_2_3.docx',
-        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\03_Tai_Lieu_Do_An\06_Bao_Cao_Ket_Qua_Do_An\BAO_CAO_NOSQL_CHUONG_1_2_3.docx',
-        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\TÀI LIỆU FINAL\BAO_CAO_NOSQL_CHUONG_1_VA_CHUONG_2.docx',
-        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\03_Tai_Lieu_Do_An\06_Bao_Cao_Ket_Qua_Do_An\BAO_CAO_NOSQL_CHUONG_1_VA_CHUONG_2.docx'
+        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\03_Tai_Lieu_Do_An\06_Bao_Cao_Ket_Qua_Do_An\BAO_CAO_NOSQL_CHUONG_1_2_3_4.docx'
     ]
     generate_full_document(paths)
