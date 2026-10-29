@@ -17,6 +17,8 @@ TUÂN THỦ 100% QUY ĐỊNH THỂ THỨC TRÌNH BÀY CỦA KHOA CNTT - HUIT:
 
 import sys, os
 sys.stdout.reconfigure(encoding='utf-8')
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from chapter_3_srs import add_chapter_3
 
 import docx
 from docx.shared import Inches, Pt, RGBColor, Cm
@@ -874,6 +876,23 @@ def generate_full_document(output_paths):
         "Kết luận Chương 2: "
     )
 
+    # =============================================================
+    # CHƯƠNG 3: ĐẶC TẢ YÊU CẦU PHẦN MỀM (SRS) - IEEE 830 / ISO 29148
+    # =============================================================
+    helpers = {
+        'add_heading_chapter': add_heading_chapter,
+        'add_heading_level1': add_heading_level1,
+        'add_heading_level2': add_heading_level2,
+        'add_heading_level3': add_heading_level3,
+        'add_table_title': add_table_title,
+        'add_figure_title': add_figure_title,
+        'add_paragraph_huit': add_paragraph_huit,
+        'add_bullet_level1': add_bullet_level1,
+        'add_bullet_level2': add_bullet_level2,
+        'create_huit_table': create_huit_table,
+    }
+    add_chapter_3(doc, helpers)
+
     # Lưu ra cả 2 thư mục: TÀI LIỆU FINAL và 03_Tai_Lieu_Do_An
     for p in output_paths:
         try:
@@ -886,6 +905,8 @@ def generate_full_document(output_paths):
 
 if __name__ == '__main__':
     paths = [
+        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\03_Tai_Lieu_Do_An\06_Bao_Cao_Ket_Qua_Do_An\BAO_CAO_NOSQL_CHUONG_1_2_3.docx',
+        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\TÀI LIỆU FINAL\BAO_CAO_NOSQL_CHUONG_1_2_3.docx',
         r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\03_Tai_Lieu_Do_An\06_Bao_Cao_Ket_Qua_Do_An\BAO_CAO_NOSQL_CHUONG_1_VA_CHUONG_2.docx',
         r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\TÀI LIỆU FINAL\BAO_CAO_NOSQL_CHUONG_1_VA_CHUONG_2.docx'
     ]
