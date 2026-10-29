@@ -19,6 +19,7 @@ import sys, os
 sys.stdout.reconfigure(encoding='utf-8')
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from chapter_3_srs import add_chapter_3
+from chapter_4_sds import add_chapter_4
 
 import docx
 from docx.shared import Inches, Pt, RGBColor, Cm
@@ -893,6 +894,12 @@ def generate_full_document(output_paths):
     }
     add_chapter_3(doc, helpers)
 
+    # =============================================================
+    # CHƯƠNG 4: ĐẶC TẢ THIẾT KẾ PHẦN MỀM (SDS) - IEEE 1016
+    # =============================================================
+    add_chapter_4(doc, helpers)
+
+
     # Lưu ra cả 2 thư mục: TÀI LIỆU FINAL và 03_Tai_Lieu_Do_An
     for p in output_paths:
         try:
@@ -905,9 +912,11 @@ def generate_full_document(output_paths):
 
 if __name__ == '__main__':
     paths = [
-        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\03_Tai_Lieu_Do_An\06_Bao_Cao_Ket_Qua_Do_An\BAO_CAO_NOSQL_CHUONG_1_2_3.docx',
+        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\TÀI LIỆU FINAL\BAO_CAO_NOSQL_CHUONG_1_2_3_4.docx',
+        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\03_Tai_Lieu_Do_An\06_Bao_Cao_Ket_Qua_Do_An\BAO_CAO_NOSQL_CHUONG_1_2_3_4.docx',
         r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\TÀI LIỆU FINAL\BAO_CAO_NOSQL_CHUONG_1_2_3.docx',
-        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\03_Tai_Lieu_Do_An\06_Bao_Cao_Ket_Qua_Do_An\BAO_CAO_NOSQL_CHUONG_1_VA_CHUONG_2.docx',
-        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\TÀI LIỆU FINAL\BAO_CAO_NOSQL_CHUONG_1_VA_CHUONG_2.docx'
+        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\03_Tai_Lieu_Do_An\06_Bao_Cao_Ket_Qua_Do_An\BAO_CAO_NOSQL_CHUONG_1_2_3.docx',
+        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\TÀI LIỆU FINAL\BAO_CAO_NOSQL_CHUONG_1_VA_CHUONG_2.docx',
+        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\03_Tai_Lieu_Do_An\06_Bao_Cao_Ket_Qua_Do_An\BAO_CAO_NOSQL_CHUONG_1_VA_CHUONG_2.docx'
     ]
     generate_full_document(paths)
