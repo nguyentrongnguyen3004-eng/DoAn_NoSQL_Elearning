@@ -25,6 +25,18 @@ from chapter_6_app_demo import add_chapter_6
 from chapter_7_testing import add_chapter_7
 from chapter_8_conclusion import add_chapter_8
 from references import add_references
+from front_matter import (
+    add_cover_page,
+    add_acknowledgements,
+    add_advisor_review,
+    add_reviewer_review,
+    add_table_of_contents,
+    add_abbreviations,
+    add_list_of_tables,
+    add_list_of_figures,
+    set_section_page_number_type,
+    clear_section_borders
+)
 
 import docx
 from docx.shared import Inches, Pt, RGBColor, Cm
@@ -349,75 +361,93 @@ def create_huit_table(doc, table_title, headers, data, col_widths):
 def generate_full_document(output_paths):
     doc = docx.Document()
     
-    # Cấu hình lề trang theo đúng quy định:
-    # Lề trang: Trái 3.5 cm, phải 2.5 cm, trên 2.5 cm, dưới 2.5 cm.
-    section = doc.sections[0]
-    section.page_width = Cm(21.0)   # A4 Width
-    section.page_height = Cm(29.7)  # A4 Height
-    section.left_margin = Cm(3.5)
-    section.right_margin = Cm(2.5)
-    section.top_margin = Cm(2.5)
-    section.bottom_margin = Cm(2.5)
+    helpers = {
+        'add_heading_chapter': add_heading_chapter,
+        'add_heading_level1': add_heading_level1,
+        'add_heading_level2': add_heading_level2,
+        'add_heading_level3': add_heading_level3,
+        'add_table_title': add_table_title,
+        'add_figure_title': add_figure_title,
+        'add_paragraph_huit': add_paragraph_huit,
+        'add_bullet_level1': add_bullet_level1,
+        'add_bullet_level2': add_bullet_level2,
+        'create_huit_table': create_huit_table,
+        'add_figure_huit': add_figure_huit,
+        'set_cell_margins': set_cell_margins,
+        'set_cell_border_black': set_cell_border_black,
+        'assets_dir': r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\03_Tai_Lieu_Do_An\06_Bao_Cao_Ket_Qua_Do_An\report_assets'
+    }
+
+    # =============================================================
+    # PHẦN 1: TRANG BÌA CHÍNH (IN GIẤY BÌA CỨNG, KHUNG VIỀN MỸ THUẬT)
+    # =============================================================
+    add_cover_page(doc, helpers, is_main_cover=True)
+
+    # =============================================================
+    # PHẦN 2: TRANG BÌA PHỤ (IN GIẤY TRẮNG THƯỜNG A4, KHÔNG KHUNG VIỀN)
+    # =============================================================
+    sec_sub = doc.add_section()
+    add_cover_page(doc, helpers, is_main_cover=False)
+
+    # =============================================================
+    # PHẦN 3: CÁC TRANG ĐẦU (FRONT MATTER): LỜI CẢM ƠN, NHẬN XÉT GVHD,
+    # NHẬN XÉT GVPB, MỤC LỤC, DANH MỤC VIẾT TẮT, DANH MỤC BẢNG, HÌNH
+    # QUY ĐỊNH ĐÁNH SỐ TRANG: LA MÃ (i, ii, iii...), CANH GIỮA
+    # =============================================================
+    sec_front = doc.add_section()
+    sec_front.left_margin = Cm(3.5)
+    sec_front.right_margin = Cm(2.5)
+    sec_front.top_margin = Cm(2.5)
+    sec_front.bottom_margin = Cm(2.5)
+    sec_front.footer.is_linked_to_previous = False
+    clear_section_borders(sec_front)
+    set_section_page_number_type(sec_front, fmt='lowerRoman', start=1)
     
-    # Cấu hình Footer đánh số trang phía dưới, canh giữa
-    footer = section.footer
-    footer_p = footer.paragraphs[0]
-    footer_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    footer_p.paragraph_format.first_line_indent = Cm(0)
-    footer_run = footer_p.add_run()
-    footer_run.font.name = 'Times New Roman'
-    footer_run.font.size = Pt(12)
-    footer_run.font.color.rgb = BLACK
-    add_page_number_field(footer_run)
+    f_roman = sec_front.footer.paragraphs[0]
+    f_roman.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    f_roman.paragraph_format.first_line_indent = Cm(0)
+    run_r = f_roman.add_run()
+    run_r.font.name = 'Times New Roman'
+    run_r.font.size = Pt(12)
+    run_r.font.color.rgb = BLACK
+    add_page_number_field(run_r)
 
-    # -------------------------------------------------------------
-    # TRANG TIÊU ĐỀ BÁO CÁO PHỤ (IN GIẤY TRẮNG THƯỜNG)
-    # -------------------------------------------------------------
-    p_top = doc.add_paragraph()
-    p_top.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p_top.paragraph_format.first_line_indent = Cm(0)
-    p_top.paragraph_format.space_before = Pt(0)
-    p_top.paragraph_format.space_after = Pt(2)
-    r = p_top.add_run("BỘ CÔNG THƯƠNG\nTRƯỜNG ĐẠI HỌC CÔNG THƯƠNG TP. HỒ CHÍ MINH (HUIT)\nKHOA CÔNG NGHỆ THÔNG TIN - BỘ MÔN CƠ SỞ DỮ LIỆU\n------------------------o0o------------------------\n\n\n")
-    r.font.name = 'Times New Roman'
-    r.font.size = Pt(13)
-    r.bold = True
-    r.font.color.rgb = BLACK
-
-    p_mid = doc.add_paragraph()
-    p_mid.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p_mid.paragraph_format.first_line_indent = Cm(0)
-    p_mid.paragraph_format.space_before = Pt(12)
-    p_mid.paragraph_format.space_after = Pt(12)
-    r1 = p_mid.add_run("BÁO CÁO ĐỒ ÁN HỌC PHẦN: DỮ LIỆU NOSQL\n\n")
-    r1.font.name = 'Times New Roman'
-    r1.font.size = Pt(18)
-    r1.bold = True
-    r1.font.color.rgb = BLACK
-
-    r2 = p_mid.add_run("ĐỀ TÀI:\nNỀN TẢNG E-LEARNING & KHẢO SÁT NĂNG LỰC TIẾNG ANH THỰC CHIẾN TÍCH HỢP ĐA MÔ HÌNH NOSQL (EDUPRO ACADEMY)\n\n\n")
-    r2.font.name = 'Times New Roman'
-    r2.font.size = Pt(15)
-    r2.bold = True
-    r2.font.color.rgb = BLACK
-
-    p_bot = doc.add_paragraph()
-    p_bot.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p_bot.paragraph_format.first_line_indent = Cm(0)
-    p_bot.paragraph_format.space_before = Pt(18)
-    p_bot.paragraph_format.space_after = Pt(0)
-    r3 = p_bot.add_run(
-        "Nhóm thực hiện: NHÓM 18 - LỚP 14DHTH\n"
-        "1. Nguyễn Trọng Nguyên - MSSV: 2001230589 (Nhóm trưởng)\n"
-        "2. Phạm Nguyễn Khôi Nguyên - MSSV: 2001230578\n"
-        "3. Võ Huỳnh Gia Huy - MSSV: 2001230303\n\n"
-        "TP. HỒ CHÍ MINH, THÁNG 10 NĂM 2026\n"
-    )
-    r3.font.name = 'Times New Roman'
-    r3.font.size = Pt(13)
-    r3.font.color.rgb = BLACK
-
+    # Thêm từng trang Front Matter
+    add_acknowledgements(doc, helpers)
     doc.add_page_break()
+    add_advisor_review(doc, helpers)
+    doc.add_page_break()
+    add_reviewer_review(doc, helpers)
+    doc.add_page_break()
+    add_table_of_contents(doc, helpers)
+    doc.add_page_break()
+    add_abbreviations(doc, helpers)
+    doc.add_page_break()
+    add_list_of_tables(doc, helpers)
+    doc.add_page_break()
+    add_list_of_figures(doc, helpers)
+
+    # =============================================================
+    # PHẦN 4: TOÀN BỘ NỘI DUNG CHÍNH (MỞ ĐẦU, CHƯƠNG 1-8, TÀI LIỆU THAM KHẢO)
+    # QUY ĐỊNH ĐÁNH SỐ TRANG: SỐ Ả RẬP (1, 2, 3...), CANH GIỮA BẮT ĐẦU TỪ 1
+    # =============================================================
+    sec_main = doc.add_section()
+    sec_main.left_margin = Cm(3.5)
+    sec_main.right_margin = Cm(2.5)
+    sec_main.top_margin = Cm(2.5)
+    sec_main.bottom_margin = Cm(2.5)
+    sec_main.footer.is_linked_to_previous = False
+    clear_section_borders(sec_main)
+    set_section_page_number_type(sec_main, fmt='decimal', start=1)
+    
+    f_dec = sec_main.footer.paragraphs[0]
+    f_dec.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    f_dec.paragraph_format.first_line_indent = Cm(0)
+    run_d = f_dec.add_run()
+    run_d.font.name = 'Times New Roman'
+    run_d.font.size = Pt(12)
+    run_d.font.color.rgb = BLACK
+    add_page_number_field(run_d)
 
         # =============================================================
     # PHẦN MỞ ĐẦU
@@ -502,6 +532,51 @@ def generate_full_document(output_paths):
     )
     add_bullet_level2(doc, 
         "Giới hạn nghiên cứu (Out-of-Scope): Đề tài không đi sâu vào việc tích hợp cổng thanh toán trực tiếp với các tổ chức tín dụng ngoài môi trường Sandbox (sử dụng giải pháp tạo mã VietQR động giả lập); không xây dựng mô hình trí tuệ nhân tạo nhận dạng giọng nói (Speech Recognition) tự huấn luyện từ đầu; và không triển khai cụm phân tán đa vùng địa lý trên hạ tầng đám mây thương mại đa quốc gia."
+    )
+
+    add_heading_level1(doc, "4. PHƯƠNG PHÁP NGHIÊN CỨU")
+    add_paragraph_huit(doc, 
+        "Để giải quyết triệt để các bài toán kỹ thuật đặt ra và hiện thực hóa mục tiêu đồ án, nhóm nghiên cứu kết hợp hài hòa hai phương pháp luận khoa học sau:",
+        "Phương pháp luận nghiên cứu: "
+    )
+    add_bullet_level1(doc, 
+        "Phương pháp nghiên cứu lý thuyết: Thu thập, tổng hợp và phân tích có hệ thống các công trình nghiên cứu học thuật, giáo trình chuyên ngành và tài liệu kỹ thuật chính thức từ các tổ chức phát triển NoSQL (MongoDB Inc., Redis Ltd., Apache Cassandra Project, Neo4j Graph Database). Trọng tâm nghiên cứu làm chủ các nguyên lý cốt lõi: Định lý CAP, Định lý PACELC, mô hình đảm bảo tính nhất quán BASE, thuật toán Băm nhất quán (Consistent Hashing), cấu trúc lưu trữ LSM-tree, cơ chế In-memory Datastore và nguyên lý duyệt đồ thị Index-free Adjacency."
+    )
+    add_bullet_level1(doc, 
+        "Phương pháp nghiên cứu thực nghiệm: Xây dựng nền tảng ứng dụng thực tế EduPro Academy; thiết kế cấu trúc dữ liệu tối ưu trên 4 CSDL NoSQL theo hướng mẫu truy cập (Access Pattern); tích hợp bộ kiểm thử tự động 22 Test Cases chức năng; thực hiện kiểm thử tải định lượng bằng k6; và tiến hành các kịch bản kiểm thử chịu lỗi Chaos Engineering nhằm đo lường chính xác các chỉ số hiệu năng và khả năng phục hồi của hệ thống."
+    )
+
+    add_heading_level1(doc, "5. BỐ CỤC ĐỒ ÁN")
+    add_paragraph_huit(doc, 
+        "Nội dung của quyển báo cáo đồ án được cấu trúc chặt chẽ thành 8 chương trọng tâm và phần tài liệu tham khảo, cụ thể như sau:",
+        "Cấu trúc bố cục đồ án: "
+    )
+    add_bullet_level1(doc, 
+        "Chương 1: Tổng quan đề tài và Kế hoạch dự án – Trình bày bối cảnh, lý do chọn đề tài, mục tiêu, phạm vi nghiên cứu, công nghệ sử dụng và kế hoạch triển khai theo quy trình Agile Scrum kèm phân công nhiệm vụ chi tiết cho từng thành viên."
+    )
+    add_bullet_level1(doc, 
+        "Chương 2: Tổng quan NoSQL và Tìm hiểu Tool – Giới thiệu tổng quan về CSDL NoSQL, các nguyên lý phân tán dữ liệu, phân loại 4 mô hình NoSQL cốt lõi và nghiên cứu chuyên sâu về công cụ quản trị giao diện GUI Tool."
+    )
+    add_bullet_level1(doc, 
+        "Chương 3: Đặc tả yêu cầu phần mềm (SRS) – Xây dựng tài liệu đặc tả yêu cầu theo chuẩn IEEE 830 / ISO 29148, bao gồm 15 yêu cầu chức năng, mô hình BPMN, mô hình hóa chức năng, 6 yêu cầu phi chức năng, đặc tính dữ liệu 3V, 16 mẫu truy cập dữ liệu (AP) và ma trận truy vết yêu cầu."
+    )
+    add_bullet_level1(doc, 
+        "Chương 4: Đặc tả thiết kế phần mềm (SDS) – Thiết kế kiến trúc theo chuẩn IEEE 1016, bao gồm ma trận quyết định chọn CSDL, thiết kế chi tiết trên 4 hệ NoSQL (Redis, MongoDB, Cassandra, Neo4j), cơ chế đồng bộ Polyglot, phân tích CAP/PACELC, thiết kế 15 API Backend, sơ đồ lớp và 5 kỹ thuật tối ưu nâng cao."
+    )
+    add_bullet_level1(doc, 
+        "Chương 5: Xây dựng CSDL và Truy vấn trên GUI Tool – Thiết lập môi trường triển khai Docker, khởi tạo cơ sở dữ liệu và hiện thực hóa 20 câu truy vấn (10 cơ bản + 10 nâng cao) trực tiếp trên các công cụ GUI Tool cùng minh chứng sao lưu, phục hồi."
+    )
+    add_bullet_level1(doc, 
+        "Chương 6: Kết nối ứng dụng và Demo – Trình bày kiến trúc phân tầng kết nối 4 CSDL NoSQL và minh chứng thực tế 6 nhóm chức năng nghiệp vụ trọng yếu của hệ thống EduPro Academy kèm hình ảnh giao diện thực tế."
+    )
+    add_bullet_level1(doc, 
+        "Chương 7: Kiểm thử và Đánh giá hiệu năng – Trình bày kết quả kiểm thử tự động 22 Test Cases chức năng, đánh giá hiệu năng chịu tải với k6, 5 thí nghiệm so sánh thực nghiệm và kiểm thử chịu lỗi Chaos Engineering."
+    )
+    add_bullet_level1(doc, 
+        "Chương 8: Kết quả đạt được và Tổng kết hoạt động nhóm – Đánh giá mức độ hoàn thành so với mục tiêu và NFR, bảng tổng kết tỷ lệ đóng góp cá nhân của từng thành viên, bài học kinh nghiệm và hướng phát triển trong tương lai."
+    )
+    add_bullet_level1(doc, 
+        "Tài liệu tham khảo – Danh mục 18 tài liệu khoa học, giáo trình đại học HUIT, tiêu chuẩn IEEE và tài liệu chính thức của các tổ chức NoSQL quốc tế."
     )
 
     doc.add_page_break()
@@ -958,7 +1033,9 @@ def generate_full_document(output_paths):
 
 if __name__ == '__main__':
     paths = [
+        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\TÀI LIỆU FINAL\BAO_CAO_NOSQL_EDUPRO_ACADEMY_FINAL.docx',
         r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\TÀI LIỆU FINAL\BAO_CAO_NOSQL_TOAN_VAN_CHUAN_HUIT.docx',
+        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\03_Tai_Lieu_Do_An\06_Bao_Cao_Ket_Qua_Do_An\BAO_CAO_NOSQL_EDUPRO_ACADEMY_FINAL.docx',
         r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\03_Tai_Lieu_Do_An\06_Bao_Cao_Ket_Qua_Do_An\BAO_CAO_NOSQL_TOAN_VAN_CHUAN_HUIT.docx'
     ]
     generate_full_document(paths)
