@@ -959,8 +959,6 @@ def generate_full_document(output_paths):
 if __name__ == '__main__':
     paths = [
         r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\TÀI LIỆU FINAL\BAO_CAO_NOSQL_TOAN_VAN_CHUAN_HUIT.docx',
-        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\03_Tai_Lieu_Do_An\06_Bao_Cao_Ket_Qua_Do_An\BAO_CAO_NOSQL_TOAN_VAN_CHUAN_HUIT.docx',
-        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\TÀI LIỆU FINAL\BAO_CAO_NOSQL_CHUONG_1_2_3_4.docx',
-        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\03_Tai_Lieu_Do_An\06_Bao_Cao_Ket_Qua_Do_An\BAO_CAO_NOSQL_CHUONG_1_2_3_4.docx'
+        r'D:\TRONGNGUYEN_HK7\NoSQL\ĐỒ ÁN\03_Tai_Lieu_Do_An\06_Bao_Cao_Ket_Qua_Do_An\BAO_CAO_NOSQL_TOAN_VAN_CHUAN_HUIT.docx'
     ]
     generate_full_document(paths)
