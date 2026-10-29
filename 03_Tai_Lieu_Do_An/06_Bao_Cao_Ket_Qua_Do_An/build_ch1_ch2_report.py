@@ -330,12 +330,12 @@ def build_report():
     table_roles = doc.add_table(rows=1, cols=4)
     format_custom_table(
         table_roles,
-        [1.8, 1.2, 1.7, 1.8],
-        ["Họ và tên", "MSSV", "Vai trò chính", "Phụ trách chuyên sâu CSDL"],
+        [1.8, 1.2, 1.4, 2.1],
+        ["Họ và tên", "MSSV", "Vai trò", "Nhiệm vụ phân công chính"],
         [
-            ["Nguyễn Trọng Nguyên", "2001230589", "Nhóm trưởng, Kiến trúc sư hệ thống", "MongoDB, Redis, Cassandra, Neo4j Core"],
-            ["Phạm Nguyễn Khôi Nguyên", "2001230578", "Thành viên, Kỹ sư Backend & GUI", "MongoDB Document Model, Redis Cache"],
-            ["Võ Huỳnh Gia Huy", "2001230303", "Thành viên, Kỹ sư Dữ liệu & Test", "Apache Cassandra, Neo4j Graph Queries"]
+            ["Nguyễn Trọng Nguyên", "2001230589", "Trưởng nhóm", "Quản lý tiến độ, kiến trúc hệ thống, CSDL Redis và kiểm thử"],
+            ["Phạm Nguyễn Khôi Nguyên", "2001230578", "Thành viên", "CSDL MongoDB, lập trình API Backend và giao diện Web"],
+            ["Võ Huỳnh Gia Huy", "2001230303", "Thành viên", "CSDL Apache Cassandra, CSDL Neo4j và chuẩn bị dữ liệu"]
         ]
     )
 

@@ -98,21 +98,21 @@ def add_chapter_8(doc, helpers):
                 "1",
                 "Nguyễn Trọng Nguyên",
                 "2001230589",
-                "Trưởng nhóm: Phụ trách kiến trúc tổng thể Polyglot Persistence, Lập trình Backend Express.js, Cấu hình và tối ưu hóa Redis (Cache, Session, Rate Limiter) & Apache Cassandra (Time-series Log, Anti-cheat), Viết mã nguồn kiểm thử tự động (automated_tests.js) và Biên soạn báo cáo tổng hợp.",
+                "Trưởng nhóm: Phụ trách kiến trúc tổng thể Polyglot Persistence, lập trình Backend Express.js, cấu hình và tối ưu hóa Redis (Cache, Session, Rate Limiter), viết mã nguồn kiểm thử tự động (automated_tests.js) và biên soạn báo cáo tổng hợp.",
                 "100%"
             ],
             [
                 "2",
-                "Thành viên nhóm 2",
-                "200123xxxx",
-                "Lập trình viên CSDL Document: Phụ trách thiết kế và quản trị MongoDB (Collections users, courses, exams, questions, results), Thiết lập chỉ mục phức hợp ESR, Viết các Aggregation Pipelines, Xây dựng phân hệ CMS quản trị đề thi và Kiểm thử chức năng thi cử.",
+                "Phạm Nguyễn Khôi Nguyên",
+                "2001230578",
+                "Thành viên: Phụ trách thiết kế và quản trị CSDL MongoDB (Collections users, courses, exams, questions, results), thiết lập chỉ mục phức hợp ESR, viết các Aggregation Pipelines, xây dựng phân hệ quản trị đề thi và thiết kế giao diện Web LMS.",
                 "100%"
             ],
             [
                 "3",
-                "Thành viên nhóm 3",
-                "200123yyyy",
-                "Lập trình viên CSDL Đồ thị & Frontend: Phụ trách thiết kế mô hình đồ thị LPG trên Neo4j, Lập trình các truy vấn Cypher (Lộ trình học tập tiên quyết, Gợi ý Bạn Cùng Tiến), Thiết kế giao diện Frontend người dùng Modular ES6 và Biên soạn danh mục kiểm thử.",
+                "Võ Huỳnh Gia Huy",
+                "2001230303",
+                "Thành viên: Phụ trách thiết kế và cài đặt CSDL Apache Cassandra (Time-series Log, Anti-cheat), thiết kế mô hình đồ thị LPG trên Neo4j, lập trình truy vấn Cypher (Lộ trình học tập, Gợi ý Bạn Cùng Tiến) và thực hiện kịch bản kiểm thử dữ liệu.",
                 "100%"
             ]
         ],
