@@ -397,7 +397,94 @@ def generate_full_document(output_paths):
 
     doc.add_page_break()
 
+        # =============================================================
+    # PHẦN MỞ ĐẦU
     # =============================================================
+    add_heading_chapter(doc, "MỞ ĐẦU")
+
+    add_heading_level1(doc, "1. GIỚI THIỆU")
+    add_paragraph_huit(doc, 
+        "Bước vào kỷ nguyên số hóa toàn diện và sự bùng nổ của cuộc cách mạng công nghiệp lần thứ tư, công nghệ giáo dục (EdTech) đang chứng kiến bước chuyển mình mạnh mẽ từ các lớp học truyền thống sang các mô hình đào tạo trực tuyến quy mô lớn (E-Learning). Các nền tảng học tập thông minh ngày càng đòi hỏi khả năng cá nhân hóa lộ trình, tương tác thời gian thực và quản lý khối lượng dữ liệu khổng lồ từ hành vi học tập của người dùng. Trong các lĩnh vực đào tạo trực tuyến tại Việt Nam, nhu cầu học tập, rèn luyện kỹ năng và khảo sát năng lực tiếng Anh thực chiến nhằm đạt các chuẩn chứng chỉ quốc tế (IELTS, TOEIC, CEFR A1-C2) luôn chiếm tỷ trọng lớn và không ngừng gia tăng qua từng năm.",
+        "Xu thế phát triển của công nghệ giáo dục: "
+    )
+    add_paragraph_huit(doc, 
+        "Tuy nhiên, trong quá trình vận hành thực tế các hệ thống E-Learning có lưu lượng truy cập cao, các kiến trúc cơ sở dữ liệu quan hệ truyền thống (RDBMS) thường xuyên đối mặt với những vấn đề nan giải và điểm nghẽn nghiêm trọng, có thể dẫn chứng cụ thể qua các kịch bản thực tế sau:",
+        "Những vấn đề kỹ thuật và dẫn chứng thực tiễn: "
+    )
+    add_bullet_level1(doc, 
+        "Dẫn chứng về sự bùng nổ lưu lượng truy cập đồng thời (Concurrency): Trong các đợt tổ chức kỳ thi khảo sát năng lực tập trung (Placement Test hoặc IELTS Mock Test), hàng ngàn thí sinh cùng truy cập làm bài, liên tục gửi đáp án và cùng bấm nộp bài vào những giây cuối cùng. CSDL RDBMS truyền thống (như MySQL hay SQL Server) lập tức bị quá tải hàng đợi I/O đĩa từ, xảy ra hiện tượng khóa bảng (table locking) hoặc khóa dòng (row-level locking), dẫn đến nghẽn cổng thi và làm sập máy chủ dịch vụ."
+    )
+    add_bullet_level1(doc, 
+        "Dẫn chứng về tần suất phát sinh dữ liệu hành vi cực cao (High Velocity): Để phục vụ thống kê tiến độ học tập và chống gian lận, trình duyệt của học viên liên tục gửi tín hiệu heartbeat theo dõi thời gian xem video (chu kỳ 5 giây một lần) cùng các sự kiện chuyển tab, rời khỏi màn hình thi. Với hàng ngàn học viên học đồng thời, số lượng bản ghi log phát sinh lên tới hàng chục ngàn dòng mỗi phút (Write-heavy). RDBMS truyền thống với cơ chế ghi đĩa đồng bộ kèm duy trì chỉ mục B-Tree không thể đáp ứng được thông lượng ghi khổng lồ này."
+    )
+    add_bullet_level1(doc, 
+        "Dẫn chứng về tính đa dạng và biến đổi của dữ liệu học tập (High Variety): Nội dung đào tạo tiếng Anh hiện đại không chỉ có văn bản đơn giản mà bao gồm đa dạng các dạng thức: bài nghe đính kèm file audio MP3, bài phát âm kèm phân tích sóng âm, câu hỏi đọc hiểu chứa văn bản đoạn văn lồng nhau, bài viết luận PEEL có chấm điểm tiêu chí mở rộng, sổ tay từ vựng flashcard cá nhân hóa. Nếu ép buộc toàn bộ các cấu trúc phức tạp này vào các bảng RDBMS sẽ làm nảy sinh hàng chục bảng trung gian phân mảnh, số lượng khóa ngoại dày đặc, khiến mã nguồn tầng Backend trở nên cồng kềnh và truy vấn rất chậm."
+    )
+    add_bullet_level1(doc, 
+        "Dẫn chứng về bài toán mạng lưới quan hệ đa tầng (Graph Traversal): Việc xây dựng lộ trình học tập phụ thuộc (học xong bài này mới được mở khóa bài nâng cao) và thuật toán gợi ý bạn cùng tiến (tìm những học viên có cùng mục tiêu Band điểm và cùng đăng ký nhiều khóa học chung) đòi hỏi duyệt qua đồ thị liên kết nhiều bước. Trong RDBMS, việc thực hiện các câu lệnh SQL JOIN đệ quy nhiều cấp (Recursive Self-JOIN) gây bùng nổ không gian tìm kiếm, độ phức tạp tính toán tăng theo cấp số nhân, khiến thời gian phản hồi kéo dài hàng chục giây."
+    )
+    add_paragraph_huit(doc, 
+        "Xuất phát từ những đòi hỏi cấp thiết và bài toán thực tế nêu trên, đề tài 'Xây dựng nền tảng E-Learning & Khảo sát năng lực tiếng Anh thực chiến tích hợp đa mô hình NoSQL (EduPro Academy)' được lựa chọn thực hiện. Đề tài nhằm mục đích nghiên cứu chuyên sâu và áp dụng giải pháp kiến trúc đa mô hình NoSQL (Polyglot Persistence) - kết hợp hài hòa sức mạnh của 4 hệ quản trị NoSQL tiên tiến: MongoDB (lưu trữ tài liệu linh hoạt), Redis (bộ nhớ đệm RAM siêu tốc), Apache Cassandra (xử lý chuỗi thời gian ghi tải cao) và Neo4j (khai phá mạng lưới đồ thị tri thức), mang lại giải pháp công nghệ toàn diện, bền vững và đạt hiệu năng tối ưu.",
+        "Lý do lựa chọn đề tài: "
+    )
+
+    add_heading_level1(doc, "2. MỤC TIÊU ĐỀ TÀI")
+    add_paragraph_huit(doc, 
+        "Đề tài xác định các mục tiêu cốt lõi cần phải đạt được trên cả hai phương diện nghiên cứu lý thuyết và hiện thực hóa sản phẩm ứng dụng, cụ thể như sau:",
+        "Mục tiêu tổng quát: "
+    )
+    add_bullet_level1(doc, 
+        "Về mặt nghiên cứu khoa học và lý thuyết:"
+    )
+    add_bullet_level2(doc, 
+        "Nghiên cứu chuyên sâu về nguyên lý vận hành, kiến trúc lưu trữ và phạm vi ứng dụng tối ưu của 4 mô hình cơ sở dữ liệu NoSQL tiêu biểu: Document Store, In-Memory Key-Value Store, Wide-Column Family Store và Graph Database."
+    )
+    add_bullet_level2(doc, 
+        "Làm chủ các lý thuyết phân tán dữ liệu hiện đại: Định lý CAP của Eric Brewer, định lý mở rộng PACELC của Daniel Abadi, mô hình đảm bảo tính nhất quán BASE, cơ chế Băm nhất quán (Consistent Hashing) trên vòng tròn Token Ring và nguyên lý duyệt đồ thị Index-free Adjacency."
+    )
+    add_bullet_level1(doc, 
+        "Về mặt hiện thực hóa sản phẩm ứng dụng:"
+    )
+    add_bullet_level2(doc, 
+        "Xây dựng thành công nền tảng E-Learning EduPro Academy với đầy đủ chức năng phục vụ 3 nhóm tác nhân (Học viên, Giảng viên, Quản trị viên): quản lý danh mục 12 khóa học tiếng Anh chuẩn quốc tế, tổ chức phòng thi khảo sát năng lực trực tuyến, hệ thống chống gian lận thi cử 3 lần cảnh báo, cơ chế Gamification đổi quà bằng điểm thưởng XP, theo dõi tiến độ xem bài giảng chuỗi thời gian và gợi ý Bạn Cùng Tiến."
+    )
+    add_bullet_level2(doc, 
+        "Tích hợp đồng thời và vận hành trơn tru cả 4 hệ CSDL NoSQL (MongoDB, Redis, Apache Cassandra, Neo4j) trong một ngăn xếp công nghệ RESTful API thống nhất, không để xảy ra xung đột hay chồng chéo về mặt nghiệp vụ."
+    )
+    add_bullet_level2(doc, 
+        "Đạt được các chỉ số hiệu năng định lượng (Non-Functional Requirements - NFR) đo lường thực tế: thời gian truy xuất Cache Redis dưới 5 ms ở phân vị p95; thông lượng ghi log học tập vào Cassandra trên 2.000 ops/giây; truy vấn tìm kiếm khóa học trên MongoDB dưới 40 ms; thuật toán duyệt đồ thị tri thức trên Neo4j dưới 30 ms; và đạt 100% tỷ lệ vượt qua bộ kiểm thử tự động 22 Test Cases."
+    )
+
+    add_heading_level1(doc, "3. ĐỐI TƯỢNG VÀ PHẠM VI ĐỀ TÀI")
+    add_paragraph_huit(doc, 
+        "Để đảm bảo tính khả thi, chiều sâu nghiên cứu và sự tập trung của đề tài, các đối tượng nghiên cứu và phạm vi giới hạn được xác định rõ ràng như sau:",
+        "Xác định đối tượng và phạm vi: "
+    )
+    add_bullet_level1(doc, 
+        "Đối tượng nghiên cứu:"
+    )
+    add_bullet_level2(doc, 
+        "Đối tượng công nghệ: 4 hệ quản trị cơ sở dữ liệu NoSQL đại diện cho 4 mô hình lưu trữ cốt lõi: MongoDB Community (phiên bản 7.0+), Redis / Memurai (phiên bản 7.0+), Apache Cassandra (phiên bản 3.11.17) và Neo4j Community (phiên bản 5.x); ngăn xếp phát triển ứng dụng web hiện đại Node.js/Express.js và kiến trúc Module hóa Frontend Vanilla ES6."
+    )
+    add_bullet_level2(doc, 
+        "Đối tượng người dùng (Tác nhân hệ thống): Học viên (Student - người học, làm bài thi, đổi quà XP), Giảng viên (Teacher - tạo khóa học, quản lý ngân hàng câu hỏi, theo dõi thống kê) và Quản trị viên (Admin - kiểm duyệt nội dung, quản lý an ninh hệ thống và phân quyền)."
+    )
+    add_bullet_level1(doc, 
+        "Phạm vi và giới hạn đề tài:"
+    )
+    add_bullet_level2(doc, 
+        "Phạm vi môi trường triển khai: Đề tài tập trung triển khai và đánh giá thực nghiệm trên môi trường máy chủ cục bộ (Local Server) kết hợp công nghệ đóng gói Container (Docker, Docker Compose), kết nối và kiểm thử trực tiếp qua các giao thức mạng bản địa: MongoDB (cổng 27017), Redis (cổng 6379), Cassandra Native Transport (cổng 9042), Neo4j Bolt Protocol (cổng 7687) và Web HTTP (cổng 5050)."
+    )
+    add_bullet_level2(doc, 
+        "Phạm vi nghiệp vụ chức năng (In-Scope): Tập trung vào 5 phân hệ nòng cốt: (1) Quản trị đào tạo LMS và từ vựng cá nhân; (2) Phòng thi trắc nghiệm trực tuyến thời gian thực và Anti-cheat 3/3; (3) Phân tích dữ liệu chuỗi thời gian tỷ lệ giữ chân video (Retention Curve); (4) Đồ thị tri thức bài học và mạng lưới xã hội học tập Bạn Cùng Tiến; (5) Tường lửa giới hạn tần suất truy cập trượt (Sliding Window Rate Limiter) và cơ chế sao lưu phục hồi dữ liệu đồng bộ."
+    )
+    add_bullet_level2(doc, 
+        "Giới hạn nghiên cứu (Out-of-Scope): Đề tài không đi sâu vào việc tích hợp cổng thanh toán trực tiếp với các tổ chức tín dụng ngoài môi trường Sandbox (sử dụng giải pháp tạo mã VietQR động giả lập); không xây dựng mô hình trí tuệ nhân tạo nhận dạng giọng nói (Speech Recognition) tự huấn luyện từ đầu; và không triển khai cụm phân tán đa vùng địa lý trên hạ tầng đám mây thương mại đa quốc gia."
+    )
+
+    doc.add_page_break()
+
+# =============================================================
     # CHƯƠNG 1: TỔNG QUAN ĐỀ TÀI VÀ KẾ HOẠCH DỰ ÁN
     # =============================================================
     add_heading_chapter(doc, "CHƯƠNG 1: TỔNG QUAN ĐỀ TÀI VÀ KẾ HOẠCH DỰ ÁN")
