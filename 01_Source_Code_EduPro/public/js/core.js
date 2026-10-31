@@ -1068,6 +1068,119 @@ var API_BASE = window.API_BASE;
 
     // 10. ĐỒ THỊ BẢN ĐỒ TRI THỨC
 
+    // ==============================================================
+    // TIỆN ÍCH PHÂN TRANG CHUẨN GIAO DIỆN CHUYÊN NGHIỆP (REUSABLE PAGINATION)
+    // ==============================================================
+    function buildPaginationControls(containerId, currentPage, totalPages, totalItems, pageSize, onPageChangeFnName) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      if (totalItems === 0 || totalPages <= 1) {
+        if (totalItems > 0) {
+          container.innerHTML = `
+            <div class="w-full flex items-center justify-between text-xs text-slate-500 py-1">
+              <span>Hiển thị tất cả <strong>${totalItems}</strong> bản ghi</span>
+              <span class="font-medium text-slate-400">Trang 1 / 1</span>
+            </div>
+          `;
+        } else {
+          container.innerHTML = '';
+        }
+        return;
+      }
+
+      const startItem = (currentPage - 1) * pageSize + 1;
+      const endItem = Math.min(currentPage * pageSize, totalItems);
+
+      let pagesHtml = '';
+      for (let i = 1; i <= totalPages; i++) {
+        const isActive = i === currentPage;
+        pagesHtml += `
+          <button onclick="${onPageChangeFnName}(${i})" class="w-8 h-8 rounded-xl font-bold text-xs transition-all flex items-center justify-center ${isActive ? 'bg-brand-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}">
+            ${i}
+          </button>
+        `;
+      }
+
+      container.innerHTML = `
+        <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+          <div class="flex items-center gap-1.5">
+            <span>Hiển thị <strong>${startItem} - ${endItem}</strong> trên tổng số <strong>${totalItems}</strong> bản ghi</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button onclick="${onPageChangeFnName}(${currentPage - 1})" ${currentPage <= 1 ? 'disabled' : ''} class="px-3 py-1.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1 ${currentPage <= 1 ? 'bg-slate-100 dark:bg-slate-800/50 text-slate-400 cursor-not-allowed opacity-50' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}">
+              <i class="fa-solid fa-chevron-left text-[10px]"></i> Trước
+            </button>
+            <div class="flex items-center gap-1">
+              ${pagesHtml}
+            </div>
+            <button onclick="${onPageChangeFnName}(${currentPage + 1})" ${currentPage >= totalPages ? 'disabled' : ''} class="px-3 py-1.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1 ${currentPage >= totalPages ? 'bg-slate-100 dark:bg-slate-800/50 text-slate-400 cursor-not-allowed opacity-50' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}">
+              Sau <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+    window.buildPaginationControls = buildPaginationControls;
+
+    // --- PHÂN TRANG LỊCH SỬ KẾT QUẢ BÀI THI HỌC VIÊN ---
+    let rawUserHistoryList = [];
+    let userHistoryCurrentPage = 1;
+    const USER_HISTORY_PAGE_SIZE = 5;
+
+    function renderUserHistoryTablePage(page = 1) {
+      userHistoryCurrentPage = page;
+      const tbody = document.getElementById('history-table-body');
+      if (!tbody) return;
+      if (!rawUserHistoryList || rawUserHistoryList.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-slate-400">Bạn chưa thực hiện bài khảo sát nào.</td></tr>';
+        buildPaginationControls('history-pagination', 1, 0, 0, USER_HISTORY_PAGE_SIZE, 'changeUserHistoryPage');
+        return;
+      }
+
+      const total = rawUserHistoryList.length;
+      const totalPages = Math.ceil(total / USER_HISTORY_PAGE_SIZE);
+      if (userHistoryCurrentPage > totalPages) userHistoryCurrentPage = totalPages;
+      if (userHistoryCurrentPage < 1) userHistoryCurrentPage = 1;
+
+      const start = (userHistoryCurrentPage - 1) * USER_HISTORY_PAGE_SIZE;
+      const pageItems = rawUserHistoryList.slice(start, start + USER_HISTORY_PAGE_SIZE);
+
+      let html = '';
+      pageItems.forEach((r, idx) => {
+        const timeStr = new Date(r.submittedAt).toLocaleDateString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+        const isPass = r.score >= 5.0;
+        html += `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+            <td class="py-4 px-4 font-mono text-xs text-slate-500">${timeStr}</td>
+            <td class="py-4 px-4 font-bold text-slate-900 dark:text-white">${r.examTitle}</td>
+            <td class="py-4 px-4 font-black text-brand-600 dark:text-indigo-400">${r.score} đ</td>
+            <td class="py-4 px-4 text-slate-600 dark:text-slate-300">${r.correctCount} / ${r.totalCount}</td>
+            <td class="py-4 px-4">
+              <span class="px-2.5 py-1 rounded-full text-xs font-bold ${isPass ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400' : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400'}">
+                ${isPass ? 'ĐẠT TIÊU CHUẨN' : 'CHƯA ĐẠT'}
+              </span>
+            </td>
+            <td class="py-4 px-4 text-center">
+              ${isPass ? `
+                <button onclick='openCertificateModal(${JSON.stringify({ score: r.score, title: r.examTitle })})' class="px-3 py-1 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-[11px] shadow-sm flex items-center gap-1 mx-auto transition-all">
+                  <i class="fa-solid fa-certificate"></i>
+                  <span>Xem</span>
+                </button>
+              ` : '<span class="text-xs text-slate-400">-</span>'}
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+
+      buildPaginationControls('history-pagination', userHistoryCurrentPage, totalPages, total, USER_HISTORY_PAGE_SIZE, 'changeUserHistoryPage');
+    }
+
+    function changeUserHistoryPage(page) {
+      renderUserHistoryTablePage(page);
+    }
+    window.changeUserHistoryPage = changeUserHistoryPage;
+
     async function loadUserHistory() {
       if (!currentToken) return;
       try {
@@ -1076,39 +1189,8 @@ var API_BASE = window.API_BASE;
         });
         const json = await res.json();
         if (json.success) {
-          const tbody = document.getElementById('history-table-body');
-          if (!json.data || json.data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-slate-400">Bạn chưa thực hiện bài khảo sát nào.</td></tr>';
-            return;
-          }
-
-          let html = '';
-          json.data.forEach(r => {
-            const timeStr = new Date(r.submittedAt).toLocaleDateString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-            const isPass = r.score >= 5.0;
-            html += `
-              <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-                <td class="py-4 px-4 font-mono text-xs text-slate-500">${timeStr}</td>
-                <td class="py-4 px-4 font-bold text-slate-900 dark:text-white">${r.examTitle}</td>
-                <td class="py-4 px-4 font-black text-brand-600 dark:text-indigo-400">${r.score} đ</td>
-                <td class="py-4 px-4 text-slate-600 dark:text-slate-300">${r.correctCount} / ${r.totalCount}</td>
-                <td class="py-4 px-4">
-                  <span class="px-2.5 py-1 rounded-full text-xs font-bold ${isPass ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400' : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400'}">
-                    ${isPass ? 'ĐẠT TIÊU CHUẨN' : 'CHƯA ĐẠT'}
-                  </span>
-                </td>
-                <td class="py-4 px-4 text-center">
-                  ${isPass ? `
-                    <button onclick='openCertificateModal(${JSON.stringify({ score: r.score, title: r.examTitle })})' class="px-3 py-1 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-[11px] shadow-sm flex items-center gap-1 mx-auto transition-all">
-                      <i class="fa-solid fa-certificate"></i>
-                      <span>Xem</span>
-                    </button>
-                  ` : '<span class="text-xs text-slate-400">-</span>'}
-                </td>
-              </tr>
-            `;
-          });
-          tbody.innerHTML = html;
+          rawUserHistoryList = json.data || [];
+          renderUserHistoryTablePage(1);
         }
       } catch (err) {
         console.error('Lỗi tải lịch sử:', err);
@@ -1117,6 +1199,57 @@ var API_BASE = window.API_BASE;
 
     let chartGradeInstance = null;
     let chartTopicInstance = null;
+
+    // --- PHÂN TRANG DANH SÁCH BÀI NỘP GẦN ĐÂY (ANALYTICS SUBMISSIONS) ---
+    let rawAnalyticsSubmissionsList = [];
+    let analyticsCurrentPage = 1;
+    const ANALYTICS_PAGE_SIZE = 6;
+
+    function renderAnalyticsSubmissionsTablePage(page = 1) {
+      analyticsCurrentPage = page;
+      const tbody = document.getElementById('analytics-table-body');
+      if (!tbody) return;
+      if (!rawAnalyticsSubmissionsList || rawAnalyticsSubmissionsList.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-slate-400">Chưa có bài nộp nào.</td></tr>';
+        buildPaginationControls('analytics-pagination', 1, 0, 0, ANALYTICS_PAGE_SIZE, 'changeAnalyticsPage');
+        return;
+      }
+
+      const total = rawAnalyticsSubmissionsList.length;
+      const totalPages = Math.ceil(total / ANALYTICS_PAGE_SIZE);
+      if (analyticsCurrentPage > totalPages) analyticsCurrentPage = totalPages;
+      if (analyticsCurrentPage < 1) analyticsCurrentPage = 1;
+
+      const start = (analyticsCurrentPage - 1) * ANALYTICS_PAGE_SIZE;
+      const pageItems = rawAnalyticsSubmissionsList.slice(start, start + ANALYTICS_PAGE_SIZE);
+
+      let html = '';
+      pageItems.forEach(sub => {
+        const timeStr = new Date(sub.submittedAt).toLocaleDateString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+        const isPass = sub.score >= 5.0;
+        html += `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+            <td class="py-4 px-4 font-mono text-xs font-semibold text-slate-500">${sub.studentCode}</td>
+            <td class="py-4 px-4 font-bold text-slate-900 dark:text-white">${sub.studentName}</td>
+            <td class="py-4 px-4 text-xs text-slate-500">${timeStr}</td>
+            <td class="py-4 px-4 font-black text-brand-600 dark:text-indigo-400">${sub.score} đ</td>
+            <td class="py-4 px-4">
+              <span class="px-2.5 py-1 rounded-full text-xs font-bold ${isPass ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400' : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400'}">
+                ${isPass ? 'ĐẠT' : 'KHÔNG ĐẠT'}
+              </span>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+
+      buildPaginationControls('analytics-pagination', analyticsCurrentPage, totalPages, total, ANALYTICS_PAGE_SIZE, 'changeAnalyticsPage');
+    }
+
+    function changeAnalyticsPage(page) {
+      renderAnalyticsSubmissionsTablePage(page);
+    }
+    window.changeAnalyticsPage = changeAnalyticsPage;
 
     // 12. BẢNG ĐIỀU KHIỂN QUẢN TRỊ VIÊN & BIỂU ĐỒ CHART.JS
     async function loadAnalyticsData() {
@@ -1136,31 +1269,8 @@ var API_BASE = window.API_BASE;
           // Vẽ Biểu Đồ Phân Bổ Xếp Loại & Chủ đề NoSQL (Chart.js)
           renderAnalyticsCharts(submissions || []);
 
-          const tbody = document.getElementById('analytics-table-body');
-          if (!submissions || submissions.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-slate-400">Chưa có bài nộp nào.</td></tr>';
-            return;
-          }
-
-          let html = '';
-          submissions.forEach(sub => {
-            const timeStr = new Date(sub.submittedAt).toLocaleDateString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-            const isPass = sub.score >= 5.0;
-            html += `
-              <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-                <td class="py-4 px-4 font-mono text-xs font-semibold text-slate-500">${sub.studentCode}</td>
-                <td class="py-4 px-4 font-bold text-slate-900 dark:text-white">${sub.studentName}</td>
-                <td class="py-4 px-4 text-xs text-slate-500">${timeStr}</td>
-                <td class="py-4 px-4 font-black text-brand-600 dark:text-indigo-400">${sub.score} đ</td>
-                <td class="py-4 px-4">
-                  <span class="px-2.5 py-1 rounded-full text-xs font-bold ${isPass ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400' : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400'}">
-                    ${isPass ? 'ĐẠT' : 'KHÔNG ĐẠT'}
-                  </span>
-                </td>
-              </tr>
-            `;
-          });
-          tbody.innerHTML = html;
+          rawAnalyticsSubmissionsList = submissions || [];
+          renderAnalyticsSubmissionsTablePage(1);
         }
       } catch (err) {
         console.error('Lỗi tải analytics:', err);

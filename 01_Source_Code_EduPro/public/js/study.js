@@ -2065,6 +2065,68 @@ In conclusion, modern advertising has devolved from benign commercial notificati
     }
 
     // --- PHÂN HỆ QUẢN TRỊ VIÊN: QUẢN LÝ TÀI KHOẢN & PHÂN QUYỀN HỆ THỐNG (ROLE ADMIN - MONGODB) ---
+    let rawAdminUsersList = [];
+    let adminUsersCurrentPage = 1;
+    const ADMIN_USERS_PAGE_SIZE = 5;
+
+    function renderAdminUsersTablePage(page = 1) {
+      adminUsersCurrentPage = page;
+      const tbody = document.getElementById('admin-users-table-body');
+      if (!tbody) return;
+      if (!rawAdminUsersList || rawAdminUsersList.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-slate-400">Không tìm thấy tài khoản nào.</td></tr>';
+        if (typeof buildPaginationControls === 'function') {
+          buildPaginationControls('admin-users-pagination', 1, 0, 0, ADMIN_USERS_PAGE_SIZE, 'changeAdminUsersPage');
+        }
+        return;
+      }
+
+      const total = rawAdminUsersList.length;
+      const totalPages = Math.ceil(total / ADMIN_USERS_PAGE_SIZE);
+      if (adminUsersCurrentPage > totalPages) adminUsersCurrentPage = totalPages;
+      if (adminUsersCurrentPage < 1) adminUsersCurrentPage = 1;
+
+      const start = (adminUsersCurrentPage - 1) * ADMIN_USERS_PAGE_SIZE;
+      const pageItems = rawAdminUsersList.slice(start, start + ADMIN_USERS_PAGE_SIZE);
+
+      tbody.innerHTML = pageItems.map(u => `
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+          <td class="py-3.5 px-4 flex items-center gap-3">
+            <img src="${u.avatar || (u.role === 'ADMIN' ? 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80' : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80')}" class="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700">
+            <div>
+              <div class="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">${u.fullName || u.username}</div>
+              <div class="text-[10px] text-slate-400 font-mono">@${u.username}</div>
+            </div>
+          </td>
+          <td class="py-3.5 px-4 text-xs font-mono text-slate-600 dark:text-slate-300">${u.email || 'N/A'}</td>
+          <td class="py-3.5 px-4">
+            <select onchange="updateUserRole('${u._id}', this.value)" class="px-2.5 py-1.5 rounded-xl text-xs font-bold outline-none border transition-all cursor-pointer ${u.role === 'ADMIN' ? 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 border-purple-300 dark:border-purple-800' : u.role === 'TEACHER' ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'}">
+              <option value="STUDENT" ${u.role === 'STUDENT' ? 'selected' : ''}>STUDENT (Học viên)</option>
+              <option value="TEACHER" ${u.role === 'TEACHER' ? 'selected' : ''}>TEACHER (Giảng viên)</option>
+              <option value="ADMIN" ${u.role === 'ADMIN' ? 'selected' : ''}>ADMIN (Quản trị viên)</option>
+            </select>
+          </td>
+          <td class="py-3.5 px-4 text-center">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block mr-1"></span>ACTIVE
+            </span>
+          </td>
+          <td class="py-3.5 px-4 text-right text-[11px] text-slate-400 font-mono">
+            ${u.createdAt ? new Date(u.createdAt).toLocaleDateString('vi-VN') : 'Mặc định'}
+          </td>
+        </tr>
+      `).join('');
+
+      if (typeof buildPaginationControls === 'function') {
+        buildPaginationControls('admin-users-pagination', adminUsersCurrentPage, totalPages, total, ADMIN_USERS_PAGE_SIZE, 'changeAdminUsersPage');
+      }
+    }
+
+    function changeAdminUsersPage(page) {
+      renderAdminUsersTablePage(page);
+    }
+    window.changeAdminUsersPage = changeAdminUsersPage;
+
     async function loadAdminUsersList() {
       const tbody = document.getElementById('admin-users-table-body');
       if (!tbody) return;
@@ -2074,33 +2136,8 @@ In conclusion, modern advertising has devolved from benign commercial notificati
         if (json.success && Array.isArray(json.data)) {
           const badge = document.getElementById('admin-users-count-badge');
           if (badge) badge.innerText = `${json.total || json.data.length} tài khoản trong CSDL`;
-          tbody.innerHTML = json.data.map(u => `
-            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-              <td class="py-3.5 px-4 flex items-center gap-3">
-                <img src="${u.avatar || (u.role === 'ADMIN' ? 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80' : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80')}" class="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700">
-                <div>
-                  <div class="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">${u.fullName || u.username}</div>
-                  <div class="text-[10px] text-slate-400 font-mono">@${u.username}</div>
-                </div>
-              </td>
-              <td class="py-3.5 px-4 text-xs font-mono text-slate-600 dark:text-slate-300">${u.email || 'N/A'}</td>
-              <td class="py-3.5 px-4">
-                <select onchange="updateUserRole('${u._id}', this.value)" class="px-2.5 py-1.5 rounded-xl text-xs font-bold outline-none border transition-all cursor-pointer ${u.role === 'ADMIN' ? 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 border-purple-300 dark:border-purple-800' : u.role === 'TEACHER' ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'}">
-                  <option value="STUDENT" ${u.role === 'STUDENT' ? 'selected' : ''}>STUDENT (Học viên)</option>
-                  <option value="TEACHER" ${u.role === 'TEACHER' ? 'selected' : ''}>TEACHER (Giảng viên)</option>
-                  <option value="ADMIN" ${u.role === 'ADMIN' ? 'selected' : ''}>ADMIN (Quản trị viên)</option>
-                </select>
-              </td>
-              <td class="py-3.5 px-4 text-center">
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block mr-1"></span>ACTIVE
-                </span>
-              </td>
-              <td class="py-3.5 px-4 text-right text-[11px] text-slate-400 font-mono">
-                ${u.createdAt ? new Date(u.createdAt).toLocaleDateString('vi-VN') : 'Mặc định'}
-              </td>
-            </tr>
-          `).join('');
+          rawAdminUsersList = json.data;
+          renderAdminUsersTablePage(1);
         }
       } catch (e) {
         console.error('Lỗi load users:', e);
