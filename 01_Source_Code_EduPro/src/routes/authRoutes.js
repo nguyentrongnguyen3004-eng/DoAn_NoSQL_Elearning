@@ -10,8 +10,27 @@ const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'nosql_elearning_super_secret_jwt_key_2026';
 
 // Helper tạo OTP ngẫu nhiên 6 chữ số
-function generateOtp() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+function generateOtp() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// Helper kiểm tra độ mạnh mật khẩu (Tối thiểu 8 ký tự, có HOA, THƯỜNG, SỐ, ĐẶC BIỆT)
+function validateStrongPassword(password) {
+  if (typeof password !== 'string' || password.length < 8) {
+    return { isValid: false, message: 'Mật khẩu phải có tối thiểu 8 ký tự' };
+  }
+  const hasUpper = /[A-Z]/.test(password);
+  const hasLower = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~\`]/.test(password);
+
+  if (!hasUpper || !hasLower || !hasNumber || !hasSpecial) {
+    return {
+      isValid: false,
+      message: 'Mật khẩu chưa đạt tiêu chuẩn an toàn: Phải chứa ít nhất 1 chữ hoa (A-Z), 1 chữ thường (a-z), 1 chữ số (0-9) và 1 ký tự đặc biệt (!@#$%...)'
+    };
+  }
+  return { isValid: true };
 }
 
 // Quản lý hồ sơ học viên trong phiên đăng nhập (Task 1.1)
@@ -56,7 +75,8 @@ router.post('/change-password', authenticateToken, async (req, res) => {
     if (!oldPassword || !newPassword || !confirmPassword) {
       return res.status(400).json({ success: false, message: 'Vui lòng nhập đầy đủ các thông tin mật khẩu' });
     }
-    if (newPassword.length < 6) return res.status(400).json({ success: false, message: 'Mật khẩu mới phải có tối thiểu 6 ký tự' });
+    const pwdCheck = validateStrongPassword(newPassword);
+    if (!pwdCheck.isValid) return res.status(400).json({ success: false, message: pwdCheck.message });
     if (newPassword !== confirmPassword) return res.status(400).json({ success: false, message: 'Xác nhận mật khẩu mới không khớp' });
     if (newPassword === oldPassword) return res.status(400).json({ success: false, message: 'Mật khẩu mới không được trùng mật khẩu cũ' });
 
@@ -210,8 +230,14 @@ router.post('/register', async (req, res) => {
       return res.status(500).json({ success: false, message: 'Database MongoDB chưa sẵn sàng' });
     }
 
-    if (!username || !fullName || !email || !password) {
-      return res.status(400).json({ success: false, message: 'Vui lòng điền đầy đủ các trường bắt buộc' });
+    if (!username || !fullName || !email || !password) {
+      return res.status(400).json({ success: false, message: 'Vui lòng điền đầy đủ các trường bắt buộc' });
+    }
+
+    // RÀNG BUỘC BẢO MẬT MẬT KHẨU MẠNH (BACKEND VALIDATION)
+    const pwdCheck = validateStrongPassword(password);
+    if (!pwdCheck.isValid) {
+      return res.status(400).json({ success: false, message: pwdCheck.message });
     }
 
     const cleanUsername = username.trim().toLowerCase();
@@ -349,8 +375,9 @@ router.post('/forgot-password/reset', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Vui lòng điền email, OTP và mật khẩu mới' });
     }
 
-    if (newPassword.length < 6) {
-      return res.status(400).json({ success: false, message: 'Mật khẩu mới phải có tối thiểu 6 ký tự' });
+    const pwdCheck = validateStrongPassword(newPassword);
+    if (!pwdCheck.isValid) {
+      return res.status(400).json({ success: false, message: pwdCheck.message });
     }
 
     const cleanEmail = email.trim().toLowerCase();

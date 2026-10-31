@@ -329,8 +329,190 @@ var API_BASE = window.API_BASE;
       hideAuthAlert();
     }
 
+    function resetRegisterForm() {
+      const form = document.getElementById('form-register');
+      if (form) form.reset();
+
+      // Reset từng input về chuỗi rỗng
+      const inputIds = ['reg-fullname', 'reg-username', 'reg-email', 'reg-otp', 'reg-password', 'reg-confirm-password'];
+      inputIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+
+      // Reset các trường mật khẩu về type='password'
+      const pwd = document.getElementById('reg-password');
+      if (pwd) pwd.type = 'password';
+      const confirmPwd = document.getElementById('reg-confirm-password');
+      if (confirmPwd) confirmPwd.type = 'password';
+
+      // Reset icon con mắt về fa-eye
+      document.querySelectorAll('#auth-view-register .btn-toggle-eye i').forEach(icon => {
+        icon.className = 'fa-solid fa-eye';
+      });
+
+      // Ẩn hộp nhập mã OTP (chỉ hiện khi bấm gửi mã thành công)
+      const boxOtp = document.getElementById('box-reg-otp');
+      if (boxOtp) boxOtp.classList.add('hidden');
+
+      const txtOtp = document.getElementById('txt-reg-otp');
+      if (txtOtp) txtOtp.textContent = 'Gửi mã OTP';
+      const btnOtp = document.getElementById('btn-send-reg-otp');
+      if (btnOtp) btnOtp.disabled = false;
+
+      // Reset giao diện kiểm tra độ mạnh mật khẩu
+      resetPasswordStrengthUI();
+      hideAuthAlert();
+    }
+    window.resetRegisterForm = resetRegisterForm;
+
+    function resetPasswordStrengthUI() {
+      const label = document.getElementById('pwd-strength-label');
+      if (label) {
+        label.textContent = 'Chưa nhập';
+        label.className = 'text-xs font-black text-slate-400';
+      }
+      const bars = ['pwd-bar-1', 'pwd-bar-2', 'pwd-bar-3', 'pwd-bar-4'];
+      bars.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.className = 'h-full flex-1 rounded-full bg-slate-300 dark:bg-slate-600 transition-all duration-300';
+      });
+      ['rule-length', 'rule-upper', 'rule-lower', 'rule-number', 'rule-special'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.className = 'flex items-center gap-1.5 text-slate-400 transition-colors';
+          const icon = el.querySelector('i');
+          if (icon) icon.className = 'fa-solid fa-circle-xmark text-slate-300 dark:text-slate-600 text-xs';
+        }
+      });
+      const matchIndicator = document.getElementById('pwd-match-indicator');
+      if (matchIndicator) {
+        matchIndicator.classList.add('hidden');
+        matchIndicator.innerHTML = '';
+      }
+    }
+    window.resetPasswordStrengthUI = resetPasswordStrengthUI;
+
+    function checkRegisterPasswordStrength() {
+      const pwdInput = document.getElementById('reg-password');
+      const confirmInput = document.getElementById('reg-confirm-password');
+      if (!pwdInput) return { isValid: false };
+
+      const pwd = pwdInput.value || '';
+      const confirmPwd = confirmInput ? (confirmInput.value || '') : '';
+
+      const hasLength = pwd.length >= 8;
+      const hasUpper = /[A-Z]/.test(pwd);
+      const hasLower = /[a-z]/.test(pwd);
+      const hasNumber = /[0-9]/.test(pwd);
+      const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(pwd);
+
+      function updateItem(id, valid) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const icon = el.querySelector('i');
+        if (valid) {
+          el.className = 'flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold transition-colors';
+          if (icon) icon.className = 'fa-solid fa-circle-check text-emerald-500 text-xs';
+        } else {
+          el.className = 'flex items-center gap-1.5 text-slate-400 dark:text-slate-500 transition-colors';
+          if (icon) icon.className = 'fa-solid fa-circle-xmark text-slate-300 dark:text-slate-600 text-xs';
+        }
+      }
+
+      updateItem('rule-length', hasLength);
+      updateItem('rule-upper', hasUpper);
+      updateItem('rule-lower', hasLower);
+      updateItem('rule-number', hasNumber);
+      updateItem('rule-special', hasSpecial);
+
+      let score = 0;
+      if (hasLength) score++;
+      if (hasUpper) score++;
+      if (hasLower) score++;
+      if (hasNumber) score++;
+      if (hasSpecial) score++;
+
+      const label = document.getElementById('pwd-strength-label');
+      const bar1 = document.getElementById('pwd-bar-1');
+      const bar2 = document.getElementById('pwd-bar-2');
+      const bar3 = document.getElementById('pwd-bar-3');
+      const bar4 = document.getElementById('pwd-bar-4');
+
+      const defaultBarClass = 'h-full flex-1 rounded-full bg-slate-300 dark:bg-slate-600 transition-all duration-300';
+      if (bar1) bar1.className = defaultBarClass;
+      if (bar2) bar2.className = defaultBarClass;
+      if (bar3) bar3.className = defaultBarClass;
+      if (bar4) bar4.className = defaultBarClass;
+
+      if (!pwd) {
+        if (label) {
+          label.textContent = 'Chưa nhập';
+          label.className = 'text-xs font-black text-slate-400';
+        }
+      } else if (score <= 2) {
+        if (label) {
+          label.textContent = 'Yếu ⚠️';
+          label.className = 'text-xs font-black text-rose-500';
+        }
+        if (bar1) bar1.className = 'h-full flex-1 rounded-full bg-rose-500 transition-all duration-300';
+      } else if (score === 3) {
+        if (label) {
+          label.textContent = 'Trung bình ⚡';
+          label.className = 'text-xs font-black text-amber-500';
+        }
+        if (bar1) bar1.className = 'h-full flex-1 rounded-full bg-amber-500 transition-all duration-300';
+        if (bar2) bar2.className = 'h-full flex-1 rounded-full bg-amber-500 transition-all duration-300';
+      } else if (score === 4) {
+        if (label) {
+          label.textContent = 'Khá 👍';
+          label.className = 'text-xs font-black text-blue-500';
+        }
+        if (bar1) bar1.className = 'h-full flex-1 rounded-full bg-blue-500 transition-all duration-300';
+        if (bar2) bar2.className = 'h-full flex-1 rounded-full bg-blue-500 transition-all duration-300';
+        if (bar3) bar3.className = 'h-full flex-1 rounded-full bg-blue-500 transition-all duration-300';
+      } else if (score === 5) {
+        if (label) {
+          label.textContent = 'Rất mạnh & An toàn ✓';
+          label.className = 'text-xs font-black text-emerald-600 dark:text-emerald-400';
+        }
+        if (bar1) bar1.className = 'h-full flex-1 rounded-full bg-emerald-500 transition-all duration-300';
+        if (bar2) bar2.className = 'h-full flex-1 rounded-full bg-emerald-500 transition-all duration-300';
+        if (bar3) bar3.className = 'h-full flex-1 rounded-full bg-emerald-500 transition-all duration-300';
+        if (bar4) bar4.className = 'h-full flex-1 rounded-full bg-emerald-500 transition-all duration-300';
+      }
+
+      // Kiểm tra sự trùng khớp
+      const matchIndicator = document.getElementById('pwd-match-indicator');
+      if (matchIndicator) {
+        if (!confirmPwd) {
+          matchIndicator.classList.add('hidden');
+        } else if (pwd === confirmPwd) {
+          matchIndicator.classList.remove('hidden');
+          matchIndicator.className = 'text-[11px] font-bold pt-1.5 border-t border-slate-200/80 dark:border-slate-700/80 flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400';
+          matchIndicator.innerHTML = '<i class="fa-solid fa-circle-check"></i> <span>Mật khẩu xác nhận hoàn toàn trùng khớp</span>';
+        } else {
+          matchIndicator.classList.remove('hidden');
+          matchIndicator.className = 'text-[11px] font-bold pt-1.5 border-t border-slate-200/80 dark:border-slate-700/80 flex items-center gap-1.5 text-rose-500';
+          matchIndicator.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> <span>Mật khẩu xác nhận chưa trùng khớp</span>';
+        }
+      }
+
+      return {
+        hasLength,
+        hasUpper,
+        hasLower,
+        hasNumber,
+        hasSpecial,
+        isStrong: score === 5,
+        isMatch: Boolean(pwd && confirmPwd && pwd === confirmPwd)
+      };
+    }
+    window.checkRegisterPasswordStrength = checkRegisterPasswordStrength;
+
     function closeLoginModal() {
       document.getElementById('login-modal').classList.add('hidden');
+      resetRegisterForm();
       hideAuthAlert();
     }
 
@@ -364,6 +546,7 @@ var API_BASE = window.API_BASE;
         if (forgotView) forgotView.classList.add('hidden');
         modalTitle.textContent = 'Đăng Ký Tài Khoản';
         modalSubtitle.textContent = 'Tạo hồ sơ học tập và xác thực kích hoạt qua Gmail OTP';
+        resetRegisterForm();
       } else if (tab === 'forgot') {
         tabsContainer.classList.add('hidden');
         loginView.classList.add('hidden');
@@ -414,12 +597,19 @@ var API_BASE = window.API_BASE;
       const btn = document.getElementById('btn-send-reg-otp');
       const txt = document.getElementById('txt-reg-otp');
 
-      if (!email) {
-        showAuthAlert('Vui lòng nhập địa chỉ Email trước khi gửi mã OTP');
+      if (!fullName) {
+        showAuthAlert('Vui lòng nhập Họ và Tên trước');
+        document.getElementById('reg-fullname')?.focus();
         return;
       }
       if (!username) {
         showAuthAlert('Vui lòng nhập Tên đăng nhập trước');
+        document.getElementById('reg-username')?.focus();
+        return;
+      }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showAuthAlert('Vui lòng nhập địa chỉ Email hợp lệ trước khi gửi mã OTP');
+        document.getElementById('reg-email')?.focus();
         return;
       }
 
@@ -435,6 +625,18 @@ var API_BASE = window.API_BASE;
         const json = await res.json();
         if (json.success) {
           showAuthAlert(json.message, 'success');
+
+          // HIỂN THỊ Ô NHẬP OTP (MẶC ĐỊNH BAN ĐẦU ẨN)
+          const boxOtp = document.getElementById('box-reg-otp');
+          if (boxOtp) {
+            boxOtp.classList.remove('hidden');
+          }
+          const otpInput = document.getElementById('reg-otp');
+          if (otpInput) {
+            otpInput.value = '';
+            otpInput.focus();
+          }
+
           // Đếm ngược 60s trước khi cho phép gửi lại
           let countdown = 60;
           txt.textContent = `${countdown}s`;
@@ -448,7 +650,6 @@ var API_BASE = window.API_BASE;
               txt.textContent = `${countdown}s`;
             }
           }, 1000);
-          document.getElementById('reg-otp').focus();
         } else {
           showAuthAlert(json.message || 'Không thể gửi OTP');
           btn.disabled = false;
@@ -622,23 +823,35 @@ var API_BASE = window.API_BASE;
       const role = roleElem ? roleElem.value : 'STUDENT';
       const submitBtn = document.getElementById('btn-submit-register');
 
-      if (!fullName || !username || !email || !password) {
-        showAuthAlert('Vui lòng điền đầy đủ các trường bắt buộc');
+      if (!fullName || !username || !email) {
+        showAuthAlert('Vui lòng điền đầy đủ Họ và tên, Tên đăng nhập và Email');
         return;
       }
 
-      if (!otp) {
-        showAuthAlert('Vui lòng bấm "Gửi mã OTP" và nhập mã OTP 6 số từ Gmail!');
+      // Kiểm tra trạng thái gửi và nhập mã OTP
+      const boxOtp = document.getElementById('box-reg-otp');
+      if (boxOtp && boxOtp.classList.contains('hidden')) {
+        showAuthAlert('Vui lòng bấm nút "Gửi mã OTP" để nhận mã xác thực qua Gmail trước!');
         return;
       }
 
-      if (password.length < 6) {
-        showAuthAlert('Mật khẩu phải có tối thiểu 6 ký tự');
+      if (!otp || otp.length !== 6) {
+        showAuthAlert('Vui lòng nhập chính xác mã xác thực OTP (6 chữ số) đã gửi vào Gmail!');
+        document.getElementById('reg-otp')?.focus();
+        return;
+      }
+
+      // RÀNG BUỘC MẬT KHẨU MẠNH: TỐI THIỂU 8 KÝ TỰ, CÓ HOA, THƯỜNG, SỐ VÀ KÝ TỰ ĐẶC BIỆT
+      const strength = checkRegisterPasswordStrength();
+      if (!strength.isStrong) {
+        showAuthAlert('Mật khẩu chưa đạt tiêu chuẩn bảo mật! Cần tối thiểu 8 ký tự, có chữ hoa, chữ thường, chữ số và ký tự đặc biệt.');
+        document.getElementById('reg-password')?.focus();
         return;
       }
 
       if (password !== confirmPassword) {
-        showAuthAlert('Mật khẩu xác nhận không trùng khớp!');
+        showAuthAlert('Mật khẩu xác nhận không trùng khớp! Vui lòng nhập lại.');
+        document.getElementById('reg-confirm-password')?.focus();
         return;
       }
 
