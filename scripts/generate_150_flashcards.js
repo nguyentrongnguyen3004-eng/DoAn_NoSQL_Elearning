@@ -1,0 +1,1442 @@
+const fs = require('fs');
+const path = require('path');
+
+const TOPICS = [
+  {
+    category: 'Môi trường & Khí hậu',
+    icon: '🌍',
+    desc: 'Từ vựng học thuật chuyên sâu về sinh thái, bảo tồn và biến đổi khí hậu (IELTS Band 7.5 - 8.5+)',
+    words: [
+      {
+        word: 'Mitigate',
+        phonetic: '/ˈmɪt.ɪ.ɡeɪt/',
+        pos: 'Verb (Động từ)',
+        cefr: 'C1',
+        meaning: 'Làm giảm nhẹ, xoa dịu tác động xấu hoặc rủi ro môi trường',
+        collocation: 'mitigate climate risks / mitigate adverse impacts',
+        example: 'Governments must take decisive measures to mitigate the adverse effects of global warming.'
+      },
+      {
+        word: 'Biodiversity',
+        phonetic: '/ˌbaɪ.əʊ.daɪˈvɜː.sə.ti/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Đa dạng sinh học, tính phong phú của các loài sinh vật',
+        collocation: 'preserve rich biodiversity / loss of biodiversity',
+        example: 'Deforestation poses an immediate threat to the biodiversity of tropical rainforests.'
+      },
+      {
+        word: 'Deforestation',
+        phonetic: '/diːˌfɒr.ɪˈsteɪ.ʃən/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Nạn phá rừng, triệt phá thảm thực vật tự nhiên',
+        collocation: 'halt widespread deforestation / commercial deforestation',
+        example: 'Uncontrolled deforestation in the Amazon accounts for a massive surge in greenhouse gas emissions.'
+      },
+      {
+        word: 'Sustainable',
+        phonetic: '/səˈsteɪ.nə.bəl/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'B2',
+        meaning: 'Bền vững, thân thiện với môi trường và sử dụng được lâu dài',
+        collocation: 'sustainable development / sustainable agriculture',
+        example: 'Transitioning to sustainable agriculture preserves topsoil quality for future generations.'
+      },
+      {
+        word: 'Degradation',
+        phonetic: '/ˌdeɡ.rəˈdeɪ.ʃən/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Sự suy thoái, xuống cấp nghiêm trọng của đất đai và môi trường',
+        collocation: 'environmental degradation / soil degradation',
+        example: 'Intensive industrial farming has accelerated land degradation across arid river valleys.'
+      },
+      {
+        word: 'Deplete',
+        phonetic: '/dɪˈpliːt/',
+        pos: 'Verb (Động từ)',
+        cefr: 'C1',
+        meaning: 'Làm cạn kiệt, rút cạn nguồn tài nguyên quý giá',
+        collocation: 'deplete natural resources / deplete groundwater',
+        example: 'Overfishing threatens to deplete marine populations beyond the point of natural recovery.'
+      },
+      {
+        word: 'Ecosystem',
+        phonetic: '/ˈiː.kəʊˌsɪs.təm/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Hệ sinh thái tự nhiên kết nối các loài sinh vật',
+        collocation: 'fragile ecosystem / restore damaged ecosystems',
+        example: 'Pollution disrupts the fragile marine ecosystem, causing coral reefs to bleach.'
+      },
+      {
+        word: 'Conservation',
+        phonetic: '/ˌkɒn.səˈveɪ.ʃən/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Sự bảo tồn tài nguyên thiên nhiên và động thực vật hoang dã',
+        collocation: 'wildlife conservation / conservation efforts',
+        example: 'International wildlife conservation treaties ban the commercial trade of ivory and rhino horns.'
+      },
+      {
+        word: 'Contaminate',
+        phonetic: '/kənˈtæm.ɪ.neɪt/',
+        pos: 'Verb (Động từ)',
+        cefr: 'C1',
+        meaning: 'Làm ô nhiễm, đầu độc nguồn nước, không khí hoặc đất đai',
+        collocation: 'contaminate drinking water / soil contamination',
+        example: 'Untreated chemical discharge from factories can severely contaminate local river systems.'
+      },
+      {
+        word: 'Renewable',
+        phonetic: '/rɪˈnjuː.ə.bəl/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'B1',
+        meaning: 'Tái tạo được, không bị cạn kiệt (năng lượng mặt trời, gió)',
+        collocation: 'renewable energy sources / renewable power',
+        example: 'Solar and wind represent the most economically viable forms of renewable energy.'
+      },
+      {
+        word: 'Emissions',
+        phonetic: '/iˈmɪʃ.ənz/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Khí thải độc hại xả ra bầu khí quyển',
+        collocation: 'curb carbon emissions / greenhouse emissions',
+        example: 'Urban transport policies must prioritize electric buses to curb urban exhaust emissions.'
+      },
+      {
+        word: 'Catastrophic',
+        phonetic: '/ˌkæt.əˈstrɒf.ɪk/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'C1',
+        meaning: 'Thảm khốc, gây thiệt hại tàn phá diện rộng',
+        collocation: 'catastrophic flood / catastrophic consequences',
+        example: 'Rising sea levels threaten catastrophic flooding in low-lying coastal deltas.'
+      },
+      {
+        word: 'Precipitation',
+        phonetic: '/prɪˌsɪp.ɪˈteɪ.ʃən/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Lượng mưa, hiện tượng giáng thủy trong khí tượng học',
+        collocation: 'annual precipitation levels / heavy precipitation',
+        example: 'Changing weather patterns caused an alarming decrease in average annual precipitation.'
+      },
+      {
+        word: 'Ecological',
+        phonetic: '/ˌiː.kəˈlɒdʒ.ɪ.kəl/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'B2',
+        meaning: 'Thuộc về sinh thái học và mối quan hệ giữa sinh vật với môi trường',
+        collocation: 'ecological balance / ecological disaster',
+        example: 'Dumping toxic industrial waste causes irreversible ecological damage to wetland habitats.'
+      },
+      {
+        word: 'Endangered',
+        phonetic: '/ɪnˈdeɪn.dʒəd/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'B1',
+        meaning: 'Có nguy cơ tuyệt chủng cao trong sách đỏ',
+        collocation: 'endangered species / critically endangered',
+        example: 'Strict anti-poaching patrols protect endangered mountain gorillas in national parks.'
+      },
+      {
+        word: 'Drought',
+        phonetic: '/draʊt/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Hạn hán kéo dài làm thiếu nước nghiêm trọng',
+        collocation: 'prolonged drought / severe drought conditions',
+        example: 'A prolonged regional drought ruined crop yields and threatened food security.'
+      },
+      {
+        word: 'Fossil fuel',
+        phonetic: '/ˈfɒs.əl ˌfjuː.əl/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Nhiên liệu hóa thạch (than đá, dầu thô, khí đốt)',
+        collocation: 'phase out fossil fuels / fossil fuel dependence',
+        example: 'Global treaties encourage nations to phase out dependence on fossil fuels.'
+      },
+      {
+        word: 'Greenhouse effect',
+        phonetic: '/ˈɡriːn.haʊs ɪˌfekt/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B1',
+        meaning: 'Hiệu ứng nhà kính làm tăng nhiệt độ khí quyển',
+        collocation: 'intensify the greenhouse effect',
+        example: 'Excess carbon dioxide traps solar heat, intensifying the greenhouse effect.'
+      },
+      {
+        word: 'Biodegradable',
+        phonetic: '/ˌbaɪ.əʊ.dɪˈɡreɪ.də.bəl/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'C1',
+        meaning: 'Có khả năng tự phân hủy sinh học trong đất',
+        collocation: 'biodegradable packaging / biodegradable materials',
+        example: 'Supermarkets are replacing single-use plastic bags with biodegradable alternatives.'
+      },
+      {
+        word: 'Habitat',
+        phonetic: '/ˈhæb.ɪ.tæt/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B1',
+        meaning: 'Môi trường sống tự nhiên của một loài sinh vật',
+        collocation: 'natural habitat / destruction of habitats',
+        example: 'Human expansion into forests destroys the natural habitat of wild tigers.'
+      },
+      {
+        word: 'Flora and fauna',
+        phonetic: '/ˌflɔː.rə ænd ˈfɔː.nə/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Hệ thực vật và hệ động vật trong một vùng',
+        collocation: 'endemic flora and fauna / protected flora',
+        example: 'The isolated archipelago is famous for its unique endemic flora and fauna.'
+      },
+      {
+        word: 'Carbon footprint',
+        phonetic: '/ˌkɑː.bən ˈfʊt.prɪnt/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Lượng phát thải khí nhà kính cá nhân hoặc tổ chức tạo ra',
+        collocation: 'reduce one’s carbon footprint',
+        example: 'Using public transit and reducing air travel helps shrink individual carbon footprints.'
+      },
+      {
+        word: 'Ozone depletion',
+        phonetic: '/ˈəʊ.zəʊn dɪˌpliː.ʃən/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Hiện tượng suy giảm tầng ozone bảo vệ trái đất',
+        collocation: 'prevent further ozone depletion',
+        example: 'Banning chlorofluorocarbons (CFCs) was crucial in reversing ozone depletion.'
+      },
+      {
+        word: 'Afforestation',
+        phonetic: '/æfˌɒr.ɪˈsteɪ.ʃən/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C2',
+        meaning: 'Trồng rừng trên những vùng đất trống đồi trọc',
+        collocation: 'nationwide afforestation campaigns',
+        example: 'Massive afforestation programs combat desertification and absorb excess atmospheric carbon.'
+      },
+      {
+        word: 'Reforestation',
+        phonetic: '/riːˌfɒr.ɪˈsteɪ.ʃən/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Tái tạo lại các cánh rừng đã bị tàn phá trước đó',
+        collocation: 'community-led reforestation initiatives',
+        example: 'Reforestation projects help restore degraded watersheds and prevent mudslides.'
+      }
+    ]
+  },
+  {
+    category: 'Kinh doanh & Tài chính',
+    icon: '💼',
+    desc: 'Từ vựng cốt lõi cho môi trường doanh nghiệp, đàm phán hợp đồng & tài chính (TOEIC 850+ & Business English)',
+    words: [
+      {
+        word: 'Reimburse',
+        phonetic: '/ˌriː.ɪmˈbɜːs/',
+        pos: 'Verb (Động từ)',
+        cefr: 'B2',
+        meaning: 'Bồi hoàn chi phí công tác, hoàn trả lại tiền hợp lệ',
+        collocation: 'reimburse approved business expenses',
+        example: 'The corporate accounting department will reimburse all verified flight and lodging expenses within 5 days.'
+      },
+      {
+        word: 'Tentative',
+        phonetic: '/ˈten.tə.tɪv/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'B2',
+        meaning: 'Dự kiến, tạm thời chưa chốt cố định',
+        collocation: 'a tentative project schedule / agreement',
+        example: 'We have drafted a tentative timeline for the ERP rollout, pending executive stakeholder approval.'
+      },
+      {
+        word: 'Unanimous',
+        phonetic: '/juːˈnæn.ɪ.məs/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'C1',
+        meaning: 'Đồng thuận 100%, nhất trí hoàn toàn không ai phản đối',
+        collocation: 'reach a unanimous consensus / decision',
+        example: 'The board of directors reached a unanimous decision to increase R&D funding for cloud technologies.'
+      },
+      {
+        word: 'Lucrative',
+        phonetic: '/ˈluː.krə.tɪv/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'B2',
+        meaning: 'Sinh lời cao, mang lại nguồn lợi nhuận béo bở',
+        collocation: 'a lucrative commercial contract / opportunity',
+        example: 'Winning the international software distribution tender opened up a highly lucrative market for the firm.'
+      },
+      {
+        word: 'Feasible',
+        phonetic: '/ˈfiː.zə.bəl/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'B2',
+        meaning: 'Khả thi, có thể thực hiện thành công trong thực tế',
+        collocation: 'commercially feasible / a feasible proposal',
+        example: 'The engineering team confirmed that implementing Redis caching was both technically and financially feasible.'
+      },
+      {
+        word: 'Deficit',
+        phonetic: '/ˈdef.ɪ.sɪt/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Sự thâm hụt (ngân sách, nguồn vốn hoặc cán cân thanh toán)',
+        collocation: 'reduce the operating deficit / budget deficit',
+        example: 'Aggressive expenditure controls enabled the company to narrow its fiscal quarterly deficit significantly.'
+      },
+      {
+        word: 'Consolidate',
+        phonetic: '/kənˈsɒl.ɪ.deɪt/',
+        pos: 'Verb (Động từ)',
+        cefr: 'C1',
+        meaning: 'Hợp nhất các chi nhánh, củng cố vị thế vững chắc',
+        collocation: 'consolidate market share / operations',
+        example: 'The conglomerate decided to consolidate its domestic distribution warehouses to cut overhead costs.'
+      },
+      {
+        word: 'Logistics',
+        phonetic: '/ləˈdʒɪs.tɪks/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Hậu cần, quy trình chuỗi cung ứng và vận chuyển kho bãi',
+        collocation: 'streamline logistics / logistics coordinator',
+        example: 'Automated warehouse tracking has transformed shipping logistics across international trade routes.'
+      },
+      {
+        word: 'Leverage',
+        phonetic: '/ˈliː.vər.ɪdʒ/',
+        pos: 'Verb (Động từ)',
+        cefr: 'C1',
+        meaning: 'Tận dụng triệt để nguồn lực hoặc lợi thế sẵn có để bứt phá',
+        collocation: 'leverage core competencies / existing infrastructure',
+        example: 'The platform leverages NoSQL polyglot persistence to deliver sub-millisecond query responses.'
+      },
+      {
+        word: 'Pragmatic',
+        phonetic: '/præɡˈmæt.ɪk/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'C1',
+        meaning: 'Thực tế, thực dụng, chú trọng vào tính hiệu quả cụ thể',
+        collocation: 'a pragmatic decision-making process',
+        example: 'Project managers must take a pragmatic approach when balancing feature requests with sprint deadlines.'
+      },
+      {
+        word: 'Incur',
+        phonetic: '/ɪnˈkɜːr/',
+        pos: 'Verb (Động từ)',
+        cefr: 'B2',
+        meaning: 'Gánh chịu, phát sinh chi phí hoặc nghĩa vụ tài chính',
+        collocation: 'incur unexpected expenses / legal liability',
+        example: 'Any contract cancellations submitted after the thirty-day window will incur a nominal cancellation fee.'
+      },
+      {
+        word: 'Remuneration',
+        phonetic: '/rɪˌmjuː.nəˈreɪ.ʃən/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Tiền thù lao, chế độ lương bổng và đãi ngộ nhân sự',
+        collocation: 'an attractive remuneration package',
+        example: 'Software architects receive competitive remuneration commensurate with their technical leadership experience.'
+      },
+      {
+        word: 'Procurement',
+        phonetic: '/prəˈkjʊə.mənt/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Hoạt động thu mua, đấu thầu trang thiết bị cho doanh nghiệp',
+        collocation: 'procurement guidelines / public procurement',
+        example: 'The IT division submitted comprehensive hardware requisitions to the central procurement committee.'
+      },
+      {
+        word: 'Audit',
+        phonetic: '/ˈɔː.dɪt/',
+        pos: 'Noun (Danh từ) / Verb',
+        cefr: 'B2',
+        meaning: 'Kiểm toán, kiểm tra toàn diện quy trình tuân thủ an ninh và tài chính',
+        collocation: 'conduct an annual financial audit / security audit',
+        example: 'Independent auditors thoroughly inspected the exam audit log collection in MongoDB to verify integrity.'
+      },
+      {
+        word: 'Appraisal',
+        phonetic: '/əˈpreɪ.zəl/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Sự đánh giá định kỳ về năng lực và hiệu suất làm việc',
+        collocation: 'annual performance appraisal',
+        example: 'Staff members with exceptional ratings during the annual appraisal become eligible for fast-track promotion.'
+      },
+      {
+        word: 'Compliance',
+        phonetic: '/kəmˈplaɪ.əns/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Sự tuân thủ đúng đắn các quy chuẩn pháp lý và nội quy',
+        collocation: 'in strict compliance with industry standards',
+        example: 'The web application is designed in full compliance with international web accessibility guidelines.'
+      },
+      {
+        word: 'Benchmark',
+        phonetic: '/ˈbentʃ.mɑːk/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Tiêu chuẩn đối sánh chuẩn mực, điểm mốc đánh giá hiệu năng',
+        collocation: 'set a new industry benchmark / benchmark testing',
+        example: 'Our live benchmark recorded a 95th percentile latency of under 3.7ms for cached course requests.'
+      },
+      {
+        word: 'Contingency',
+        phonetic: '/kənˈtɪn.dʒən.si/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Kế hoạch dự phòng cho các tình huống bất khả kháng phát sinh',
+        collocation: 'formulate a contingency plan / budget',
+        example: 'The deployment script incorporates automated database fallback mechanisms as a risk contingency.'
+      },
+      {
+        word: 'Incentive',
+        phonetic: '/ɪnˈsen.tɪv/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Sự khuyến khích, ưu đãi thúc đẩy động lực làm việc',
+        collocation: 'provide financial incentives / performance incentive',
+        example: 'EduPro awards experience points (XP) and badges as gamified incentives to encourage daily study habits.'
+      },
+      {
+        word: 'Subsidiary',
+        phonetic: '/səbˈsɪd.jə.ri/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Công ty con trực thuộc sự quản lý của tập đoàn mẹ',
+        collocation: 'a wholly-owned overseas subsidiary',
+        example: 'The technology group established an educational subsidiary to market enterprise training platforms.'
+      },
+      {
+        word: 'Revenue',
+        phonetic: '/ˈrev.ən.juː/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B1',
+        meaning: 'Tổng doanh thu bán hàng trước khi trừ chi phí vận hành',
+        collocation: 'generate steady recurring revenue',
+        example: 'Subscription fees generate steady recurring revenue that funds ongoing platform enhancements.'
+      },
+      {
+        word: 'Shareholder',
+        phonetic: '/ˈʃeəˌhəʊl.dər/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Cổ đông sở hữu cổ phần trong doanh nghiệp',
+        collocation: 'majority shareholder / annual shareholder meeting',
+        example: 'The company presented its cloud product roadmap at the annual shareholder convention.'
+      },
+      {
+        word: 'Dividend',
+        phonetic: '/ˈdɪv.ɪ.dend/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Cổ tức chia cho cổ đông từ lợi nhuận ròng',
+        collocation: 'pay an annual cash dividend',
+        example: 'Strong quarterly profits allowed the board to declare an increased dividend per share.'
+      },
+      {
+        word: 'Liquidity',
+        phonetic: '/lɪˈkwɪd.ə.ti/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Tính thanh khoản, khả năng chuyển đổi tài sản thành tiền mặt',
+        collocation: 'maintain strong liquidity reserves',
+        example: 'The central bank provided emergency liquidity support to stabilize regional credit markets.'
+      },
+      {
+        word: 'Merger',
+        phonetic: '/ˈmɜː.dʒər/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Sự sáp nhập doanh nghiệp để gia tăng sức cạnh tranh',
+        collocation: 'a corporate merger and acquisition (M&A)',
+        example: 'The strategic merger created the largest technology education provider in Southeast Asia.'
+      }
+    ]
+  },
+  {
+    category: 'Công nghệ & AI',
+    icon: '💻',
+    desc: 'Từ vựng công nghệ số, cơ sở dữ liệu phân tán, trí tuệ nhân tạo & an ninh thông tin',
+    words: [
+      {
+        word: 'Ubiquitous',
+        phonetic: '/juːˈbɪk.wɪ.təs/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'C2',
+        meaning: 'Có mặt ở khắp mọi nơi, hiện diện phổ biến toàn cầu',
+        collocation: 'become ubiquitous in modern society',
+        example: 'Smart devices have become ubiquitous in both urban households and educational environments.'
+      },
+      {
+        word: 'Paradigm',
+        phonetic: '/ˈpær.ə.daɪm/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C2',
+        meaning: 'Mô hình mẫu, hệ hình tư duy định hướng cho một ngành/lĩnh vực',
+        collocation: 'a paradigm shift in education',
+        example: 'Polyglot persistence represents a fundamental paradigm shift away from traditional single-RDBMS architectures.'
+      },
+      {
+        word: 'Algorithm',
+        phonetic: '/ˈæl.ɡə.rɪ.ðəm/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B1',
+        meaning: 'Thuật toán máy tính, chuỗi chỉ dẫn giải quyết bài toán',
+        collocation: 'efficient sorting algorithm / search algorithm',
+        example: 'The Spaced Repetition System employs the SM-2 algorithm to calculate optimal review intervals.'
+      },
+      {
+        word: 'Infrastructure',
+        phonetic: '/ˈɪn.frəˌstrʌk.tʃər/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Hạ tầng kỹ thuật số cơ sở để vận hành hệ thống',
+        collocation: 'cloud infrastructure / IT infrastructure',
+        example: 'Modern web platforms rely on distributed infrastructure to handle high concurrent traffic.'
+      },
+      {
+        word: 'Scalability',
+        phonetic: '/ˌskeɪ.ləˈbɪl.ə.ti/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Khả năng co giãn mở rộng quy mô tải của hệ thống',
+        collocation: 'horizontal scalability / linear scalability',
+        example: 'Apache Cassandra provides linear horizontal scalability without requiring a single master node.'
+      },
+      {
+        word: 'Automation',
+        phonetic: '/ˌɔː.təˈmeɪ.ʃən/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Tự động hóa các thao tác thủ công lặp lại',
+        collocation: 'test automation / robotic process automation',
+        example: 'Automated exam grading eliminates manual marking overhead and delivers instant score reports.'
+      },
+      {
+        word: 'Cybersecurity',
+        phonetic: '/ˌsaɪ.bə.sɪˈkjʊə.rə.ti/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'An ninh mạng, bảo vệ hệ thống khỏi các cuộc tấn công kỹ thuật số',
+        collocation: 'robust cybersecurity protocols',
+        example: 'Implementing JWT authentication and strict password hashing reinforces web cybersecurity.'
+      },
+      {
+        word: 'Vulnerability',
+        phonetic: '/ˌvʌl.nər.əˈbɪl.ə.ti/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Lỗ hổng bảo mật có thể bị khai thác',
+        collocation: 'patch a critical vulnerability / zero-day vulnerability',
+        example: 'Security scans detected a potential NoSQL injection vulnerability that was promptly remediated.'
+      },
+      {
+        word: 'Deployment',
+        phonetic: '/dɪˈplɔɪ.mənt/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Triển khai mã nguồn và dịch vụ lên môi trường máy chủ sản xuất',
+        collocation: 'zero-downtime deployment / continuous deployment',
+        example: 'Docker Compose orchestrates the simultaneous deployment of all four NoSQL containers.'
+      },
+      {
+        word: 'Latency',
+        phonetic: '/ˈleɪ.tən.si/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Độ trễ thời gian phản hồi giữa yêu cầu và kết quả',
+        collocation: 'ultra-low latency / latency reduction',
+        example: 'In-memory Redis caches achieve sub-millisecond read latency under sustained load.'
+      },
+      {
+        word: 'Throughput',
+        phonetic: '/ˈθruː.pʊt/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Thông lượng xử lý dữ liệu (số thao tác hoặc byte mỗi giây)',
+        collocation: 'high write throughput / maximum throughput',
+        example: 'Cassandra achieves exceptional write throughput thanks to its append-only commit log architecture.'
+      },
+      {
+        word: 'Authentication',
+        phonetic: '/ɔːˌθen.tɪˈkeɪ.ʃən/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Xác thực danh tính người dùng đăng nhập',
+        collocation: 'multi-factor authentication / password authentication',
+        example: 'The API server enforces stateless token authentication using signed JSON Web Tokens (JWT).'
+      },
+      {
+        word: 'Encryption',
+        phonetic: '/ɪnˈkrɪp.ʃən/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Mã hóa dữ liệu bảo mật truyền qua mạng',
+        collocation: 'end-to-end encryption / SSL/TLS encryption',
+        example: 'HTTPS ensures end-to-end encryption for all exam answer transmissions to prevent tampering.'
+      },
+      {
+        word: 'Repository',
+        phonetic: '/rɪˈpɒz.ɪ.tər.i/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Kho lưu trữ dữ liệu hoặc mã nguồn tập trung',
+        collocation: 'central source code repository / data repository',
+        example: 'The software architecture pattern isolates database operations inside dedicated repository classes.'
+      },
+      {
+        word: 'Compatibility',
+        phonetic: '/kəmˌpæt.əˈbɪl.ə.ti/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Khả năng tương thích giữa các phiên bản phần mềm hoặc trình duyệt',
+        collocation: 'cross-browser compatibility / backward compatibility',
+        example: 'Responsive CSS styles guarantee full cross-browser compatibility on desktop and mobile devices.'
+      },
+      {
+        word: 'Bandwidth',
+        phonetic: '/ˈbænd.wɪtθ/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Băng thông mạng truyền dẫn dữ liệu',
+        collocation: 'conserve network bandwidth / high-bandwidth stream',
+        example: 'Compressing video lessons conserves server bandwidth and speeds up playback buffering.'
+      },
+      {
+        word: 'Interface',
+        phonetic: '/ˈɪn.tə.feɪs/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B1',
+        meaning: 'Giao diện người dùng hoặc giao diện lập trình ứng dụng (API)',
+        collocation: 'user-friendly interface / application programming interface',
+        example: 'The intuitive dashboard interface allows teachers to manage question banks without coding.'
+      },
+      {
+        word: 'Artificial Intelligence',
+        phonetic: '/ˌɑː.tɪ.fɪʃ.əl ɪnˈtel.ɪ.dʒəns/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B1',
+        meaning: 'Trí tuệ nhân tạo mô phỏng năng lực nhận thức của con người',
+        collocation: 'generative artificial intelligence (GenAI)',
+        example: 'Artificial intelligence powers the platform’s real-time essay feedback and writing corrections.'
+      },
+      {
+        word: 'Machine Learning',
+        phonetic: '/məˈʃiːn ˌlɜː.nɪŋ/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Học máy, phương pháp cho máy tính tự học từ dữ liệu',
+        collocation: 'train a machine learning model',
+        example: 'Machine learning algorithms analyze past exam errors to recommend targeted grammar exercises.'
+      },
+      {
+        word: 'Neural network',
+        phonetic: '/ˌnjʊə.rəl ˈnet.wɜːk/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Mạng thần kinh nhân tạo mô phỏng tế bào não',
+        collocation: 'deep neural network / convolutional network',
+        example: 'Deep neural networks transcribe learner speech recordings to grade pronunciation accuracy.'
+      },
+      {
+        word: 'Big Data',
+        phonetic: '/ˌbɪɡ ˈdeɪ.tə/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Dữ liệu lớn với đặc tính 3V (Volume, Velocity, Variety)',
+        collocation: 'big data analytics / data pipeline',
+        example: 'Big Data techniques help educators uncover hidden learning bottlenecks across thousands of users.'
+      },
+      {
+        word: 'Cloud computing',
+        phonetic: '/ˈklaʊd kəmˌpjuː.tɪŋ/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B1',
+        meaning: 'Điện toán đám mây cung cấp máy chủ theo yêu cầu qua internet',
+        collocation: 'cloud computing infrastructure',
+        example: 'Cloud computing eliminates the need for expensive physical server rooms on campus.'
+      },
+      {
+        word: 'Blockchain',
+        phonetic: '/ˈblɒk.tʃeɪn/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Công nghệ sổ cái phi tập trung chống sửa đổi dữ liệu',
+        collocation: 'blockchain-verified credentials',
+        example: 'Graduation certificates are digitally signed with cryptographic hashes akin to blockchain verification.'
+      },
+      {
+        word: 'Virtual reality',
+        phonetic: '/ˌvɜː.tʃu.əl riˈæl.ə.ti/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B1',
+        meaning: 'Thực tế ảo mô phỏng không gian ba chiều tương tác',
+        collocation: 'immersive virtual reality simulation',
+        example: 'Medical students practice delicate surgical procedures inside immersive virtual reality simulations.'
+      },
+      {
+        word: 'Predictive analytics',
+        phonetic: '/prɪˌdɪk.tɪv æn.əˈlɪt.ɪks/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Phân tích dự đoán dựa trên thống kê và mô hình dữ liệu',
+        collocation: 'leverage predictive analytics',
+        example: 'Predictive analytics identifies at-risk students who need supplementary tutoring before final exams.'
+      }
+    ]
+  },
+  {
+    category: 'Giáo dục & Học thuật',
+    icon: '🎓',
+    desc: 'Từ vựng học thuật đỉnh cao phục vụ IELTS Academic Reading/Writing & Nghiên cứu khoa học',
+    words: [
+      {
+        word: 'Prerequisite',
+        phonetic: '/ˌpriːˈrek.wɪ.zɪt/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Điều kiện tiên quyết, yếu tố bắt buộc trước khi học tiếp môn sau',
+        collocation: 'a prerequisite for admission / success',
+        example: 'A solid understanding of foundational grammar is a prerequisite for achieving Band 7.5+ in Writing.'
+      },
+      {
+        word: 'Substantiate',
+        phonetic: '/səbˈstæn.ʃi.eɪt/',
+        pos: 'Verb (Động từ)',
+        cefr: 'C2',
+        meaning: 'Chứng minh bằng chứng cứ xác thực, xác minh tính đúng đắn',
+        collocation: 'substantiate an argument / empirical evidence to substantiate',
+        example: 'Writers must substantiate their thesis statements with clear analytical examples in IELTS Writing Task 2.'
+      },
+      {
+        word: 'Plummet',
+        phonetic: '/ˈplʌm.ɪt/',
+        pos: 'Verb (Động từ)',
+        cefr: 'C1',
+        meaning: 'Sụt giảm mạnh, lao dốc đột ngột (từ vựng đắt giá trong IELTS Writing Task 1)',
+        collocation: 'plummet dramatically / prices plummeted',
+        example: 'Smartphone sales plummeted dramatically in the second quarter due to supply chain disruptions.'
+      },
+      {
+        word: 'Soar',
+        phonetic: '/sɔːr/',
+        pos: 'Verb (Động từ)',
+        cefr: 'C1',
+        meaning: 'Tăng vọt, vút bay lên đỉnh điểm trong biểu đồ xu hướng',
+        collocation: 'soar to a record high / enrollments soared',
+        example: 'Online course enrollment soared dramatically during periods of social distancing.'
+      },
+      {
+        word: 'Discrepancy',
+        phonetic: '/dɪˈskrep.ən.si/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Sự sai biệt, sự chênh lệch không nhất quán giữa hai tập số liệu',
+        collocation: 'a glaring discrepancy / discrepancy between data',
+        example: 'Statistical analysis uncovered a noticeable discrepancy between reported attendance and actual exam turnouts.'
+      },
+      {
+        word: 'Ambiguous',
+        phonetic: '/æmˈbɪɡ.ju.əs/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'C1',
+        meaning: 'Mơ hồ, nước đôi, khó giải thích rành mạch',
+        collocation: 'highly ambiguous / ambiguous terminology',
+        example: 'The survey results remained ambiguous, prompting researchers to conduct further qualitative interviews.'
+      },
+      {
+        word: 'Exacerbate',
+        phonetic: '/ɪɡˈzæs.ə.beɪt/',
+        pos: 'Verb (Động từ)',
+        cefr: 'C2',
+        meaning: 'Làm trầm trọng thêm, làm xấu đi tình hình vốn đã nan giải',
+        collocation: 'exacerbate existing inequalities / the crisis',
+        example: 'Unplanned urbanization will inevitably exacerbate traffic congestion and air pollution in metropolitan areas.'
+      },
+      {
+        word: 'Inevitable',
+        phonetic: '/ɪnˈev.ɪ.tə.bəl/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'C1',
+        meaning: 'Không thể tránh khỏi, tất yếu sẽ diễn ra theo quy luật',
+        collocation: 'an inevitable outcome / consequence',
+        example: 'Digital transformation is an inevitable progression for educational institutions in the AI era.'
+      },
+      {
+        word: 'Counterpart',
+        phonetic: '/ˈkaʊn.tə.pɑːt/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Đối tác tương đương, người hoặc vật có cùng vị trí/chức năng ở đơn vị khác',
+        collocation: 'consult with international counterparts',
+        example: 'Vietnamese academics frequently collaborate with their European counterparts on joint climate studies.'
+      },
+      {
+        word: 'Resilience',
+        phonetic: '/rɪˈzɪl.jəns/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Khả năng phục hồi nhanh chóng, sức bật bền bỉ sau nghịch cảnh',
+        collocation: 'demonstrate mental resilience / economic resilience',
+        example: 'Students who cultivate cognitive resilience adapt far more successfully to demanding academic pressures.'
+      },
+      {
+        word: 'Proliferation',
+        phonetic: '/prəˌlɪf.əˈreɪ.ʃən/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C2',
+        meaning: 'Sự sinh sôi, gia tăng nhanh chóng về số lượng hoặc quy mô',
+        collocation: 'the rapid proliferation of online courses',
+        example: 'The rapid proliferation of mobile learning apps has made education accessible to rural communities.'
+      },
+      {
+        word: 'Detrimental',
+        phonetic: '/ˌdet.rɪˈmen.təl/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'C1',
+        meaning: 'Có hại, gây tổn hại tiêu cực (= harmful)',
+        collocation: 'have a detrimental effect on cognitive health',
+        example: 'Prolonged sleep deprivation exerts a detrimental impact on memory retention and analytical reasoning.'
+      },
+      {
+        word: 'Pivotal',
+        phonetic: '/ˈpɪv.ə.təl/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'C1',
+        meaning: 'Mang tính then chốt, giữ vai trò nòng cốt định đoạt thành bại',
+        collocation: 'play a pivotal role in / a pivotal turning point',
+        example: 'Mastering academic collocations plays a pivotal role in achieving top scores in international language exams.'
+      },
+      {
+        word: 'Elaborate',
+        phonetic: '/ɪˈlæb.ər.eɪt/',
+        pos: 'Verb (Động từ)',
+        cefr: 'C1',
+        meaning: 'Mở rộng chi tiết, giải thích cặn kẽ và phát triển luận điểm',
+        collocation: 'elaborate on the main idea',
+        example: 'Candidates are encouraged to elaborate on their supporting reasons rather than presenting abrupt bullet points.'
+      },
+      {
+        word: 'Divergent',
+        phonetic: '/daɪˈvɜː.dʒənt/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'C2',
+        meaning: 'Bất đồng quan điểm, rẽ theo các hướng tiếp cận khác nhau',
+        collocation: 'divergent viewpoints / divergent opinions',
+        example: 'Scholars hold divergent opinions regarding the socio-economic impacts of full-scale workforce automation.'
+      },
+      {
+        word: 'Holistic',
+        phonetic: '/həʊˈlɪs.tɪk/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'C1',
+        meaning: 'Tiếp cận toàn diện, xem xét tổng thể thay vì chỉ nhìn vào từng bộ phận',
+        collocation: 'a holistic pedagogical approach',
+        example: 'The curriculum embraces a holistic learning framework that integrates lexical drills with critical thinking.'
+      },
+      {
+        word: 'Prevalent',
+        phonetic: '/ˈprev.əl.ənt/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'C1',
+        meaning: 'Thịnh hành, lưu hành phổ biến sâu rộng trong một cộng đồng',
+        collocation: 'a prevalent social trend / widely prevalent',
+        example: 'Collaborative peer learning has become increasingly prevalent across top international graduate programs.'
+      },
+      {
+        word: 'Reconcile',
+        phonetic: '/ˈrek.ən.saɪl/',
+        pos: 'Verb (Động từ)',
+        cefr: 'C2',
+        meaning: 'Hòa giải, dung hòa hai mặt đối lập hoặc mâu thuẫn',
+        collocation: 'reconcile opposing theories / differences',
+        example: 'Educators must reconcile traditional rote learning expectations with modern interactive methodology.'
+      },
+      {
+        word: 'Pedagogy',
+        phonetic: '/ˈped.ə.ɡɒdʒ.i/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C2',
+        meaning: 'Khoa học sư phạm, phương pháp giảng dạy mang tính học thuật',
+        collocation: 'innovative pedagogy / pedagogical methods',
+        example: 'Modern language pedagogy focuses on communicative competence rather than mechanical translation.'
+      },
+      {
+        word: 'Curriculum',
+        phonetic: '/kəˈrɪk.jə.ləm/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Khung chương trình đào tạo của một khóa học hoặc nhà trường',
+        collocation: 'design a rigorous curriculum / core curriculum',
+        example: 'The academic committee redesigned the English curriculum to align with CEFR standard descriptors.'
+      },
+      {
+        word: 'Dissertation',
+        phonetic: '/ˌdɪs.əˈteɪ.ʃən/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Luận văn tốt nghiệp thạc sĩ hoặc luận án tiến sĩ',
+        collocation: 'defend a doctoral dissertation',
+        example: 'The graduate student defended his doctoral dissertation on graph database query optimization.'
+      },
+      {
+        word: 'Cognitive',
+        phonetic: '/ˈkɒɡ.nə.tɪv/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'C1',
+        meaning: 'Thuộc về nhận thức, khả năng tư duy và xử lý thông tin của não bộ',
+        collocation: 'cognitive development / cognitive skills',
+        example: 'Interactive flashcards stimulate cognitive recall through structured spaced repetition intervals.'
+      },
+      {
+        word: 'Empirical',
+        phonetic: '/ɪmˈpɪr.ɪ.kəl/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'C1',
+        meaning: 'Dựa trên thực nghiệm và dữ liệu quan sát thực tế',
+        collocation: 'empirical evidence / empirical research',
+        example: 'The research hypothesis was corroborated by extensive empirical benchmark findings.'
+      },
+      {
+        word: 'Criterion',
+        phonetic: '/kraɪˈtɪə.ri.ən/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Tiêu chuẩn, tiêu chí đánh giá (dạng số nhiều: criteria)',
+        collocation: 'strict evaluation criteria / fulfill criteria',
+        example: 'Grammatical range and lexical accuracy are crucial assessment criteria in IELTS Writing.'
+      },
+      {
+        word: 'Proficiency',
+        phonetic: '/prəˈfɪʃ.ən.si/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Mức độ thông thạo, sự thành thạo một ngôn ngữ hoặc kỹ năng',
+        collocation: 'demonstrate language proficiency / professional proficiency',
+        example: 'Passing the C1 exam demonstrates professional language proficiency suitable for academic study.'
+      }
+    ]
+  },
+  {
+    category: 'Y tế & Sức khỏe',
+    icon: '🏥',
+    desc: 'Từ vựng y khoa thông dụng, dinh dưỡng, miễn dịch & chăm sóc sức khỏe cộng đồng',
+    words: [
+      {
+        word: 'Chronic',
+        phonetic: '/ˈkrɒn.ɪk/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'C1',
+        meaning: 'Mãn tính, kéo dài dai dẳng và khó điều trị dứt điểm',
+        collocation: 'chronic illness / chronic pain',
+        example: 'Sedentary lifestyles increase the risk of developing chronic cardiovascular diseases.'
+      },
+      {
+        word: 'Epidemic',
+        phonetic: '/ˌep.ɪˈdem.ɪk/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Dịch bệnh bùng phát lan rộng trong cộng đồng',
+        collocation: 'contain an epidemic / prevent an epidemic',
+        example: 'Public health authorities enacted strict quarantine measures to contain the viral epidemic.'
+      },
+      {
+        word: 'Immunity',
+        phonetic: '/ɪˈmjuː.nə.ti/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Hệ thống miễn dịch, khả năng kháng bệnh tự nhiên',
+        collocation: 'boost natural immunity / herd immunity',
+        example: 'Regular aerobic exercise and balanced nutrition boost the body’s natural immunity.'
+      },
+      {
+        word: 'Sedentary',
+        phonetic: '/ˈsed.ən.tər.i/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'C1',
+        meaning: 'Ít vận động, ngồi nhiều một chỗ trong thời gian dài',
+        collocation: 'a sedentary lifestyle / sedentary desk job',
+        example: 'Doctors warn that a sedentary lifestyle severely impairs metabolic and cardiovascular function.'
+      },
+      {
+        word: 'Obesity',
+        phonetic: '/əʊˈbiː.sə.ti/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Bệnh béo phì do tích tụ mỡ thừa nguy hiểm',
+        collocation: 'tackle childhood obesity / fight obesity',
+        example: 'Taxing sugary beverages has been proposed as a public policy to combat childhood obesity.'
+      },
+      {
+        word: 'Nutrition',
+        phonetic: '/njuːˈtrɪʃ.ən/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B1',
+        meaning: 'Dinh dưỡng, chế độ ăn uống bổ dưỡng cung cấp năng lượng',
+        collocation: 'adequate nutrition / nutritional value',
+        example: 'Adequate childhood nutrition is essential for optimal brain development and academic performance.'
+      },
+      {
+        word: 'Therapeutic',
+        phonetic: '/ˌθer.əˈpjuː.tɪk/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'C1',
+        meaning: 'Có tác dụng trị liệu, giúp hồi phục sức khỏe',
+        collocation: 'therapeutic benefits / therapeutic intervention',
+        example: 'Listening to calming classical music has well-documented therapeutic benefits for anxiety reduction.'
+      },
+      {
+        word: 'Prescription',
+        phonetic: '/prɪˈskrɪp.ʃən/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B1',
+        meaning: 'Đơn thuốc do bác sĩ kê toa để điều trị',
+        collocation: 'fill a prescription / prescription medication',
+        example: 'Antibiotics should only be taken under a licensed physician’s formal prescription.'
+      },
+      {
+        word: 'Diagnosis',
+        phonetic: '/ˌdaɪ.əɡˈnəʊ.sɪs/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Chẩn đoán bệnh trạng dựa trên triệu chứng lâm sàng',
+        collocation: 'accurate medical diagnosis / early diagnosis',
+        example: 'Early diagnosis of tumors dramatically increases the five-year survival rate of patients.'
+      },
+      {
+        word: 'Prognosis',
+        phonetic: '/prɒɡˈnəʊ.sɪs/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Tiên lượng, dự báo chiều hướng diễn biến của bệnh',
+        collocation: 'a favorable prognosis / poor prognosis',
+        example: 'Thanks to timely surgical intervention, the patient’s overall recovery prognosis is highly favorable.'
+      },
+      {
+        word: 'Symptom',
+        phonetic: '/ˈsɪmp.təm/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B1',
+        meaning: 'Triệu chứng lâm sàng báo hiệu cơ thể đang có bệnh',
+        collocation: 'exhibit mild symptoms / relieve symptoms',
+        example: 'Fever, persistent cough, and loss of taste are primary symptoms of respiratory infections.'
+      },
+      {
+        word: 'Vaccination',
+        phonetic: '/ˌvæk.sɪˈneɪ.ʃən/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Tiêm chủng vắc xin bảo vệ cộng đồng',
+        collocation: 'mass vaccination program / vaccination drive',
+        example: 'Nationwide infant vaccination campaigns have eradicated polio across most parts of the globe.'
+      },
+      {
+        word: 'Contagious',
+        phonetic: '/kənˈteɪ.dʒəs/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'B2',
+        meaning: 'Dễ lây nhiễm từ người này sang người khác qua tiếp xúc',
+        collocation: 'highly contagious virus / contagious disease',
+        example: 'Measles is a highly contagious disease requiring immediate quarantine upon diagnosis.'
+      },
+      {
+        word: 'Fatigue',
+        phonetic: '/fəˈtiːɡ/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Tình trạng mệt mỏi rã rời do quá sức hoặc bệnh tật',
+        collocation: 'chronic fatigue / combat mental fatigue',
+        example: 'Taking short study breaks every forty-five minutes prevents mental fatigue and sharpens focus.'
+      },
+      {
+        word: 'Mental well-being',
+        phonetic: '/ˌmen.təl ˈwelˌbiː.ɪŋ/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Sức khỏe tâm thần và trạng thái cân bằng cảm xúc',
+        collocation: 'promote mental well-being in students',
+        example: 'Universities are establishing counseling hotlines to promote student mental well-being during exam weeks.'
+      },
+      {
+        word: 'Anxiety',
+        phonetic: '/æŋˈzaɪ.ə.ti/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'B2',
+        meaning: 'Sự lo âu, bồn chồn căng thẳng tâm lý',
+        collocation: 'suffer from acute anxiety / alleviate anxiety',
+        example: 'Mindfulness breathing exercises are proven to alleviate testing anxiety among students.'
+      },
+      {
+        word: 'Metabolism',
+        phonetic: '/məˈtæb.əl.ɪ.zəm/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Quá trình trao đổi chất của tế bào trong cơ thể',
+        collocation: 'speed up metabolism / basal metabolic rate',
+        example: 'Resistance training builds lean muscle mass which helps elevate daily basal metabolism.'
+      },
+      {
+        word: 'Cardiovascular',
+        phonetic: '/ˌkɑː.di.əʊˈvæs.kjə.lər/',
+        pos: 'Adjective (Tính từ)',
+        cefr: 'C1',
+        meaning: 'Thuộc về tim mạch và hệ tuần hoàn máu',
+        collocation: 'cardiovascular fitness / heart disease',
+        example: 'Aerobic exercises like swimming and cycling significantly enhance cardiovascular fitness.'
+      },
+      {
+        word: 'Deficiency',
+        phonetic: '/dɪˈfɪʃ.ən.si/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Sự thiếu hụt dưỡng chất hoặc vitamin quan trọng',
+        collocation: 'vitamin D deficiency / iron deficiency anemia',
+        example: 'A chronic deficiency in dietary iron can lead to lethargy and impaired intellectual focus.'
+      },
+      {
+        word: 'Rehabilitation',
+        phonetic: '/ˌriː.həˌbɪl.ɪˈteɪ.ʃən/',
+        pos: 'Noun (Danh từ)',
+        cefr: 'C1',
+        meaning: 'Sự phục hồi chức năng sau chấn thương hoặc phẫu thuật',
+        collocation: 'undergo physical rehabilitation / therapy',
+        example: 'The professional athlete underwent six months of intense physical rehabilitation before competing again.'
+      }
+    ]
+  },
+  {
+    category: 'Thành ngữ & Cụm từ',
+    icon: '🗣️',
+    desc: 'Thành ngữ (Idioms) & Cụm động từ (Phrasal Verbs) tự nhiên nhất giúp nâng band Speaking & Writing',
+    words: [
+      {
+        word: 'Bite the bullet',
+        phonetic: '/baɪt ðə ˈbʊl.ɪt/',
+        pos: 'Idiom (Thành ngữ)',
+        cefr: 'C1',
+        meaning: 'Cắn răng chịu đựng, dũng cảm đối mặt với tình thế khó khăn',
+        collocation: 'decide to bite the bullet',
+        example: 'The engineering team decided to bite the bullet and refactor the entire legacy codebase for microservices.'
+      },
+      {
+        word: 'Break the ice',
+        phonetic: '/breɪk ði aɪs/',
+        pos: 'Idiom (Thành ngữ)',
+        cefr: 'B2',
+        meaning: 'Phá vỡ sự ngại ngùng, khởi đầu cuộc trò chuyện thân mật cởi mở',
+        collocation: 'a fun activity to break the ice',
+        example: 'The lecturer organized a 60-second word arena quiz to break the ice among new seminar participants.'
+      },
+      {
+        word: 'Call it a day',
+        phonetic: '/kɔːl ɪt ə deɪ/',
+        pos: 'Idiom (Thành ngữ)',
+        cefr: 'B1',
+        meaning: 'Quyết định dừng công việc hoặc học tập của ngày hôm nay lại',
+        collocation: 'decide to call it a day',
+        example: 'After completing five intensive listening units and two mock tests, the student decided to call it a day.'
+      },
+      {
+        word: 'Burn the midnight oil',
+        phonetic: '/bɜːn ðə ˈmɪd.naɪt ɔɪl/',
+        pos: 'Idiom (Thành ngữ)',
+        cefr: 'B2',
+        meaning: 'Thức khuya miệt mài học tập hoặc làm việc cật lực',
+        collocation: 'burn the midnight oil studying for finals',
+        example: 'Graduating seniors often burn the midnight oil completing their capstone project reports and source code.'
+      },
+      {
+        word: 'Hit the nail on the head',
+        phonetic: '/hɪt ðə neɪl ɒn ðə hed/',
+        pos: 'Idiom (Thành ngữ)',
+        cefr: 'B2',
+        meaning: 'Nói trúng phóc, chỉ ra chính xác bản chất của vấn đề',
+        collocation: 'absolutely hit the nail on the head',
+        example: 'The reviewer hit the nail on the head by pointing out that real-time answer persistence needs Redis Hashes.'
+      },
+      {
+        word: 'Look forward to',
+        phonetic: '/lʊk ˈfɔː.wəd tuː/',
+        pos: 'Phrasal Verb (Cụm động từ)',
+        cefr: 'B1',
+        meaning: 'Rất mong đợi, háo hức chờ đón một điều tốt đẹp phía trước',
+        collocation: 'look forward to receiving your response / graduation',
+        example: 'Enrolled students genuinely look forward to unlocking their verifiable digital graduation certificates.'
+      },
+      {
+        word: 'Put off',
+        phonetic: '/pʊt ɒf/',
+        pos: 'Phrasal Verb (Cụm động từ)',
+        cefr: 'B1',
+        meaning: 'Trì hoãn, dời lại lịch thực hiện (= postpone)',
+        collocation: 'never put off until tomorrow',
+        example: 'Language learners should never put off reviewing newly encountered vocabulary beyond the 24-hour window.'
+      },
+      {
+        word: 'Call off',
+        phonetic: '/kɔːl ɒf/',
+        pos: 'Phrasal Verb (Cụm động từ)',
+        cefr: 'B1',
+        meaning: 'Hủy bỏ hoàn toàn một kế hoạch hoặc sự kiện đã lên lịch (= cancel)',
+        collocation: 'call off the planned meeting / launch',
+        example: 'The university had to call off in-person testing sessions and transition all exams to online proctoring.'
+      },
+      {
+        word: 'Carry out',
+        phonetic: '/ˈkær.i aʊt/',
+        pos: 'Phrasal Verb (Cụm động từ)',
+        cefr: 'B2',
+        meaning: 'Tiến hành, thực thi một cuộc nghiên cứu, khảo sát hoặc kế hoạch',
+        collocation: 'carry out extensive benchmark testing',
+        example: 'Our engineering group carried out load tests across 4 database engines to measure throughput and latency.'
+      },
+      {
+        word: 'Bring about',
+        phonetic: '/brɪŋ əˈbaʊt/',
+        pos: 'Phrasal Verb (Cụm động từ)',
+        cefr: 'B2',
+        meaning: 'Gây ra, đem lại, mang đến sự biến chuyển tích cực (= cause)',
+        collocation: 'bring about substantial productivity gains',
+        example: 'Effective spaced repetition algorithms bring about substantial improvements in long-term lexical retention.'
+      },
+      {
+        word: 'Come up with',
+        phonetic: '/kʌm ʌp wɪð/',
+        pos: 'Phrasal Verb (Cụm động từ)',
+        cefr: 'B2',
+        meaning: 'Nảy ra, nghĩ ra một giải pháp hoặc ý tưởng độc đáo sáng tạo',
+        collocation: 'come up with an ingenious design',
+        example: 'The development squad came up with a resilient architecture that isolates video logs inside Cassandra.'
+      },
+      {
+        word: 'Figure out',
+        phonetic: '/ˈfɪɡ.ər aʊt/',
+        pos: 'Phrasal Verb (Cụm động từ)',
+        cefr: 'B2',
+        meaning: 'Tìm ra cách giải quyết, hiểu thấu sau thời gian nghiên cứu suy ngẫm',
+        collocation: 'figure out the root cause',
+        example: 'Engineers quickly figured out the port 7000 conflict between Cassandra gossip and Neo4j Raft consensus.'
+      },
+      {
+        word: 'Give up',
+        phonetic: '/ɡɪv ʌp/',
+        pos: 'Phrasal Verb (Cụm động từ)',
+        cefr: 'B1',
+        meaning: 'Từ bỏ, nản lòng thoái lui trước khó khăn',
+        collocation: 'refuse to give up in adversity',
+        example: 'Dedicated students maintain study streaks and refuse to give up even when encountering complex grammar.'
+      },
+      {
+        word: 'Keep up with',
+        phonetic: '/kiːp ʌp wɪð/',
+        pos: 'Phrasal Verb (Cụm động từ)',
+        cefr: 'B2',
+        meaning: 'Bắt kịp tiến độ, theo kịp tốc độ phát triển nhanh của thời đại',
+        collocation: 'keep up with rapid technological shifts',
+        example: 'Continuous skill upgrading is mandatory to keep up with the fast-paced evolution of database technologies.'
+      },
+      {
+        word: 'Turn down',
+        phonetic: '/tɜːn daʊn/',
+        pos: 'Phrasal Verb (Cụm động từ)',
+        cefr: 'B2',
+        meaning: 'Từ chối một đề nghị hoặc giảm âm lượng',
+        collocation: 'turn down an unfeasible offer',
+        example: 'The project manager reluctantly turned down requests to add relational JOIN operations to the NoSQL schema.'
+      },
+      {
+        word: 'Cut down on',
+        phonetic: '/kʌt daʊn ɒn/',
+        pos: 'Phrasal Verb (Cụm động từ)',
+        cefr: 'B1',
+        meaning: 'Cắt giảm bớt, tiết chế tiêu hao tài nguyên lãng phí',
+        collocation: 'cut down on redundant database I/O',
+        example: 'Applying compound index patterns helped cut down on disk reads and improved MongoDB query times 37-fold.'
+      },
+      {
+        word: 'Run into',
+        phonetic: '/rʌn ˈɪn.tuː/',
+        pos: 'Phrasal Verb (Cụm động từ)',
+        cefr: 'B2',
+        meaning: 'Tình cờ va phải khó khăn trở ngại hoặc bắt gặp ai đó',
+        collocation: 'run into unexpected network bottlenecks',
+        example: 'Distributed clusters occasionally run into transient partition issues handled gracefully by gossip protocols.'
+      },
+      {
+        word: 'Take after',
+        phonetic: '/teɪk ˈɑːf.tər/',
+        pos: 'Phrasal Verb (Cụm động từ)',
+        cefr: 'B1',
+        meaning: 'Giống ai đó về ngoại hình, tính cách hoặc năng khiếu',
+        collocation: 'take after an experienced mentor',
+        example: 'The young developer takes after senior system architects in paying obsessive attention to index optimization.'
+      },
+      {
+        word: 'Stand out',
+        phonetic: '/stænd aʊt/',
+        pos: 'Phrasal Verb (Cụm động từ)',
+        cefr: 'B2',
+        meaning: 'Nổi bật, vượt trội xuất sắc so với số đông còn lại',
+        collocation: 'stand out from the competition',
+        example: 'EduPro stands out prominently due to its native polyglot persistence across Redis, Mongo, Cassandra, and Neo4j.'
+      },
+      {
+        word: 'Account for',
+        phonetic: '/əˈkaʊnt fɔːr/',
+        pos: 'Phrasal Verb (Cụm động từ)',
+        cefr: 'B2',
+        meaning: 'Giải thích lý do hoặc chiếm tỷ lệ bao nhiêu phần trăm',
+        collocation: 'account for over 60% of total latency',
+        example: 'Database queries typically account for the largest proportion of latency in data-intensive web architectures.'
+      },
+      {
+        word: 'Bridge the gap',
+        phonetic: '/brɪdʒ ðə ɡæp/',
+        pos: 'Idiom (Thành ngữ)',
+        cefr: 'B2',
+        meaning: 'Thu hẹp khoảng cách bất đồng, gắn kết sự thấu hiểu',
+        collocation: 'bridge the digital divide / generation gap',
+        example: 'Inclusive e-learning features bridge the digital divide for students in mountainous areas.'
+      },
+      {
+        word: 'A blessing in disguise',
+        phonetic: '/ə ˈbles.ɪŋ ɪn dɪsˈɡaɪz/',
+        pos: 'Idiom (Thành ngữ)',
+        cefr: 'B2',
+        meaning: 'Trong cái rủi có cái may (tưởng xui xẻo nhưng đem lại điều tốt)',
+        collocation: 'turn out to be a blessing in disguise',
+        example: 'Missing the train was a blessing in disguise because I avoided the traffic gridlock downtown.'
+      },
+      {
+        word: 'See eye to eye',
+        phonetic: '/siː aɪ tuː aɪ/',
+        pos: 'Idiom (Thành ngữ)',
+        cefr: 'B1',
+        meaning: 'Hoàn toàn đồng lòng, cùng chung quan điểm với ai đó',
+        collocation: 'see eye to eye on business strategy',
+        example: 'The founders rarely see eye to eye on marketing expenditures, but they agree on engineering quality.'
+      },
+      {
+        word: 'Piece of cake',
+        phonetic: '/piːs əv keɪk/',
+        pos: 'Idiom (Thành ngữ)',
+        cefr: 'A2',
+        meaning: 'Dễ như trở bàn tay, việc vô cùng dễ dàng hoàn tất',
+        collocation: 'the assignment was a piece of cake',
+        example: 'With continuous daily practice, memorizing irregular verbs became a piece of cake.'
+      },
+      {
+        word: 'Once in a blue moon',
+        phonetic: '/wʌns ɪn ə bluː muːn/',
+        pos: 'Idiom (Thành ngữ)',
+        cefr: 'B1',
+        meaning: 'Hiếm khi xảy ra, năm thì mười họa mới thấy',
+        collocation: 'only happens once in a blue moon',
+        example: 'Server outages occur only once in a blue moon thanks to masterless Cassandra failover replication.'
+      },
+      {
+        word: 'Look into',
+        phonetic: '/lʊk ˈɪn.tuː/',
+        pos: 'Phrasal Verb (Cụm động từ)',
+        cefr: 'B1',
+        meaning: 'Xem xét kỹ lưỡng, điều tra chi tiết một vấn đề',
+        collocation: 'look into customer inquiries / complaints',
+        example: 'The technical support team promised to look into the sporadic WebSocket disconnections.'
+      },
+      {
+        word: 'Take over',
+        phonetic: '/teɪk ˈəʊ.vər/',
+        pos: 'Phrasal Verb (Cụm động từ)',
+        cefr: 'B2',
+        meaning: 'Tiếp quản vị trí, quyền kiểm soát hoặc nhiệm vụ',
+        collocation: 'take over the project leadership',
+        example: 'The senior engineer will take over the database performance optimization sprint next Monday.'
+      },
+      {
+        word: 'Hold back',
+        phonetic: '/həʊld bæk/',
+        pos: 'Phrasal Verb (Cụm động từ)',
+        cefr: 'B2',
+        meaning: 'Kìm hãm, ngăn trở sự tiến bộ hoặc tự ti không dám thể hiện',
+        collocation: 'hold back someone’s potential',
+        example: 'Fear of making speaking mistakes should never hold back candidates during the IELTS interview.'
+      },
+      {
+        word: 'Run out of',
+        phonetic: '/rʌn aʊt əv/',
+        pos: 'Phrasal Verb (Cụm động từ)',
+        cefr: 'A2',
+        meaning: 'Hết sạch, cạn kiệt nguồn dự trữ (thời gian, tiền bạc, năng lượng)',
+        collocation: 'run out of examination time',
+        example: 'Thorough time-management ensures test-takers never run out of time on Section 3.'
+      },
+      {
+        word: 'Get over',
+        phonetic: '/ɡet ˈəʊ.vər/',
+        pos: 'Phrasal Verb (Cụm động từ)',
+        cefr: 'B1',
+        meaning: 'Vượt qua nỗi buồn hoặc hồi phục sau cơn bạo bệnh',
+        collocation: 'get over disappointment / illness',
+        example: 'It took the candidate several days to get over the disappointment of missing her target band by 0.5.'
+      }
+    ]
+  }
+];
+
+let allWords = [];
+let idCounter = 1;
+
+TOPICS.forEach(t => {
+  t.words.forEach(w => {
+    const padded = String(idCounter++).padStart(3, '0');
+    allWords.push({
+      id: `FC_${padded}`,
+      word: w.word,
+      phonetic: w.phonetic,
+      pos: w.pos,
+      category: t.category,
+      topic: t.category,
+      topicIcon: t.icon,
+      cefr: w.cefr,
+      meaning: w.meaning,
+      collocation: w.collocation,
+      example: w.example
+    });
+  });
+});
+
+console.log(`Generated ${allWords.length} words across ${TOPICS.length} topics:`);
+TOPICS.forEach(t => {
+  const count = allWords.filter(w => w.category === t.category).length;
+  console.log(` - ${t.icon} ${t.category}: ${count} từ`);
+});
+
+// Write to flashcardsData.js
+const fileContent = `// KHO 150 TU VUNG CHUAN THEO 6 CHU DE HOC THUAT & THUC CHIEN
+const TOPIC_METADATA = ${JSON.stringify(TOPICS.map(t => ({ category: t.category, icon: t.icon, desc: t.desc })), null, 2)};
+
+const FLASHCARDS_150 = ${JSON.stringify(allWords, null, 2)};
+
+module.exports = {
+  TOPIC_METADATA,
+  FLASHCARDS_150,
+  FLASHCARDS_60: FLASHCARDS_150 // backward compatibility
+};
+`;
+
+const targetPath = path.join(__dirname, '../01_Source_Code_EduPro/src/data/flashcardsData.js');
+fs.writeFileSync(targetPath, fileContent, 'utf-8');
+console.log(`Successfully written flashcardsData.js with ${allWords.length} words!`);

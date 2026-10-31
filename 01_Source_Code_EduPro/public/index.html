@@ -548,17 +548,34 @@
             </div>
             <div>
               <div class="text-[11px] font-bold uppercase text-amber-600 dark:text-amber-400">Tiến độ từ vựng</div>
-              <div class="text-lg font-black text-slate-900 dark:text-white" id="vocab-mastered-counter">Đã thuộc: 0 / 60 từ</div>
+              <div class="text-lg font-black text-slate-900 dark:text-white" id="vocab-mastered-counter">Đã thuộc: 0 / 150 từ</div>
             </div>
           </div>
         </div>
 
-        <!-- Bộ lọc chủ đề từ vựng -->
-        <div class="flex flex-wrap gap-2 mb-6">
-          <button id="fc-btn-all" onclick="filterFlashcards('ALL', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white shadow-sm transition-all">Tất cả (60)</button>
-          <button id="fc-btn-ielts" onclick="filterFlashcards('IELTS Band 8.0', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-all">IELTS Band 8.0 (20)</button>
-          <button id="fc-btn-toeic" onclick="filterFlashcards('TOEIC Business', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-all">TOEIC Business (20)</button>
-          <button id="fc-btn-idioms" onclick="filterFlashcards('Phrasal Verbs & Idioms', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-all">Phrasal Verbs & Idioms (20)</button>
+        <!-- Bộ lọc chủ đề từ vựng chuẩn 6 nhóm học thuật & thực chiến -->
+        <div id="vocab-category-filters" class="flex flex-wrap gap-2 mb-6">
+          <button id="fc-btn-all" onclick="filterFlashcards('ALL', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white shadow-sm transition-all">
+            Tất cả (150)
+          </button>
+          <button onclick="filterFlashcards('Môi trường & Khí hậu', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-all">
+            🌍 Môi trường & Khí hậu (25)
+          </button>
+          <button onclick="filterFlashcards('Kinh doanh & Tài chính', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-all">
+            💼 Kinh doanh & Tài chính (25)
+          </button>
+          <button onclick="filterFlashcards('Công nghệ & AI', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-all">
+            💻 Công nghệ & AI (25)
+          </button>
+          <button onclick="filterFlashcards('Giáo dục & Học thuật', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-all">
+            🎓 Giáo dục & Học thuật (25)
+          </button>
+          <button onclick="filterFlashcards('Y tế & Sức khỏe', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-all">
+            🏥 Y tế & Sức khỏe (20)
+          </button>
+          <button onclick="filterFlashcards('Thành ngữ & Cụm từ', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-all">
+            🗣️ Thành ngữ & Cụm từ (30)
+          </button>
         </div>
 
         <!-- HỆ THỐNG ÔN TẬP NGẮT QUÃNG THÔNG MINH (SRS ANKI MODE - REDIS ZSET TIME-QUEUE) -->
@@ -871,12 +888,56 @@
           <!-- Cột soạn thảo Essay -->
           <div class="lg:col-span-7 space-y-4">
             <div>
-              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Chọn chủ đề IELTS Writing Task 2:</label>
-              <select id="writing-topic-select" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 outline-none focus:border-brand-500">
-                <option value="Some people believe that artificial intelligence and online platforms will replace traditional classrooms in the near future. To what extent do you agree or disagree?">Chủ đề 1 (Education & AI): Online platforms & AI replacing traditional classrooms — Agree or Disagree?</option>
-                <option value="Governments worldwide should prioritize economic growth even if it leads to environmental damage. Discuss both views and give your opinion.">Chủ đề 2 (Environment & Economy): Economic growth vs. Environmental protection — Discuss both views.</option>
-                <option value="Many multinational corporations require employees to possess certified English proficiency. Why is this happening, and is it a positive or negative development?">Chủ đề 3 (Globalization & Work): English proficiency in multinational corporations — Positive or Negative?</option>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">Chọn chủ đề IELTS Writing Task 2 (15 đề chuẩn Cambridge):</label>
+                <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">5 Nhóm Chủ Đề • 15 Đề Thi</span>
+              </div>
+              <select id="writing-topic-select" onchange="onWritingTopicChange()" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 outline-none focus:border-brand-500">
+                <optgroup label="📚 NHÓM 1: GIÁO DỤC, CÔNG NGHỆ & TRÍ TUỆ NHÂN TẠO (AI)">
+                  <option value="Some people believe that artificial intelligence and online platforms will replace traditional classrooms and teachers in the near future. To what extent do you agree or disagree?">Chủ đề 1 (Education & AI): Online platforms & AI replacing traditional classrooms — Agree or Disagree?</option>
+                  <option value="Some people think that university education should be free for all students, while others believe students should pay tuition fees since they benefit individually. Discuss both views and give your opinion.">Chủ đề 2 (Higher Education): Free university tuition vs. Self-funded tuition — Discuss both views.</option>
+                  <option value="Children are spending an increasing amount of time using digital screens and smartphones for study and leisure. Is this a positive or negative development?">Chủ đề 3 (Child Development): Screen time and digital devices for children — Positive or Negative?</option>
+                </optgroup>
+
+                <optgroup label="🌿 NHÓM 2: MÔI TRƯỜNG & PHÁT TRIỂN BỀN VỮNG">
+                  <option value="Governments worldwide should prioritize economic growth even if it leads to environmental damage. Discuss both views and give your opinion.">Chủ đề 4 (Environment & Economy): Economic growth vs. Environmental protection — Discuss both views.</option>
+                  <option value="Many scientists argue that individual lifestyle changes are insufficient to combat climate change, and only strict government environmental regulations can succeed. To what extent do you agree or disagree?">Chủ đề 5 (Climate Action): Individual lifestyle changes vs. Strict government legislation — Agree or Disagree?</option>
+                  <option value="Some countries are transitioning from fossil fuels to renewable energy sources such as solar and wind. Do the advantages of this transition outweigh the disadvantages?">Chủ đề 6 (Renewable Energy): Phasing out fossil fuels for clean green energy — Advantages outweigh Disadvantages?</option>
+                </optgroup>
+
+                <optgroup label="💼 NHÓM 3: TOÀN CẦU HÓA, LAO ĐỘNG & VIỆC LÀM">
+                  <option value="Many multinational corporations require employees to possess certified English proficiency. Why is this happening, and is it a positive or negative development?">Chủ đề 7 (Globalization & Work): English proficiency in multinational corporations — Positive or Negative?</option>
+                  <option value="Remote working and telecommuting from home have become widespread across many corporate sectors. Do the benefits of working from home outweigh the drawbacks?">Chủ đề 8 (Modern Workforce): Remote working from home — Advantages outweigh Disadvantages?</option>
+                  <option value="Rapid advances in automation and artificial intelligence are threatening both manual and white-collar jobs. What problems does this cause, and what solutions can governments propose?">Chủ đề 9 (AI & Employment): Technological unemployment and labor automation — Problems & Solutions.</option>
+                </optgroup>
+
+                <optgroup label="🏥 NHÓM 4: SỨC KHỎE CỘNG ĐỒNG, LỐI SỐNG & ĐÔ THỊ HÓA">
+                  <option value="The rate of obesity and lifestyle-related diseases is increasing worldwide. Some believe governments should impose heavy taxes on fast food and sugary drinks to encourage healthier diets. To what extent do you agree or disagree?">Chủ đề 10 (Public Health): Sugar and junk food taxation to combat obesity — Agree or Disagree?</option>
+                  <option value="Rapid urbanization has caused traffic congestion, air pollution, and housing shortages in megacities. What are the main causes, and what urban planning measures can resolve these issues?">Chủ đề 11 (Urban Planning): Megacity congestion and housing shortages — Causes & Solutions.</option>
+                  <option value="The widespread use of social media platforms has led to rising anxiety, depression, and social isolation among adolescents. What factors contribute to this, and how can society address it?">Chủ đề 12 (Mental Health): Social media addiction and youth mental health — Causes & Solutions.</option>
+                </optgroup>
+
+                <optgroup label="🏛️ NHÓM 5: VĂN HÓA, PHÁP LUẬT & TRÁCH NHIỆM XÃ HỘI">
+                  <option value="Some argue that government budgets should be spent on preserving historical monuments and cultural heritage, while others think money is better spent on modern public services like hospitals. Discuss both views and give your opinion.">Chủ đề 13 (Cultural Heritage): Preserving historical heritage vs. Modern public services — Discuss both views.</option>
+                  <option value="Some believe that harsher prison sentences are the most effective deterrent to crime, while others argue that education and vocational rehabilitation are far more effective. Discuss both views and give your opinion.">Chủ đề 14 (Crime & Punishment): Incarceration vs. Education & Vocational rehabilitation — Discuss both views.</option>
+                  <option value="Modern advertising creates artificial consumer needs and promotes an unsustainable culture of materialistic consumerism. To what extent do you agree or disagree?">Chủ đề 15 (Consumerism & Ads): Commercial advertising manipulating consumer behavior — Agree or Disagree?</option>
+                </optgroup>
               </select>
+            </div>
+
+            <!-- Thẻ hiển thị Đề bài chi tiết & Dạng bài chuẩn Cambridge -->
+            <div id="writing-topic-preview-card" class="p-3.5 rounded-2xl bg-purple-50/80 dark:bg-purple-950/30 border border-purple-200/80 dark:border-purple-800/60 text-xs space-y-1.5 transition-all">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wider text-[11px]"><i class="fa-solid fa-quote-left mr-1"></i> Đề bài chính thức (IELTS Prompt)</span>
+                <span id="writing-topic-type-badge" class="px-2.5 py-0.5 rounded-full font-bold bg-purple-200/80 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-[10px]">Opinion (Agree/Disagree)</span>
+              </div>
+              <p id="writing-topic-full-text" class="text-slate-700 dark:text-slate-300 italic leading-relaxed">
+                "Some people believe that artificial intelligence and online platforms will replace traditional classrooms and teachers in the near future. To what extent do you agree or disagree?"
+              </p>
+              <div class="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400 pt-1 border-t border-purple-200/40 dark:border-purple-800/40">
+                <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                <span id="writing-topic-tip">Cấu trúc khuyến nghị: 4 đoạn (Mở bài ➔ 2 Thân bài phản biện/bổ trợ ➔ Kết luận khẳng định quan điểm).</span>
+              </div>
             </div>
 
             <div class="relative">
@@ -939,9 +1000,14 @@
             <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">Luyện Phát Âm Chuẩn IPA & Phản Xạ Nói IELTS Speaking</h3>
           </div>
           <select id="speaking-sentence-select" onchange="changeSpeakingSentence(this.value)" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 outline-none">
-            <option value="0">Câu mẫu 1: IELTS Speaking Part 3 (Technology & Education)</option>
-            <option value="1">Câu mẫu 2: Business English Pitching (Corporate Strategy)</option>
-            <option value="2">Câu mẫu 3: IELTS Speaking Part 2 (Memorable Achievement)</option>
+            <option value="0">Câu 1: IELTS Speaking Part 3 (Technology & Education)</option>
+            <option value="1">Câu 2: Business English (Corporate Strategy)</option>
+            <option value="2">Câu 3: IELTS Speaking Part 2 (Personal Growth & Resilience)</option>
+            <option value="3">Câu 4: IELTS Speaking Part 3 (Environmental Sustainability)</option>
+            <option value="4">Câu 5: IELTS Speaking Part 3 (AI & Future Workforce)</option>
+            <option value="5">Câu 6: IELTS Speaking Part 1 (Urbanization & Hometown)</option>
+            <option value="6">Câu 7: IELTS Speaking Part 3 (Cultural Heritage Preservation)</option>
+            <option value="7">Câu 8: IELTS Speaking Part 2 (Technological Breakthroughs)</option>
           </select>
         </div>
 
@@ -3185,7 +3251,7 @@
   <script src="/js/study.js?v=2.7.0"></script>
   <script src="/js/telemetry.js?v=2.7.0"></script>
   <script src="/js/copilot.js?v=2.7.0"></script>
-  <script src="/member2.js"></script>
+  <script src="/member2.js?v=2.7.0"></script>
 
   <!-- MODAL: CHINH SUA HO SO HOC VIEN (TASK 1.1) -->
   <div id="modal-edit-profile" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 p-4">

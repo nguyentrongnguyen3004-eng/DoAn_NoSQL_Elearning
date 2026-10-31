@@ -94,8 +94,8 @@ const memoryDiscussions = [
 ];
 
 // DANH SACH 60 FLASHCARD TU VUNG TIENG ANH CHUAN IELTS / TOEIC / BUSINESS
-const { FLASHCARDS_60 } = require('../data/flashcardsData');
-let DEFAULT_FLASHCARDS = [...FLASHCARDS_60];
+const { FLASHCARDS_150, TOPIC_METADATA } = require('../data/flashcardsData');
+let DEFAULT_FLASHCARDS = [...FLASHCARDS_150];
 
 // DANH SACH CAU LUYEN NGHE CHEP CHINH TA (AUDIO DICTATION)
 const DEFAULT_DICTATIONS = [
@@ -236,12 +236,17 @@ router.get('/flashcards/list', async (req, res) => {
       };
     });
 
-    const categories = {
-      ALL: cards.length,
-      'IELTS Band 8.0': cards.filter(c => c.category === 'IELTS Band 8.0').length,
-      'TOEIC Business': cards.filter(c => c.category === 'TOEIC Business').length,
-      'Phrasal Verbs & Idioms': cards.filter(c => c.category === 'Phrasal Verbs & Idioms').length
-    };
+    const categories = { ALL: cards.length };
+    if (Array.isArray(TOPIC_METADATA)) {
+      TOPIC_METADATA.forEach(m => {
+        categories[m.category] = cards.filter(c => c.category === m.category).length;
+      });
+    }
+    cards.forEach(c => {
+      if (c.category && categories[c.category] === undefined) {
+        categories[c.category] = cards.filter(x => x.category === c.category).length;
+      }
+    });
 
     const actualMasteredCount = cards.filter(c => c.mastered).length;
 
@@ -251,6 +256,7 @@ router.get('/flashcards/list', async (req, res) => {
       masteredCount: actualMasteredCount,
       totalCount: cards.length,
       categories,
+      topics: TOPIC_METADATA || [],
       data: cards
     });
   } catch (err) {
