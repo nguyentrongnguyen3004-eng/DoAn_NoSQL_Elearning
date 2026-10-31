@@ -10,7 +10,7 @@
 
 > **Học phần:** Cơ sở dữ liệu NoSQL (Học kỳ 7 - Khóa 14DH)  
 > **Đơn vị:** Khoa Công nghệ Thông tin - Trường Đại học Công Thương TP. Hồ Chí Minh (HUIT)  
-> **Giảng viên hướng dẫn:** TS. Nguyễn Thị Định  
+> **Giảng viên hướng dẫn:** Bộ môn Hệ thống Thông tin - HUIT  
 > **Nhóm thực hiện:** Nhóm 18 (Lớp 14DHTH)  
 > **Trưởng nhóm & Kiến trúc sư:** Nguyễn Trọng Nguyên  
 > **Kho lưu trữ GitHub:** [https://github.com/nguyentrongnguyen3004-eng/DoAn_NoSQL_Elearning.git](https://github.com/nguyentrongnguyen3004-eng/DoAn_NoSQL_Elearning.git)

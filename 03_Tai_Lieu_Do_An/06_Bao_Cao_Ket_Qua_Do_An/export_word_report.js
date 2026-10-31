@@ -264,7 +264,7 @@ async function generateDocx() {
                     width: { size: 45, type: WidthType.PERCENTAGE },
                     children: [
                       p('GIẢNG VIÊN HƯỚNG DẪN:', { bold: true, size: 26, color: COLOR_PRIMARY }),
-                      p('TS. NGUYỄN THỊ ĐỊNH', { bold: true, size: 26 }),
+                      p('BỘ MÔN HỆ THỐNG THÔNG TIN', { bold: true, size: 26 }),
                       p('Bộ môn Hệ thống thông tin', { italics: true, size: 24 }),
                       p('Khoa Công nghệ thông tin', { italics: true, size: 24 })
                     ]
@@ -346,7 +346,7 @@ async function generateDocx() {
             'Lời đầu tiên, nhóm sinh viên thực hiện đề tài xin gửi lời tri ân sâu sắc nhất tới Ban Giám hiệu Trường Đại học Công Thương TP. Hồ Chí Minh (HUIT), Ban Chủ nhiệm Khoa Công nghệ Thông tin đã tạo điều kiện học tập và môi trường nghiên cứu thực hành công nghệ hiện đại.'
           ),
           p(
-            'Đặc biệt, nhóm chúng em xin gửi lời cảm ơn chân thành và sâu sắc nhất tới TS. Nguyễn Thị Định – giảng viên trực tiếp hướng dẫn học phần Dữ liệu NoSQL. Cô đã tận tình truyền đạt cho chúng em những nền tảng kiến thức quý báu về các mô hình cơ sở dữ liệu phi quan hệ, phương pháp tư duy mô hình hóa dữ liệu quy mô lớn và định hướng thiết kế kiến trúc phân tán. Những góp ý chuyên môn sát sao của Cô chính là kim chỉ nam giúp nhóm hoàn thiện đồ án này một cách toàn diện và đáp ứng tiêu chuẩn phần mềm thương mại thực chiến.'
+            'Đặc biệt, nhóm chúng em xin gửi lời cảm ơn chân thành và sâu sắc nhất tới Giảng viên phụ trách học phần Dữ liệu NoSQL – giảng viên trực tiếp hướng dẫn học phần Dữ liệu NoSQL. Giảng viên đã tận tình truyền đạt cho chúng em những nền tảng kiến thức quý báu về các mô hình cơ sở dữ liệu phi quan hệ, phương pháp tư duy mô hình hóa dữ liệu quy mô lớn và định hướng thiết kế kiến trúc phân tán. Những góp ý chuyên môn sát sao của Thầy/Cô chính là kim chỉ nam giúp nhóm hoàn thiện đồ án này một cách toàn diện và đáp ứng tiêu chuẩn phần mềm thương mại thực chiến.'
           ),
           p(
             'Mặc dù đã rất nỗ lực, đề tài khó tránh khỏi những thiếu sót nhất định. Nhóm kính mong tiếp tục nhận được những ý kiến đóng góp quý báu từ Cô và Hội đồng để sản phẩm ngày càng hoàn thiện hơn nữa.'

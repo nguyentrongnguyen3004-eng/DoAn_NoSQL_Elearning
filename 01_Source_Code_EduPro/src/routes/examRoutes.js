@@ -115,7 +115,7 @@ const safeRedis = {
     let zset = memoryStore.zsets.get(key);
     if (!zset || zset.size === 0) {
       return [
-        'TS. Nguyễn Thị Định (dinhnt)', '10.0',
+        'ThS. Hoàng Minh Đức (instructor_alex)', '10.0',
         'Nguyễn Trọng Nguyên (2001230589)', '9.5',
         'Phạm Nguyễn Khôi Nguyên (2001230578)', '8.8'
       ];

@@ -242,7 +242,7 @@ const newClassroomEngineCode = `    async function enterClassroom(courseId) {
             document.getElementById('classroom-badge-category').textContent = category || 'IELTS Academic Mastery';
           }
           if (document.getElementById('classroom-instructor-name')) {
-            document.getElementById('classroom-instructor-name').textContent = instructorName || 'TS. Nguyễn Thị Định (IELTS 8.5)';
+            document.getElementById('classroom-instructor-name').textContent = instructorName || 'Ban Chuyên Môn EduPro (IELTS 8.5+)';
           }
           if (document.getElementById('classroom-total-hours')) {
             document.getElementById('classroom-total-hours').textContent = \`\${durationHours || 48} giờ học thực chiến\`;

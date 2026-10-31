@@ -66,7 +66,7 @@ const memoryDiscussions = [
     createdAt: new Date(Date.now() - 7200000),
     replies: [
       {
-        authorName: 'TS. Nguyễn Thị Định (Giảng viên)',
+        authorName: 'Ban Chuyên Môn EduPro (Giảng viên)',
         authorRole: 'TEACHER',
         isVerified: true,
         content: 'Hoàn toàn chuẩn xác! Việc đưa cấu trúc Đảo ngữ điều kiện loại 3 (Third Conditional Inversion) vào đoạn Counter-argument giúp tiêu chí Grammatical Range & Accuracy dễ dàng chạm mốc Band 8.0+.',
@@ -1023,7 +1023,7 @@ router.get('/materials/:filename', async (req, res) => {
     
     // PDF 1.4 hop le tieu chuan mo duoc ngay tren Chrome/Edge/Adobe
     const pdfContent = `%PDF-1.4
-1 0 obj << /Title (${safeName}) /Author (TS. Nguyen Thi Dinh - EduPro English) >> endobj
+1 0 obj << /Title (${safeName}) /Author (Ban Chuyen Mon EduPro - IELTS 8.5+) >> endobj
 2 0 obj << /Type /Catalog /Pages 3 0 R >> endobj
 3 0 obj << /Type /Pages /Kids [4 0 R] /Count 1 >> endobj
 4 0 obj << /Type /Page /Parent 3 0 R /MediaBox [0 0 612 792] /Contents 5 0 R /Resources << /Font << /F1 6 0 R >> >> >> endobj
@@ -1037,7 +1037,7 @@ BT
 0 -36 Td
 (Giao trinh: ${safeName}) Tj
 0 -28 Td
-(Giang vien: TS. Nguyen Thi Dinh - IELTS 8.5) Tj
+(Giang vien: Ban Chuyen Mon EduPro - IELTS 8.5+) Tj
 0 -28 Td
 (Ban quyen thuoc ve He thong E-Learning NoSQL - Truong DH Cong Thuong TP.HCM HUIT) Tj
 0 -40 Td
@@ -1109,7 +1109,7 @@ router.post('/', authenticateToken, authorizeRoles('ADMIN', 'TEACHER'), async (r
       tagline: req.body.tagline || req.body.description || 'Khóa học Tiếng Anh tiêu chuẩn quốc tế tại EduPro English.',
       description: req.body.description || req.body.tagline || 'Chương trình đào tạo kỹ năng Tiếng Anh chuyên sâu.',
       category: req.body.category || 'IELTS Academic',
-      instructorName: req.user.fullName || 'TS. Nguyễn Thị Định (IELTS 8.5)',
+      instructorName: req.user.fullName || 'Ban Chuyên Môn EduPro (IELTS 8.5+)',
       price: Number(req.body.price) || 1290000,
       originalPrice: Number(req.body.originalPrice) || 1890000,
       durationHours: Number(req.body.durationHours) || 36,
@@ -1561,7 +1561,7 @@ router.post('/:id/discussions', authenticateToken, async (req, res) => {
       createdAt: new Date(),
       replies: isTeacher ? [] : [
         {
-          authorName: 'TS. Nguyễn Thị Định (IELTS 8.5 - Verified Instructor)',
+          authorName: 'Ban Chuyên Môn EduPro (IELTS 8.5+ - Verified Instructor)',
           authorRole: 'TEACHER',
           isVerified: true,
           content: 'Cảm ơn câu hỏi rất hay của em! Hãy áp dụng cấu trúc ngữ pháp học thuật này kết hợp với ví dụ thực tế trong IELTS Writing Task 2 để đạt điểm Grammatical Range Band 8.0 nhé.',
@@ -1858,7 +1858,7 @@ router.post('/dictation/cloze-submit', async (req, res) => {
 const memorySpeakingQueue = new Set();
 const memorySpeakingPvPLeaderboard = new Map([
   ['Nguyễn Trọng Nguyên (2001230589)', { wins: 14, score: 1420, title: 'IELTS Speaking Master' }],
-  ['TS. Nguyễn Thị Định (Instructor)', { wins: 22, score: 2180, title: 'Grandmaster 8.5' }],
+  ['Ban Chuyên Môn EduPro (Instructor)', { wins: 22, score: 2180, title: 'Grandmaster 8.5' }],
   ['Phạm Nguyễn Khôi Nguyên (2001230578)', { wins: 8, score: 860, title: 'Speaking Challenger' }],
   ['Võ Hoàng Long (2001230491)', { wins: 5, score: 540, title: 'Rising Speaker' }]
 ]);
@@ -2499,7 +2499,7 @@ router.get('/:id/certificate', authenticateToken, async (req, res) => {
         certificateId: certCode,
         studentName,
         courseTitle: course.title,
-        instructorName: course.instructorName || 'TS. Nguyễn Thị Định (IELTS 8.5)',
+        instructorName: course.instructorName || 'Ban Chuyên Môn EduPro (IELTS 8.5+)',
         issueDate,
         issuedBy: 'Khoa Ngoại ngữ & Bộ môn Hệ thống Thông tin - Trường ĐH Công Thương TP.HCM (HUIT)',
         grade: 'Xuất Sắc (Mastery Grade A+)',

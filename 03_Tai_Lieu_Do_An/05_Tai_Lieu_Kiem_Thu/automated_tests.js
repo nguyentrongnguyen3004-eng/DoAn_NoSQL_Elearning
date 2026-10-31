@@ -1,7 +1,7 @@
 /**
  * KICH BAN KIEM THU TOAN DIEN (AUTOMATED TEST SUITE - 17 TEST CASES)
  * De tai: E-learning & Online Examination Platform (100% NoSQL)
- * Giang vien huong dan: TS. Nguyen Thi Dinh - Khoa CNTT, HUIT
+ * Giang vien huong dan: Bo mon He thong Thong tin - Khoa CNTT, HUIT
  */
 
 const http = require('http');

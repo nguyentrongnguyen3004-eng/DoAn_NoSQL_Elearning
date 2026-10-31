@@ -68,7 +68,7 @@ router.get('/materials/:filename', async (req, res) => {
     
     // PDF 1.4 hop le tieu chuan mo duoc ngay tren Chrome/Edge/Adobe
     const pdfContent = \`%PDF-1.4
-1 0 obj << /Title (\${safeName}) /Author (TS. Nguyen Thi Dinh - EduPro English) >> endobj
+1 0 obj << /Title (\${safeName}) /Author (Ban Chuyen Mon EduPro - IELTS 8.5+) >> endobj
 2 0 obj << /Type /Catalog /Pages 3 0 R >> endobj
 3 0 obj << /Type /Pages /Kids [4 0 R] /Count 1 >> endobj
 4 0 obj << /Type /Page /Parent 3 0 R /MediaBox [0 0 612 792] /Contents 5 0 R /Resources << /Font << /F1 6 0 R >> >> >> endobj
@@ -82,7 +82,7 @@ BT
 0 -36 Td
 (Giao trinh: \${safeName}) Tj
 0 -28 Td
-(Giang vien: TS. Nguyen Thi Dinh - IELTS 8.5) Tj
+(Giang vien: Ban Chuyen Mon EduPro - IELTS 8.5+) Tj
 0 -28 Td
 (Ban quyen thuoc ve He thong E-Learning NoSQL - Truong DH Cong Thuong TP.HCM HUIT) Tj
 0 -40 Td
@@ -126,7 +126,7 @@ router.get('/:id/certificate', authenticateToken, async (req, res) => {
         certificateId: certCode,
         studentName,
         courseTitle: course.title,
-        instructorName: course.instructorName || 'TS. Nguyễn Thị Định (IELTS 8.5)',
+        instructorName: course.instructorName || 'Ban Chuyên Môn EduPro (IELTS 8.5+)',
         issueDate,
         issuedBy: 'Khoa Ngoại ngữ & Bộ môn Hệ thống Thông tin - Trường ĐH Công Thương TP.HCM (HUIT)',
         grade: 'Xuất Sắc (Mastery Grade A+)',

@@ -219,7 +219,7 @@ const docChildren = [
           new TableCell({
             borders: { top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE } },
             children: [
-              p([new TextRun({ text: 'Giảng viên hướng dẫn: ', bold: true, font: FONT_NAME, size: 26 }), new TextRun({ text: 'TS. Nguyễn Thị Định', font: FONT_NAME, size: 26 })]),
+              p([new TextRun({ text: 'Giảng viên hướng dẫn: ', bold: true, font: FONT_NAME, size: 26 }), new TextRun({ text: 'Bộ môn Hệ thống Thông tin', font: FONT_NAME, size: 26 })]),
               p([new TextRun({ text: 'Nhóm sinh viên thực hiện: ', bold: true, font: FONT_NAME, size: 26 }), new TextRun({ text: 'Nhóm 18', font: FONT_NAME, size: 26 })]),
               p([new TextRun({ text: '1. Nguyễn Trọng Nguyên', font: FONT_NAME, size: 26 }), new TextRun({ text: ' - MSSV: 2001230589 (Nhóm trưởng)', bold: true, font: FONT_NAME, size: 26 })]),
               p([new TextRun({ text: '2. Phạm Nguyễn Khôi Nguyên', font: FONT_NAME, size: 26 }), new TextRun({ text: ' - MSSV: 2001230578', font: FONT_NAME, size: 26 })]),
@@ -303,7 +303,7 @@ db.courses.createIndex(
   "title": "Cơ Sở Dữ Liệu NoSQL & Phân Tích Dữ Liệu Lớn",
   "category": "Database",
   "level": "Chuyên ngành",
-  "instructor": "TS. Nguyễn Thị Định",
+  "instructor": "Bộ môn Hệ thống Thông tin",
   "durationHours": 45,
   "lessonsCount": 5,
   "status": "PUBLISHED",

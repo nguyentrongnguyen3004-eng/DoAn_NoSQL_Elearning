@@ -46,7 +46,7 @@ const newSectionClassroom = `  <!-- ============================================
                 <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-brand-500 to-indigo-600 flex items-center justify-center text-white font-bold text-[11px] ring-2 ring-white/20">
                   <i class="fa-solid fa-chalkboard-user"></i>
                 </div>
-                <span>Giảng viên: <strong class="text-white" id="classroom-instructor-name">TS. Nguyễn Thị Định (IELTS 8.5)</strong></span>
+                <span>Giảng viên: <strong class="text-white" id="classroom-instructor-name">Ban Chuyên Môn EduPro (IELTS 8.5+)</strong></span>
               </div>
               <span class="text-slate-500 hidden sm:inline">•</span>
               <div class="flex items-center gap-1.5 text-slate-300">
@@ -384,7 +384,7 @@ const newSectionClassroom = `  <!-- ============================================
               </div>
               <div>
                 <div class="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
-                  <span>TS. Nguyễn Thị Định</span>
+                  <span>Ban Chuyên Môn EduPro</span>
                   <i class="fa-solid fa-circle-check text-brand-600 text-[11px]" title="Verified Lecturer"></i>
                 </div>
                 <div class="text-[11px] text-brand-600 dark:text-indigo-400 font-bold">IELTS 8.5 • Trưởng Bộ môn</div>

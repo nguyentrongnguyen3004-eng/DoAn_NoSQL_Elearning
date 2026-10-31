@@ -179,7 +179,7 @@ def build_document():
     p_info.paragraph_format.space_before = Pt(14)
     p_info.paragraph_format.space_after = Pt(14)
     r_info = p_info.add_run(
-        "• Giảng viên hướng dẫn: TS. Nguyễn Thị Định\n"
+        "• Giảng viên hướng dẫn: Giảng viên Bộ môn Hệ thống Thông tin\n"
         "• Đơn vị đào tạo: Khoa Công nghệ Thông tin - Trường ĐH Công Thương TP.HCM (HUIT)\n"
         "• Nhóm sinh viên thực hiện: Nhóm 18 (Lớp 14DHTH)\n"
         "   1. Nguyễn Trọng Nguyên (MSSV: 2001230589) — Trưởng nhóm / Kiến trúc sư trưởng (Lead Architect)\n"
@@ -556,7 +556,7 @@ def build_document():
     add_h1("4. HƯỚNG DẪN MỞ CÔNG CỤ GIAO DIỆN (GUI) & TRUY VẤN DEMO KHI BẢO VỆ")
     
     add_p(
-        "Khi bảo vệ đồ án trước Hội đồng / Giảng viên hướng dẫn (TS. Nguyễn Thị Định), sinh viên có thể khởi động nhanh "
+        "Khi bảo vệ đồ án trước Hội đồng / Giảng viên hướng dẫn (Giảng viên phụ trách), sinh viên có thể khởi động nhanh "
         "toàn bộ 4 phần mềm quản trị CSDL bằng cách chạy tệp Mo_4_Phan_Mem_CSDL.bat tại thư mục gốc (hoặc bấm phím A để mở tất cả). "
         "Bảng 1.3 cung cấp hướng dẫn thao tác chi tiết và câu lệnh truy vấn mẫu cho từng phần mềm:",
         bold_prefix="Quy trình minh chứng thực tế: "
@@ -656,9 +656,14 @@ def build_document():
     # Lưu tài liệu ra nhiều đường dẫn
     print("Đang tiến hành lưu tài liệu Word...")
     for out_path in OUTPUT_PATHS:
-        os.makedirs(os.path.dirname(out_path), exist_ok=True)
-        doc.save(out_path)
-        print(f" -> Đã xuất thành công: {out_path}")
+        try:
+            os.makedirs(os.path.dirname(out_path), exist_ok=True)
+            doc.save(out_path)
+            print(f" -> Đã xuất thành công: {out_path}")
+        except PermissionError:
+            alt_path = out_path.replace(".docx", "_UPDATED.docx")
+            doc.save(alt_path)
+            print(f" -> File đang được mở trong Word ({out_path}), đã lưu bản mới sạch tại: {alt_path}")
 
 if __name__ == "__main__":
     build_document()

@@ -196,7 +196,7 @@ def add_cover_page(doc, helpers, is_main_cover=True):
     col_w = [Cm(5.0), Cm(10.0)]
     
     info_data = [
-        ("Giảng viên hướng dẫn:", "TS. Nguyễn Thị Định"),
+        ("Giảng viên hướng dẫn:", "Bộ môn Hệ thống Thông tin"),
         ("Sinh viên thực hiện:", "1. Nguyễn Trọng Nguyên  - MSSV: 2001230589 (Trưởng nhóm)\n2. Phạm Nguyễn Khôi Nguyên - MSSV: 2001230578\n3. Võ Huỳnh Gia Huy    - MSSV: 2001230303"),
         ("Lớp học phần:", "14DHTH"),
         ("Khóa học:", "14 (2023 - 2027)"),
@@ -258,7 +258,7 @@ def add_acknowledgements(doc, helpers):
     )
     
     helpers['add_paragraph_huit'](doc, 
-        "Trước hết, nhóm chúng em xin gửi lời cảm ơn chân thành, sâu sắc và lòng kính trọng nhất tới TS. Nguyễn Thị Định – giảng viên trực tiếp giảng dạy và tận tâm hướng dẫn học phần Dữ liệu NoSQL (Mã HP: 01201073). Trong suốt quá trình thực hiện đồ án, Cô đã luôn dành nhiều thời gian quý báu để định hướng phương pháp tiếp cận đề tài, truyền đạt những nền tảng tri thức chuyên sâu về cơ sở dữ liệu phi quan hệ và các kiến trúc phân tán hiện đại. Những lời góp ý khoa học, thực tiễn và sự chỉ dẫn ân cần của Cô chính là kim chỉ nam giúp nhóm vượt qua các rào cản kỹ thuật phức tạp, hoàn thiện sản phẩm đúng tiến độ và nâng cao chất lượng học thuật của toàn bộ công trình."
+        "Trước hết, nhóm chúng em xin gửi lời cảm ơn chân thành, sâu sắc và lòng kính trọng nhất tới Bộ môn Hệ thống Thông tin – giảng viên trực tiếp giảng dạy và tận tâm hướng dẫn học phần Dữ liệu NoSQL (Mã HP: 01201073). Trong suốt quá trình thực hiện đồ án, Thầy/Cô đã luôn dành nhiều thời gian quý báu để định hướng phương pháp tiếp cận đề tài, truyền đạt những nền tảng tri thức chuyên sâu về cơ sở dữ liệu phi quan hệ và các kiến trúc phân tán hiện đại. Những lời góp ý khoa học, thực tiễn và sự chỉ dẫn ân cần của Giảng viên chính là kim chỉ nam giúp nhóm vượt qua các rào cản kỹ thuật phức tạp, hoàn thiện sản phẩm đúng tiến độ và nâng cao chất lượng học thuật của toàn bộ công trình."
     )
     
     helpers['add_paragraph_huit'](doc, 
@@ -304,7 +304,7 @@ def add_advisor_review(doc, helpers):
     helpers['add_heading_chapter'](doc, "NHẬN XÉT CỦA GIẢNG VIÊN HƯỚNG DẪN")
     
     helpers['add_paragraph_huit'](doc, 
-        "Cán bộ hướng dẫn: TS. Nguyễn Thị Định\n"
+        "Cán bộ hướng dẫn: Bộ môn Hệ thống Thông tin\n"
         "Đơn vị công tác: Khoa Công nghệ Thông tin - Trường Đại học Công Thương TP. Hồ Chí Minh\n"
         "Học phần: Dữ liệu NoSQL (Mã HP: 01201073)\n"
         "Tên đề tài: Nền tảng E-Learning & Khảo sát năng lực tiếng Anh thực chiến tích hợp đa mô hình NoSQL (EduPro Academy)\n"
@@ -358,7 +358,7 @@ def add_advisor_review(doc, helpers):
     r_gv.bold = True
     r_gv.font.color.rgb = BLACK
     
-    r_name = p_sign.add_run("TS. Nguyễn Thị Định")
+    r_name = p_sign.add_run("Bộ môn Hệ thống Thông tin")
     r_name.font.name = 'Times New Roman'
     r_name.font.size = Pt(13)
     r_name.bold = True
