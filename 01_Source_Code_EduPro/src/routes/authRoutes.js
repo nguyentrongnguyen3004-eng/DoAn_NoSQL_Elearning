@@ -119,7 +119,8 @@ router.post('/login', async (req, res) => {
     // Mapping linh hoạt giữa alias thương mại và MSSV
     let targetUsername = username;
     if (username === 'student_nguyen') targetUsername = '2001230589';
-    if (username === 'student_khoi') targetUsername = '2001230578';
+    if (username === 'student_khoi') targetUsername = '2001230578';
+    if (username === 'student_huy') targetUsername = '2001230303';
     if (username === 'instructor_alex') targetUsername = 'dinhnt';
 
     const query = {
@@ -282,7 +283,7 @@ router.post('/register', async (req, res) => {
       fullName: fullName.trim(),
       email: cleanEmail,
       passwordHash: passwordHash,
-      role: role === 'TEACHER' ? 'TEACHER' : 'STUDENT',
+      role: 'STUDENT',
       avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${cleanUsername}`,
       status: 'ACTIVE',
       createdAt: new Date()
@@ -447,8 +448,8 @@ router.put('/users/:id/role', async (req, res) => {
     const { ObjectId } = require('mongodb');
     const db = getMongoDb();
 
-    if (!['STUDENT', 'TEACHER', 'ADMIN'].includes(role)) {
-      return res.status(400).json({ success: false, message: 'Role không hợp lệ. Chọn STUDENT, TEACHER hoặc ADMIN.' });
+    if (!['STUDENT', 'ADMIN'].includes(role)) {
+      return res.status(400).json({ success: false, message: 'Role không hợp lệ. Chỉ chấp nhận STUDENT hoặc ADMIN.' });
     }
 
     if (!db) {

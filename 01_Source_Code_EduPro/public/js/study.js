@@ -2163,10 +2163,9 @@ In conclusion, modern advertising has devolved from benign commercial notificati
           </td>
           <td class="py-3.5 px-4 text-xs font-mono text-slate-600 dark:text-slate-300">${u.email || 'N/A'}</td>
           <td class="py-3.5 px-4">
-            <select onchange="updateUserRole('${u._id}', this.value)" class="px-2.5 py-1.5 rounded-xl text-xs font-bold outline-none border transition-all cursor-pointer ${u.role === 'ADMIN' ? 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 border-purple-300 dark:border-purple-800' : u.role === 'TEACHER' ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'}">
-              <option value="STUDENT" ${u.role === 'STUDENT' ? 'selected' : ''}>STUDENT (Học viên)</option>
-              <option value="TEACHER" ${u.role === 'TEACHER' ? 'selected' : ''}>TEACHER (Giảng viên)</option>
-              <option value="ADMIN" ${u.role === 'ADMIN' ? 'selected' : ''}>ADMIN (Quản trị viên)</option>
+            <select onchange="updateUserRole('${u._id}', this.value)" class="px-2.5 py-1.5 rounded-xl text-xs font-bold outline-none border transition-all cursor-pointer ${u.role === 'ADMIN' ? 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 border-purple-300 dark:border-purple-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'}">
+              <option value="STUDENT" ${u.role === 'STUDENT' ? 'selected' : ''}>Người dùng (Học viên)</option>
+              <option value="ADMIN" ${u.role === 'ADMIN' ? 'selected' : ''}>Quản trị viên (ADMIN)</option>
             </select>
           </td>
           <td class="py-3.5 px-4 text-center">

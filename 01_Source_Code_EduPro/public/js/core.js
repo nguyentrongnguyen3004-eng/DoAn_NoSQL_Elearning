@@ -819,8 +819,7 @@ var API_BASE = window.API_BASE;
       const otp = document.getElementById('reg-otp').value.trim();
       const password = document.getElementById('reg-password').value;
       const confirmPassword = document.getElementById('reg-confirm-password').value;
-      const roleElem = document.querySelector('input[name="reg-role"]:checked');
-      const role = roleElem ? roleElem.value : 'STUDENT';
+      const role = 'STUDENT';
       const submitBtn = document.getElementById('btn-submit-register');
 
       if (!fullName || !username || !email) {
@@ -942,14 +941,13 @@ var API_BASE = window.API_BASE;
 
         const roleMap = {
           ADMIN: 'Quản trị viên (Admin)',
-          TEACHER: 'Giảng viên',
-          STUDENT: 'Học viên'
+          STUDENT: 'Người dùng (Học viên)'
         };
         document.getElementById('nav-user-name').textContent = currentUser.fullName;
         document.getElementById('nav-user-role').textContent = roleMap[currentUser.role] || 'Học viên';
         document.getElementById('nav-user-avatar').src = currentUser.avatar || (currentUser.role === 'ADMIN' ? 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80' : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80');
 
-        if (currentUser.role === 'TEACHER' || currentUser.role === 'ADMIN') {
+        if (currentUser.role === 'ADMIN') {
           document.getElementById('nav-btn-analytics').classList.remove('hidden');
           if (mobileAnalyticsBtn) mobileAnalyticsBtn.classList.remove('hidden');
         } else {
