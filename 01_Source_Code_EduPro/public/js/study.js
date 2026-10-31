@@ -2066,28 +2066,91 @@ In conclusion, modern advertising has devolved from benign commercial notificati
 
     // --- PHÂN HỆ QUẢN TRỊ VIÊN: QUẢN LÝ TÀI KHOẢN & PHÂN QUYỀN HỆ THỐNG (ROLE ADMIN - MONGODB) ---
     let rawAdminUsersList = [];
+    let filteredAdminUsersList = [];
     let adminUsersCurrentPage = 1;
     const ADMIN_USERS_PAGE_SIZE = 5;
+
+    function applyAdminUsersFilters() {
+      const keyword = (document.getElementById('admin-users-search-input')?.value || '').trim().toLowerCase();
+      const roleFilter = document.getElementById('admin-users-filter-role')?.value || 'ALL';
+      const sortBy = document.getElementById('admin-users-sort-by')?.value || 'name_asc';
+
+      let list = [...rawAdminUsersList];
+
+      // 1. Tìm kiếm theo họ tên, username hoặc email
+      if (keyword) {
+        list = list.filter(u => {
+          const name = (u.fullName || '').toLowerCase();
+          const user = (u.username || '').toLowerCase();
+          const mail = (u.email || '').toLowerCase();
+          return name.includes(keyword) || user.includes(keyword) || mail.includes(keyword);
+        });
+      }
+
+      // 2. Lọc theo vai trò (Role)
+      if (roleFilter !== 'ALL') {
+        list = list.filter(u => u.role === roleFilter);
+      }
+
+      // 3. Sắp xếp
+      list.sort((a, b) => {
+        if (sortBy === 'name_asc') {
+          return (a.fullName || a.username || '').localeCompare(b.fullName || b.username || '', 'vi');
+        } else if (sortBy === 'name_desc') {
+          return (b.fullName || b.username || '').localeCompare(a.fullName || a.username || '', 'vi');
+        } else if (sortBy === 'date_desc') {
+          return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+        } else if (sortBy === 'date_asc') {
+          return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+        }
+        return 0;
+      });
+
+      filteredAdminUsersList = list;
+
+      const badge = document.getElementById('admin-users-count-badge');
+      if (badge) {
+        if (list.length === rawAdminUsersList.length) {
+          badge.innerText = `${list.length} tài khoản trong CSDL`;
+        } else {
+          badge.innerText = `${list.length} / ${rawAdminUsersList.length} tài khoản phù hợp`;
+        }
+      }
+
+      renderAdminUsersTablePage(1);
+    }
+    window.applyAdminUsersFilters = applyAdminUsersFilters;
+
+    function resetAdminUsersFilters() {
+      const sInput = document.getElementById('admin-users-search-input');
+      const sRole = document.getElementById('admin-users-filter-role');
+      const sSort = document.getElementById('admin-users-sort-by');
+      if (sInput) sInput.value = '';
+      if (sRole) sRole.value = 'ALL';
+      if (sSort) sSort.value = 'name_asc';
+      applyAdminUsersFilters();
+    }
+    window.resetAdminUsersFilters = resetAdminUsersFilters;
 
     function renderAdminUsersTablePage(page = 1) {
       adminUsersCurrentPage = page;
       const tbody = document.getElementById('admin-users-table-body');
       if (!tbody) return;
-      if (!rawAdminUsersList || rawAdminUsersList.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-slate-400">Không tìm thấy tài khoản nào.</td></tr>';
+      if (!filteredAdminUsersList || filteredAdminUsersList.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-slate-400">Không tìm thấy tài khoản nào phù hợp với bộ lọc.</td></tr>';
         if (typeof buildPaginationControls === 'function') {
           buildPaginationControls('admin-users-pagination', 1, 0, 0, ADMIN_USERS_PAGE_SIZE, 'changeAdminUsersPage');
         }
         return;
       }
 
-      const total = rawAdminUsersList.length;
+      const total = filteredAdminUsersList.length;
       const totalPages = Math.ceil(total / ADMIN_USERS_PAGE_SIZE);
       if (adminUsersCurrentPage > totalPages) adminUsersCurrentPage = totalPages;
       if (adminUsersCurrentPage < 1) adminUsersCurrentPage = 1;
 
       const start = (adminUsersCurrentPage - 1) * ADMIN_USERS_PAGE_SIZE;
-      const pageItems = rawAdminUsersList.slice(start, start + ADMIN_USERS_PAGE_SIZE);
+      const pageItems = filteredAdminUsersList.slice(start, start + ADMIN_USERS_PAGE_SIZE);
 
       tbody.innerHTML = pageItems.map(u => `
         <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
@@ -2134,10 +2197,8 @@ In conclusion, modern advertising has devolved from benign commercial notificati
         const res = await fetch(`${API_BASE}/auth/users`);
         const json = await res.json();
         if (json.success && Array.isArray(json.data)) {
-          const badge = document.getElementById('admin-users-count-badge');
-          if (badge) badge.innerText = `${json.total || json.data.length} tài khoản trong CSDL`;
           rawAdminUsersList = json.data;
-          renderAdminUsersTablePage(1);
+          applyAdminUsersFilters();
         }
       } catch (e) {
         console.error('Lỗi load users:', e);

@@ -1200,33 +1200,138 @@ var API_BASE = window.API_BASE;
     let chartGradeInstance = null;
     let chartTopicInstance = null;
 
-    // --- PHÂN TRANG DANH SÁCH BÀI NỘP GẦN ĐÂY (ANALYTICS SUBMISSIONS) ---
+    // --- BỘ LỌC NÂNG CAO, TÌM KIẾM, SẮP XẾP & PHÂN TRANG DANH SÁCH BÀI NỘP GẦN ĐÂY ---
     let rawAnalyticsSubmissionsList = [];
+    let filteredAnalyticsSubmissionsList = [];
     let analyticsCurrentPage = 1;
     const ANALYTICS_PAGE_SIZE = 6;
+
+    function applyAnalyticsFilters() {
+      const searchKeyword = (document.getElementById('analytics-search-input')?.value || '').trim().toLowerCase();
+      const statusFilter = document.getElementById('analytics-filter-status')?.value || 'ALL';
+      const scoreFilter = document.getElementById('analytics-filter-score')?.value || 'ALL';
+      const sortBy = document.getElementById('analytics-sort-by')?.value || 'time_desc';
+
+      let list = [...rawAnalyticsSubmissionsList];
+
+      // 1. Tìm kiếm theo từ khóa (Mã sinh viên / Tài khoản / Họ tên)
+      if (searchKeyword) {
+        list = list.filter(s => {
+          const code = (s.studentCode || '').toLowerCase();
+          const name = (s.studentName || '').toLowerCase();
+          return code.includes(searchKeyword) || name.includes(searchKeyword);
+        });
+      }
+
+      // 2. Lọc theo kết quả (ĐẠT / KHÔNG ĐẠT)
+      if (statusFilter === 'PASS') {
+        list = list.filter(s => Number(s.score) >= 5.0);
+      } else if (statusFilter === 'FAIL') {
+        list = list.filter(s => Number(s.score) < 5.0);
+      }
+
+      // 3. Lọc theo mức điểm
+      if (scoreFilter === 'EXCELLENT') {
+        list = list.filter(s => Number(s.score) >= 8.5);
+      } else if (scoreFilter === 'GOOD') {
+        list = list.filter(s => Number(s.score) >= 7.0 && Number(s.score) < 8.5);
+      } else if (scoreFilter === 'AVERAGE') {
+        list = list.filter(s => Number(s.score) >= 5.0 && Number(s.score) < 7.0);
+      } else if (scoreFilter === 'WEAK') {
+        list = list.filter(s => Number(s.score) < 5.0);
+      }
+
+      // 4. Sắp xếp theo các trường dữ liệu
+      list.sort((a, b) => {
+        if (sortBy === 'time_desc') {
+          return new Date(b.submittedAt) - new Date(a.submittedAt);
+        } else if (sortBy === 'time_asc') {
+          return new Date(a.submittedAt) - new Date(b.submittedAt);
+        } else if (sortBy === 'score_desc') {
+          return Number(b.score) - Number(a.score);
+        } else if (sortBy === 'score_asc') {
+          return Number(a.score) - Number(b.score);
+        } else if (sortBy === 'name_asc') {
+          return (a.studentName || '').localeCompare(b.studentName || '', 'vi');
+        } else if (sortBy === 'name_desc') {
+          return (b.studentName || '').localeCompare(a.studentName || '', 'vi');
+        }
+        return 0;
+      });
+
+      filteredAnalyticsSubmissionsList = list;
+
+      // Cập nhật huy hiệu đếm
+      const countBadge = document.getElementById('analytics-filter-count-badge');
+      if (countBadge) {
+        if (list.length === rawAnalyticsSubmissionsList.length) {
+          countBadge.innerText = `${list.length} bài nộp`;
+        } else {
+          countBadge.innerText = `${list.length} / ${rawAnalyticsSubmissionsList.length} bài nộp phù hợp`;
+        }
+      }
+
+      // Render lại trang 1
+      renderAnalyticsSubmissionsTablePage(1);
+    }
+    window.applyAnalyticsFilters = applyAnalyticsFilters;
+
+    function resetAnalyticsFilters() {
+      const sInput = document.getElementById('analytics-search-input');
+      const sStatus = document.getElementById('analytics-filter-status');
+      const sScore = document.getElementById('analytics-filter-score');
+      const sSort = document.getElementById('analytics-sort-by');
+      if (sInput) sInput.value = '';
+      if (sStatus) sStatus.value = 'ALL';
+      if (sScore) sScore.value = 'ALL';
+      if (sSort) sSort.value = 'time_desc';
+      applyAnalyticsFilters();
+    }
+    window.resetAnalyticsFilters = resetAnalyticsFilters;
+
+    function toggleAnalyticsSort(column) {
+      const sortSelect = document.getElementById('analytics-sort-by');
+      if (!sortSelect) return;
+      if (column === 'score') {
+        sortSelect.value = sortSelect.value === 'score_desc' ? 'score_asc' : 'score_desc';
+      } else if (column === 'name') {
+        sortSelect.value = sortSelect.value === 'name_asc' ? 'name_desc' : 'name_asc';
+      } else if (column === 'time') {
+        sortSelect.value = sortSelect.value === 'time_desc' ? 'time_asc' : 'time_desc';
+      } else if (column === 'account') {
+        sortSelect.value = sortSelect.value === 'name_asc' ? 'name_desc' : 'name_asc';
+      } else if (column === 'status') {
+        const statusFilter = document.getElementById('analytics-filter-status');
+        if (statusFilter) {
+          statusFilter.value = statusFilter.value === 'PASS' ? 'FAIL' : (statusFilter.value === 'FAIL' ? 'ALL' : 'PASS');
+        }
+      }
+      applyAnalyticsFilters();
+    }
+    window.toggleAnalyticsSort = toggleAnalyticsSort;
 
     function renderAnalyticsSubmissionsTablePage(page = 1) {
       analyticsCurrentPage = page;
       const tbody = document.getElementById('analytics-table-body');
       if (!tbody) return;
-      if (!rawAnalyticsSubmissionsList || rawAnalyticsSubmissionsList.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-slate-400">Chưa có bài nộp nào.</td></tr>';
+      if (!filteredAnalyticsSubmissionsList || filteredAnalyticsSubmissionsList.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-slate-400">Không tìm thấy bài nộp nào phù hợp với bộ lọc hiện tại.</td></tr>';
         buildPaginationControls('analytics-pagination', 1, 0, 0, ANALYTICS_PAGE_SIZE, 'changeAnalyticsPage');
         return;
       }
 
-      const total = rawAnalyticsSubmissionsList.length;
+      const total = filteredAnalyticsSubmissionsList.length;
       const totalPages = Math.ceil(total / ANALYTICS_PAGE_SIZE);
       if (analyticsCurrentPage > totalPages) analyticsCurrentPage = totalPages;
       if (analyticsCurrentPage < 1) analyticsCurrentPage = 1;
 
       const start = (analyticsCurrentPage - 1) * ANALYTICS_PAGE_SIZE;
-      const pageItems = rawAnalyticsSubmissionsList.slice(start, start + ANALYTICS_PAGE_SIZE);
+      const pageItems = filteredAnalyticsSubmissionsList.slice(start, start + ANALYTICS_PAGE_SIZE);
 
       let html = '';
       pageItems.forEach(sub => {
         const timeStr = new Date(sub.submittedAt).toLocaleDateString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-        const isPass = sub.score >= 5.0;
+        const isPass = Number(sub.score) >= 5.0;
         html += `
           <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
             <td class="py-4 px-4 font-mono text-xs font-semibold text-slate-500">${sub.studentCode}</td>
@@ -1270,7 +1375,7 @@ var API_BASE = window.API_BASE;
           renderAnalyticsCharts(submissions || []);
 
           rawAnalyticsSubmissionsList = submissions || [];
-          renderAnalyticsSubmissionsTablePage(1);
+          applyAnalyticsFilters();
         }
       } catch (err) {
         console.error('Lỗi tải analytics:', err);
