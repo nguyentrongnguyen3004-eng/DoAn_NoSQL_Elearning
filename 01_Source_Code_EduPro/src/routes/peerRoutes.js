@@ -27,10 +27,16 @@ router.get('/study-buddies', async (req, res) => {
     if (neo4jDriver) {
       const session = neo4jDriver.session();
       try {
+        // CYPHER TỐI ƯU TRÁNH SUPERNODE & CO-ENROLLMENT GRAPH FILTERING
         const cypher = `
-          MATCH (u:User)
-          WHERE u.id <> $userId
-          RETURN u.id AS id, u.fullName AS fullName, u.targetBand AS targetBand, u.avatar AS avatar
+          MATCH (me:User {id: $userId})
+          OPTIONAL MATCH (me)-[:ENROLLED_IN]->(c:Course)
+          WHERE COUNT { (c)<-[:ENROLLED_IN]-() } < 10000
+          OPTIONAL MATCH (c)<-[:ENROLLED_IN]-(peer:User)
+          WHERE peer.id <> $userId
+          WITH coalesce(peer, me) AS candidate, count(c) AS sharedCourses
+          WHERE candidate.id <> $userId
+          RETURN candidate.id AS id, candidate.fullName AS fullName, candidate.targetBand AS targetBand, candidate.avatar AS avatar
           LIMIT 4;
         `;
         const res = await session.run(cypher, { userId: user.id });

@@ -195,12 +195,80 @@ openCertificateModal = async function (certData = null) {
   } catch (e) { m2Error(e); }
 };
 function m2OpenVerify(certId = '') {
-  m2Modal('modal-verify-certificate', 'Tra cứu chứng chỉ', `<form onsubmit="event.preventDefault();m2Verify()"><label>Mã chứng chỉ<input id="m2-cert-input" required value="${esc(certId)}"></label><button class="m2-btn">Tra cứu</button></form><div id="m2-verify-result" aria-live="polite"></div>`);
+  const sampleCerts = [
+    { id: 'EDUPRO-d7e8e72f-be96-4b9f-925a-67604dc90164', label: 'Nguyễn Trọng Nguyên (C1 - 10/10)' },
+    { id: 'EDUPRO-5be6ed39-37ca-454e-b6ee-2ead7e972c67', label: 'Nguyễn Trọng Nguyên (B2 - 8.8/10)' }
+  ];
+
+  m2Modal('modal-verify-certificate', 'Tra Cứu & Xác Thực Chứng Chỉ Quốc Tế', `
+    <div style="font-size:13px;color:#64748b;margin-bottom:14px;line-height:1.5">
+      Hệ thống tra cứu tính hợp lệ của <strong>Chứng chỉ Năng lực Tiếng Anh Quốc tế (CEFR A1 - C2)</strong> cấp bởi EduPro Academy.
+      Dữ liệu chứng chỉ được đồng bộ và xác thực tính toàn vẹn bằng hàm băm mật mã <strong>SHA-256</strong> trên cơ sở dữ liệu <strong>MongoDB</strong>.
+    </div>
+
+    <form onsubmit="event.preventDefault();m2Verify()" style="margin-bottom:12px">
+      <label style="font-weight:700;margin-bottom:6px;display:block">Nhập Mã Chứng Chỉ (Certificate ID):
+        <input id="m2-cert-input" required placeholder="Ví dụ: EDUPRO-d7e8e72f-be96-4b9f-925a-67604dc90164" value="${esc(certId)}" style="margin-top:6px;font-family:monospace">
+      </label>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+        <button class="m2-btn" type="submit" style="background:#4f46e5;color:white;border:none;padding:10px 20px;border-radius:12px;font-weight:700">🔍 Tra Cứu Ngay</button>
+      </div>
+    </form>
+
+    <div style="background:#f8fafc;padding:12px 14px;border-radius:12px;border:1px dashed #cbd5e1;margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:6px">💡 Mã chứng chỉ mẫu sẵn có trong CSDL để thử nghiệm:</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        ${sampleCerts.map(sc => `<button type="button" onclick="document.getElementById('m2-cert-input').value='${sc.id}';m2Verify()" style="background:#fff;border:1px solid #cbd5e1;padding:5px 10px;border-radius:8px;font-size:12px;cursor:pointer;font-weight:600;color:#334155;text-align:left">🎯 ${sc.label}</button>`).join('')}
+      </div>
+    </div>
+
+    <div id="m2-verify-result" aria-live="polite"></div>
+  `);
   if (certId) m2Verify();
 }
+
 async function m2Verify() {
-  const box = document.getElementById('m2-verify-result'); box.textContent = 'Đang tra cứu…';
-  try { const c = await m2Api(`/exams/certificates/verify/${encodeURIComponent(document.getElementById('m2-cert-input').value.trim())}`); box.innerHTML = `<article class="m2-card"><h3 style="color:#15803d">🛡 Chứng chỉ hợp lệ</h3><p>${esc(c.studentName)}</p><p>${esc(c.examTitle)}</p><p>${c.score}/10 · CEFR ${esc(c.cefrLevel)}</p><p>Ngày cấp: ${new Date(c.issuedDate).toLocaleDateString('vi-VN')}</p><small style="overflow-wrap:anywhere">SHA-256: ${esc(c.verifyHash)}</small></article>`; } catch (e) { box.textContent = e.message; }
+  const box = document.getElementById('m2-verify-result');
+  const inputVal = (document.getElementById('m2-cert-input')?.value || '').trim();
+  if (!inputVal) {
+    box.innerHTML = '<div style="color:#e11d48;font-weight:700">Vui lòng nhập mã chứng chỉ cần tra cứu.</div>';
+    return;
+  }
+  box.innerHTML = '<div style="padding:15px;color:#4f46e5;font-weight:700">⏳ Đang truy vấn MongoDB và xác thực chữ ký số SHA-256…</div>';
+  try {
+    const c = await m2Api(`/exams/certificates/verify/${encodeURIComponent(inputVal)}`);
+    box.innerHTML = `
+      <article class="m2-card" style="border:2px solid #22c55e;background:#f0fdf4;padding:18px;border-radius:16px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+          <span style="background:#22c55e;color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900">✓</span>
+          <h3 style="color:#15803d;font-size:16px;font-weight:800;margin:0">CHỨNG CHỈ HỢP LỆ VÀ ĐÃ ĐƯỢC XÁC THỰC</h3>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px;color:#1e293b;margin-bottom:12px">
+          <div><strong>Họ và tên:</strong> ${esc(c.studentName)}</div>
+          <div><strong>Mã chứng chỉ:</strong> <span style="font-family:monospace;font-weight:700;color:#047857">${esc(c.certId)}</span></div>
+          <div><strong>Kỳ thi hoàn thành:</strong> ${esc(c.examTitle)}</div>
+          <div><strong>Kết quả đạt được:</strong> <span style="font-weight:800;color:#16a34a">${c.score}/10 — CEFR ${esc(c.cefrLevel)}</span></div>
+          <div><strong>Ngày cấp chứng chỉ:</strong> ${new Date(c.issuedDate).toLocaleDateString('vi-VN')}</div>
+          <div><strong>Cơ quan cấp:</strong> EduPro Global Examination Council</div>
+        </div>
+        <div style="padding:8px 12px;background:#e2e8f0;border-radius:8px;font-size:11px;font-family:monospace;color:#334155;word-break:break-all">
+          <strong>SHA-256 Verify Hash:</strong> ${esc(c.verifyHash)}
+        </div>
+        <div style="margin-top:12px;text-align:right">
+          <button type="button" onclick="m2OpenCertificate({ certificateId: '${c.certId}' })" style="background:#059669;color:white;border:none;padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">📜 Xem Bản In Chứng Chỉ Đầy Đủ & QR</button>
+        </div>
+      </article>
+    `;
+  } catch (e) {
+    box.innerHTML = `
+      <article class="m2-card" style="border:2px solid #f43f5e;background:#fff1f2;padding:16px;border-radius:16px">
+        <div style="display:flex;align-items:center;gap:8px;color:#e11d48;font-weight:800;margin-bottom:6px">
+          <span>❌</span> <span>KHÔNG TÌM THẤY CHỨNG CHỈ HOẶC ĐÃ BỊ THU HỒI</span>
+        </div>
+        <p style="font-size:13px;color:#64748b;margin:0">Mã chứng chỉ <code>${esc(inputVal)}</code> không tồn tại trên hệ thống hoặc mã băm không trùng khớp.</p>
+      </article>
+    `;
+  }
 }
 async function m2LoadCMS() {
   if (!m2Staff()) return;

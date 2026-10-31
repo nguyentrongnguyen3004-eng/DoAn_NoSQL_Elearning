@@ -66,6 +66,7 @@ redisSubscriber.connect().then(() => {
 }).catch(err => console.error('[Redis Subscriber Connect Error]:', err.message));
 
 // NANG CAP 3: LANG NGHE KEYSPACE EVENT DE TU DONG CHAM DIEM KHI HET GIO (AUTO-SUBMIT ON TTL EXPIRE)
+// TICH HOP DISTRIBUTED LOCK VA IDEMPOTENCY CHONG DUPLICATE SUBMIT
 redisSubscriber.on('message', async (channel, message) => {
   if (channel === '__keyevent@0__:expired') {
     // message chinh la ten key bi expired, vi du: exam:670000000000000000000040:attempt:student_nguyen
@@ -75,26 +76,72 @@ redisSubscriber.on('message', async (channel, message) => {
       const studentId = parts[3];
       console.log(`[Redis Keyspace Notification] Phat hien phien thi ${examId} cua thi sinh ${studentId} da het han TTL. Tu dong nop bai!`);
       
+      const lockKey = `lock:submit:${examId}:${studentId}`;
+      let acquired = false;
       try {
+        if (redisClient && redisClient.status === 'ready') {
+          const lockRes = await redisClient.set(lockKey, 'AUTO_SUBMIT', 'EX', 15, 'NX');
+          acquired = (lockRes === 'OK');
+        } else {
+          acquired = true;
+        }
+
+        if (!acquired) {
+          console.log(`[Redis Auto-Submit] Khoa phan tan ${lockKey} dang ban (nguoi dung dang nop tay hoac da xu ly). Bo qua auto-submit.`);
+          return;
+        }
+
         const db = getMongoDb();
         if (db) {
           const { ObjectId } = require('mongodb');
           const answersKey = `exam:${examId}:answers:${studentId}`;
-          const userAnswers = await redisClient.hgetall(answersKey);
           
-          const exam = await db.collection('exams').findOne({ _id: new ObjectId(examId) });
+          // IDEMPOTENCY CHECK: Kiem tra sinh vien da duoc cham diem hoac da nop bai chua
+          const existingResult = await db.collection('results').findOne({
+            $or: [
+              { examId: ObjectId.isValid(examId) ? new ObjectId(examId) : examId, studentCode: studentId },
+              { examId: examId, studentCode: studentId }
+            ]
+          });
+
+          if (existingResult) {
+            console.log(`[Redis Auto-Submit] Sinh vien ${studentId} da co ket qua nop bai (ID: ${existingResult._id}). Khong chen trung lap.`);
+            if (redisClient && redisClient.status === 'ready') {
+              await redisClient.del(answersKey);
+            }
+            return;
+          }
+
+          let userAnswers = {};
+          if (redisClient && redisClient.status === 'ready') {
+            userAnswers = await redisClient.hgetall(answersKey) || {};
+          }
+          
+          const exam = await db.collection('exams').findOne({ _id: ObjectId.isValid(examId) ? new ObjectId(examId) : examId });
           if (exam) {
-            const questionIds = exam.questions.map(q => new ObjectId(q));
+            const questionIds = (exam.questions || []).map(q => ObjectId.isValid(q) ? new ObjectId(q) : q);
             const questions = await db.collection('questions').find({ _id: { $in: questionIds } }).toArray();
             
             let correctCount = 0;
+            const detailedAnswers = [];
             questions.forEach(q => {
-              if (userAnswers && userAnswers[q._id.toString()] === q.correctAnswer) correctCount++;
+              const qIdStr = q._id.toString();
+              const selected = userAnswers[qIdStr] || null;
+              const isCorrect = (selected && selected === q.correctAnswer);
+              if (isCorrect) correctCount++;
+              detailedAnswers.push({
+                questionId: q._id,
+                content: q.content,
+                selectedOption: selected,
+                correctAnswer: q.correctAnswer,
+                isCorrect: isCorrect,
+                explanation: q.explanation
+              });
             });
             const score = questions.length > 0 ? Math.round(((correctCount / questions.length) * 10) * 10) / 10 : 0;
             
-            await db.collection('results').insertOne({
-              examId: new ObjectId(examId),
+            const autoResultDoc = {
+              examId: ObjectId.isValid(examId) ? new ObjectId(examId) : examId,
               examTitle: exam.title,
               studentCode: studentId,
               studentName: studentId,
@@ -102,15 +149,30 @@ redisSubscriber.on('message', async (channel, message) => {
               correctCount: correctCount,
               totalCount: questions.length,
               autoSubmitted: true,
-              submittedAt: new Date()
-            });
+              submittedAt: new Date(),
+              answers: detailedAnswers
+            };
 
-            await redisClient.del(answersKey);
-            console.log(`[Redis Auto-Submit] Da tu dong luu ket qua thi cho SV ${studentId}: ${score} diem`);
+            await db.collection('results').insertOne(autoResultDoc);
+            await db.collection('exam_attempts').updateOne(
+              { studentId, examId },
+              { $set: { status: 'submitted', score, autoSubmitted: true, submittedAt: new Date() } }
+            );
+
+            if (redisClient && redisClient.status === 'ready') {
+              await redisClient.del(answersKey, `exam:${examId}:order:${studentId}`);
+              await redisClient.zadd(`leaderboard:${examId}`, score, `${studentId} (${studentId})`);
+            }
+            console.log(`[Redis Auto-Submit] Da tu dong luu ket qua thi an toan cho SV ${studentId}: ${score} diem (Idempotent)`);
           }
         }
       } catch (e) {
         console.error('[Auto-Submit Error]:', e.message);
+      } finally {
+        // Giai phong lock sau khi hoan tat
+        if (redisClient && redisClient.status === 'ready') {
+          await redisClient.del(lockKey).catch(() => {});
+        }
       }
     }
   }

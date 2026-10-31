@@ -5,6 +5,18 @@
     // TÍNH NĂNG KIẾN TRÚC 2: GIÁM SÁT HIỆU NĂNG 4 CSDL, TƯỜNG LỬA & PHỤC HỒI THẢM HỌA
     // ==============================================================================
     function openSystemTelemetryModal() {
+      // KIỂM TRA PHÂN QUYỀN (RBAC): CHỈ CÓ QUẢN TRỊ VIÊN (ADMIN) MỚI ĐƯỢC PHÉP TRUY CẬP
+      if (!currentUser || !currentToken || currentUser.role !== 'ADMIN') {
+        if (typeof showCustomAlert === 'function') {
+          showCustomAlert('⛔ Quyền truy cập bị từ chối: Bảng điều khiển cấu hình & giám sát 4 CSDL NoSQL chỉ dành riêng cho Quản trị viên (Admin).');
+        } else if (typeof showToast === 'function') {
+          showToast('⛔ Chỉ Quản trị viên (Admin) mới có quyền truy cập cấu hình 4 CSDL!', 'error');
+        } else {
+          alert('⛔ Chỉ Quản trị viên (Admin) mới có quyền truy cập cấu hình 4 CSDL!');
+        }
+        return;
+      }
+
       document.getElementById('modal-system-telemetry')?.classList.remove('hidden');
       switchTelemetryTab('metrics');
       loadLiveTelemetryMetrics();
@@ -12,6 +24,14 @@
 
     function closeSystemTelemetryModal() {
       document.getElementById('modal-system-telemetry')?.classList.add('hidden');
+    }
+
+    function getTelemetryAuthHeaders(customHeaders = {}) {
+      const headers = { ...customHeaders };
+      if (typeof currentToken !== 'undefined' && currentToken) {
+        headers['Authorization'] = 'Bearer ' + currentToken;
+      }
+      return headers;
     }
 
     function switchTelemetryTab(tab) {
@@ -46,7 +66,9 @@
 
     async function loadLiveTelemetryMetrics() {
       try {
-        const res = await fetch('/api/telemetry/live-metrics');
+        const res = await fetch('/api/telemetry/live-metrics', {
+          headers: getTelemetryAuthHeaders()
+        });
         const data = await res.json();
         if (data.success && data.data) {
           const m = data.data;
@@ -79,7 +101,9 @@
       const auditContainer = document.getElementById('firewall-audit-logs');
 
       try {
-        const res = await fetch('/api/telemetry/security/firewall');
+        const res = await fetch('/api/telemetry/security/firewall', {
+          headers: getTelemetryAuthHeaders()
+        });
         const data = await res.json();
         if (data.success && data.firewall) {
           if (blContainer) {
@@ -115,7 +139,7 @@
       try {
         const res = await fetch('/api/telemetry/security/unblock', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getTelemetryAuthHeaders({ 'Content-Type': 'application/json' }),
           body: JSON.stringify({ ip })
         });
         const data = await res.json();
@@ -133,7 +157,9 @@
       if (!container) return;
 
       try {
-        const res = await fetch('/api/backups');
+        const res = await fetch('/api/backups', {
+          headers: getTelemetryAuthHeaders()
+        });
         const data = await res.json();
         if (data.success && data.data) {
           if (data.data.length === 0) {
@@ -174,7 +200,7 @@
       try {
         const res = await fetch('/api/backups/create', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getTelemetryAuthHeaders({ 'Content-Type': 'application/json' }),
           body: JSON.stringify({ operator: currentUser?.fullName || 'Admin Architect' })
         });
         const data = await res.json();
@@ -199,7 +225,10 @@
 
       try {
         showToast('Đang tiến hành phục hồi thảm họa đồng bộ 4 CSDL NoSQL...', 'info');
-        const res = await fetch(`/api/backups/${folder}/restore`, { method: 'POST' });
+        const res = await fetch(`/api/backups/${folder}/restore`, {
+          method: 'POST',
+          headers: getTelemetryAuthHeaders()
+        });
         const data = await res.json();
         if (data.success) {
           showToast(data.message, 'success');

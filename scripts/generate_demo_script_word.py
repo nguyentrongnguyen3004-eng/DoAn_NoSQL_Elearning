@@ -377,15 +377,15 @@ def create_document():
         "Tại Phòng thi trực tuyến, từng đáp án chọn được lưu tức thời vào Redis Hash với độ trễ dưới 2ms phòng ngừa rủi ro mất mạng. "
         "Hệ thống Anti-Cheat tự động phát hiện khi thí sinh chuyển tab trình duyệt và cảnh báo 1/3. "
         "Nộp bài thi, điểm số 8.8/10 được tính tự động, lưu vào MongoDB và đẩy lên đỉnh Bảng xếp hạng tuần Redis Sorted Set. "
-        "Học viên dùng điểm đổi vật phẩm Streak Freeze trong Shop XP, trường xp được trừ nguyên tử, triệt tiêu lỗi Race Condition."
+        "Đặc biệt, hệ thống áp dụng kỹ thuật MongoDB Projection ẩn hoàn toàn đáp án đúng và lời giải thích tại API start, ngăn chặn triệt để thí sinh dùng F12 DevTools gian lận. Khi nộp bài, nút nộp lập tức bị vô hiệu hóa kết hợp Atomic Redis Lock (SET NX EX 15) và Grace Period (+120s) trên Redis, triệt tiêu Race Condition giữa nộp tay và Auto-submit khi hết giờ. Học viên dùng điểm đổi vật phẩm Streak Freeze trong Shop XP, trường xp được trừ nguyên tử, triệt tiêu lỗi Race Condition."
     )
 
     steps_p2 = [
         ["Bước 1 (1:05 - 1:30)", "Web: Đăng nhập học viên & duyệt khóa học", "RedisInsight: Key `cache:courses:catalog` (TTL 1800s), chứng minh Cache Hit < 3.5ms."],
         ["Bước 2 (1:30 - 1:55)", "Web: Đăng ký khóa học, quét mã VietQR động", "Compass: Collection `users` tăng `+200 XP` và mảng `enrolledCourses` kích hoạt."],
-        ["Bước 3 (1:55 - 2:20)", "Web: Vào Phòng thi, chọn câu 1-B, 2-A, 3-C", "RedisInsight: Hash `exam:answers:2001230589` hiển thị các field đáp án thời gian thực."],
+        ["Bước 3 (1:55 - 2:20)", "Web: Vào Phòng thi, mở F12 Network xem API start (đáp án đã ẩn 100%), chọn câu 1-B, 2-A", "F12 Network: Payload start đã ẩn correctAnswer; RedisInsight: Hash `exam:answers:2001230589` (TTL +120s Grace Period)."],
         ["Bước 4 (2:20 - 2:35)", "Web: Alt+Tab sang ứng dụng khác", "Web bật cảnh báo đỏ Anti-Cheat (1/3 vi phạm quy chế thi)."],
-        ["Bước 5 (2:35 - 2:50)", "Web: Nộp bài (8.8đ) & Đổi quà Streak Freeze", "RedisInsight: ZSET `leaderboard:weekly` xếp hạng 8.8đ lên Top; Compass: `results` lưu bản ghi."]
+        ["Bước 5 (2:35 - 2:50)", "Web: Nộp bài (Nút disable chống double-click, Redis Lock), xem lại bài làm an toàn", "RedisInsight: ZSET `leaderboard:weekly` xếp hạng 8.8đ lên Top; Compass: `results` lưu bản ghi Idempotent (chống trùng lặp)."]
     ]
     add_steps_table(["Bước / Thời gian", "Thao tác trên Web Client", "Minh chứng đối chiếu GUI Tool CSDL"], steps_p2, [Cm(3.0), Cm(6.5), Cm(6.5)])
 
@@ -412,7 +412,7 @@ def create_document():
     )
 
     steps_p3 = [
-        ["Bước 1 (2:50 - 3:25)", "Web: Vào phòng học, phát video, tua tiến độ", "TablePlus: Query `SELECT * FROM learning_events WHERE student_id='2001230589'` thấy log theo giây."],
+        ["Bước 1 (2:50 - 3:25)", "Web: Vào phòng học, phát video, thử bấm hoàn thành (chặn 403), sau đó bấm nút Demo Force", "Toast cảnh báo chưa xem đủ 80%; TablePlus: Query `SELECT * FROM learning_events` thấy log VIDEO_HEARTBEAT thời gian thực."],
         ["Bước 2 (3:25 - 3:45)", "Web: Xem biểu đồ Analytics Retention Curve", "Biểu đồ đường cong giữ chân video xuất trực quan từ Cassandra."],
         ["Bước 3 (3:45 - 4:15)", "Web: Mở Bản đồ tri thức CEFR (A1 -> C2)", "Neo4j Browser: Chạy Cypher `MATCH (c:Course)-[:CONTAINS]->(l:Lesson) RETURN c, l`."],
         ["Bước 4 (4:15 - 4:40)", "Web: Xem Bạn Cùng Tiến & Hỏi AI Copilot", "Neo4j Browser: Chạy Cypher Co-enrollment Match gợi ý bạn học cùng Band 7.5+."]

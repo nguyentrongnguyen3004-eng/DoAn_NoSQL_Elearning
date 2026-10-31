@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const os = require('os');
 const { getMongoDb, redisClient, cassandraClient, neo4jDriver } = require('../config/db');
+const { authenticateToken, authorizeRoles } = require('../middlewares/auth');
 
-// GET /api/telemetry/live-metrics - Thong so telemetry thoi gian thuc cua 4 CSDL NoSQL
-router.get('/live-metrics', async (req, res) => {
+// GET /api/telemetry/live-metrics - Thong so telemetry thoi gian thuc cua 4 CSDL NoSQL (CHỈ DÀNH CHO ADMIN)
+router.get('/live-metrics', authenticateToken, authorizeRoles('ADMIN'), async (req, res) => {
   const startTime = Date.now();
   const metrics = {
     system: {
@@ -137,8 +138,8 @@ router.get('/live-metrics', async (req, res) => {
   return res.json({ success: true, data: metrics });
 });
 
-// GET /api/telemetry/security/firewall - Trang thai tuong lua Redis Rate Limiting & Blacklist
-router.get('/security/firewall', async (req, res) => {
+// GET /api/telemetry/security/firewall - Trang thai tuong lua Redis Rate Limiting & Blacklist (CHỈ ADMIN)
+router.get('/security/firewall', authenticateToken, authorizeRoles('ADMIN'), async (req, res) => {
   try {
     let blacklistedIps = [];
     if (redisClient && redisClient.status === 'ready') {
@@ -173,8 +174,8 @@ router.get('/security/firewall', async (req, res) => {
   }
 });
 
-// POST /api/telemetry/security/unblock - Mo khoa IP
-router.post('/security/unblock', async (req, res) => {
+// POST /api/telemetry/security/unblock - Mo khoa IP (CHỈ ADMIN)
+router.post('/security/unblock', authenticateToken, authorizeRoles('ADMIN'), async (req, res) => {
   try {
     const { ip } = req.body;
     if (!ip) return res.status(400).json({ success: false, message: 'Vui lòng cung cấp địa chỉ IP.' });
@@ -189,8 +190,8 @@ router.post('/security/unblock', async (req, res) => {
   }
 });
 
-// POST /api/telemetry/security/block - Chan thu cong mot IP
-router.post('/security/block', async (req, res) => {
+// POST /api/telemetry/security/block - Chan thu cong mot IP (CHỈ ADMIN)
+router.post('/security/block', authenticateToken, authorizeRoles('ADMIN'), async (req, res) => {
   try {
     const { ip, reason } = req.body;
     if (!ip) return res.status(400).json({ success: false, message: 'Vui lòng cung cấp địa chỉ IP.' });
@@ -202,6 +203,111 @@ router.post('/security/block', async (req, res) => {
     return res.json({ success: true, message: `Đã thêm IP [${ip}] vào danh sách đen Redis Firewall (${reason || 'Spam / DoS'}).` });
   } catch (err) {
     return res.status(500).json({ success: false, message: 'Lỗi chặn IP: ' + err.message });
+  }
+});
+
+
+// ==============================================================================
+// 5. THU THẬP TELEMETRY HEARTBEAT THỜI GIAN THỰC (CASSANDRA LOG + ANOMALY DETECTION)
+// ==============================================================================
+const memoryHeartbeats = new Map();
+
+router.post('/heartbeat', async (req, res) => {
+  const { studentId, courseId, lessonId, videoCurrentTime, durationSeconds, sessionId } = req.body;
+  const sid = studentId || (req.user && req.user.username) || '2001230589';
+  const cId = courseId || '670000000000000000000010';
+  const lId = lessonId || '670000000000000000000021';
+  const curTime = Number(videoCurrentTime) || 0;
+  const now = Date.now();
+
+  const hbKey = `telemetry:last_hb:${sid}:${lId}`;
+  const watchKey = `telemetry:watch:${sid}:${cId}:${lId}`;
+  const sessionKey = `session:active:${sid}`;
+
+  let isAnomalousFastForward = false;
+  let timeDiffSeconds = 10;
+  let isMultiDevice = false;
+
+  try {
+    // 1. Multi-device check qua Redis
+    if (redisClient && redisClient.status === 'ready') {
+      const activeSession = await redisClient.get(sessionKey).catch(() => null);
+      if (activeSession && sessionId && activeSession !== sessionId) {
+        isMultiDevice = true;
+      }
+      if (sessionId) {
+        await redisClient.set(sessionKey, sessionId, 'EX', 900).catch(() => {});
+      }
+    }
+
+    // 2. Anomaly Fast-Forward Check & Debounce
+    let lastHb = null;
+    if (redisClient && redisClient.status === 'ready') {
+      const lastStr = await redisClient.get(hbKey).catch(() => null);
+      if (lastStr) lastHb = JSON.parse(lastStr);
+    } else {
+      lastHb = memoryHeartbeats.get(hbKey);
+    }
+
+    if (lastHb) {
+      timeDiffSeconds = Math.max(1, (now - lastHb.timestamp) / 1000);
+      const videoJump = curTime - lastHb.videoCurrentTime;
+
+      // Debounce: Nếu request gửi quá dồn dập (< 2s) thì throttle
+      if (timeDiffSeconds < 2) {
+        return res.json({ success: true, throttled: true, message: 'Heartbeat throttled' });
+      }
+
+      // Phát hiện tua nhanh bất thường: bước nhảy video gấp 3 lần thời gian thực
+      if (videoJump > timeDiffSeconds * 3 + 10) {
+        isAnomalousFastForward = true;
+      }
+    }
+
+    // 3. Ghi nhận thời lượng xem hợp lệ
+    let validSecondsAdded = 0;
+    if (!isAnomalousFastForward) {
+      validSecondsAdded = Math.min(Math.round(timeDiffSeconds), 15);
+      if (redisClient && redisClient.status === 'ready') {
+        await redisClient.hincrby(watchKey, 'validSeconds', validSecondsAdded).catch(() => {});
+        await redisClient.expire(watchKey, 604800).catch(() => {});
+      }
+    }
+
+    // Cập nhật trạng thái heartbeat mới
+    const currentHbState = { timestamp: now, videoCurrentTime: curTime, sessionId: sessionId || 'default' };
+    if (redisClient && redisClient.status === 'ready') {
+      await redisClient.set(hbKey, JSON.stringify(currentHbState), 'EX', 3600).catch(() => {});
+    } else {
+      memoryHeartbeats.set(hbKey, currentHbState);
+    }
+
+    // 4. Ghi log vào Apache Cassandra
+    try {
+      if (cassandraClient && cassandraClient.getState().getConnectedHosts().length > 0) {
+        const query = `
+          INSERT INTO learning_events (student_id, event_time, event_id, event_type, course_id, lesson_id, session_id, duration_seconds, payload)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+        `;
+        const { randomUUID } = require('crypto');
+        await cassandraClient.execute(
+          query,
+          [sid, new Date(), randomUUID(), isAnomalousFastForward ? 'ANOMALY_FAST_FORWARD' : 'VIDEO_HEARTBEAT', cId, lId, sessionId || 'default', validSecondsAdded, JSON.stringify({ currentTime: curTime, isMultiDevice })],
+          { prepare: true }
+        );
+      }
+    } catch (casErr) {}
+
+    return res.json({
+      success: true,
+      verified: true,
+      isAnomalousFastForward,
+      isMultiDevice,
+      validSecondsAdded,
+      message: isAnomalousFastForward ? 'Cảnh báo tua nhanh bất thường! Không tích lũy giờ học.' : 'Đã ghi nhận heartbeat tiến độ vào Cassandra'
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
   }
 });
 

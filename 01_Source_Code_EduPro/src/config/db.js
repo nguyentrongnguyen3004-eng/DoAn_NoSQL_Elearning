@@ -9,11 +9,35 @@ require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 const mongoClient = new MongoClient(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/elearning_nosql');
 let mongoDb = null;
 
+async function ensureMongoIndexes(db) {
+  if (!db) return;
+  try {
+    // 1. Index cho ket qua thi results: Toi uu tra cuu, xep hang va Idempotency chong duplicate submit
+    await db.collection('results').createIndex({ examId: 1, studentCode: 1 }, { background: true });
+    await db.collection('results').createIndex({ submittedAt: -1 }, { background: true });
+
+    // 2. Index cho de thi va cau hoi
+    await db.collection('questions').createIndex({ category: 1, difficulty: 1 }, { background: true });
+
+    // 3. Index ESR Compound Index { category: 1, price: 1 } tren courses (Benchmark Thí nghiệm 2)
+    await db.collection('courses').createIndex({ category: 1, price: 1 }, { background: true });
+    await db.collection('courses').createIndex({ status: 1 }, { background: true });
+
+    // 4. Index cho tien do hoc tap va phien thi
+    await db.collection('exam_attempts').createIndex({ studentId: 1, examId: 1 }, { background: true });
+    await db.collection('user_enrollments').createIndex({ studentId: 1, courseId: 1 }, { background: true });
+    console.log('[MongoDB]   Da dam bao khoi tao cac Compound & Performance Indexes thanh cong');
+  } catch (idxErr) {
+    console.warn('[MongoDB]   Canh bao tao index:', idxErr.message);
+  }
+}
+
 async function connectMongoDB() {
   try {
     await mongoClient.connect();
     mongoDb = mongoClient.db();
     console.log('[MongoDB]   Da ket noi thanh cong');
+    ensureMongoIndexes(mongoDb).catch(() => {});
     return mongoDb;
   } catch (err) {
     console.error('[MongoDB]   Loi ket noi:', err.message);

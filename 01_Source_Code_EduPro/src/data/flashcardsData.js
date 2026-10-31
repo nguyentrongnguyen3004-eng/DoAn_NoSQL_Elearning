@@ -34,6 +34,20 @@ const TOPIC_METADATA = [
 
 const FLASHCARDS_150 = [
   {
+    "id": "FC_RESIGN",
+    "word": "resign",
+    "phonetic": "/rɪˈzaɪn/",
+    "pos": "verb",
+    "category": "Kinh doanh & Tài chính",
+    "topic": "Kinh doanh & Tài chính",
+    "topicIcon": "💼",
+    "cefr": "B2",
+    "meaning": "từ chức, xin thôi (việc)",
+    "collocation": "resign as director / tender one's resignation",
+    "example": "She resigned as director. (Cô ấy đã từ chức giám đốc.)",
+    "image": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=400&q=80"
+  },
+  {
     "id": "FC_001",
     "word": "Mitigate",
     "phonetic": "/ˈmɪt.ɪ.ɡeɪt/",

@@ -221,6 +221,66 @@ router.get('/list/all', async (req, res) => {
         totalQuestions: 8,
         participants: 5120,
         description: 'Kiểm tra chuyên sâu nền tảng ngữ pháp cốt lõi thường xuyên xuất hiện trong các kỳ thi chuẩn đầu ra đại học và quốc tế.'
+      },
+      {
+        _id: '67000000000000000000004d',
+        title: 'IELTS Speaking & Listening: Academic Lexical Resource & Signposting Band 7.0+',
+        badge: 'IELTS Lexicon 7.0+',
+        level: 'Trung cao cấp (CEFR B2 - C1)',
+        durationMinutes: 20,
+        totalQuestions: 8,
+        participants: 2150,
+        description: 'Chuyên sâu về từ vựng học thuật chủ đề Speaking Part 1, 2, 3 và từ định hướng tư duy (Signpost Words) trong bài thi Listening Section 3 & 4.'
+      },
+      {
+        _id: '67000000000000000000004e',
+        title: 'Business English: Giao Tiếp, Thuyết Trình & Thư Tín Thương Mại Quốc Tế',
+        badge: 'Business English',
+        level: 'Chuyên nghiệp (CEFR B2 - C1)',
+        durationMinutes: 20,
+        totalQuestions: 8,
+        participants: 1980,
+        description: 'Rèn luyện văn phong đàm phán, email thương mại, xử lý xung đột dự án và thuật ngữ quản trị doanh nghiệp đa quốc gia.'
+      },
+      {
+        _id: '67000000000000000000004f',
+        title: 'VSTEP B2 - C1: Đọc Hiểu Học Thuật & Ngữ Pháp Ứng Dụng Sau Đại Học',
+        badge: 'VSTEP B2 - C1',
+        level: 'Bậc 4 - Bậc 5 Khung 6 Bậc VN',
+        durationMinutes: 25,
+        totalQuestions: 8,
+        participants: 1640,
+        description: 'Đề luyện thi định hướng chứng chỉ VSTEP chuẩn Bộ GD&ĐT dành cho học viên thạc sĩ, tiến sĩ và giảng viên đại học.'
+      },
+      {
+        _id: '670000000000000000000050',
+        title: 'Cụm Từ Cố Định & Cụm Động Từ Bản Xứ (Collocations & Phrasal Verbs Mastery)',
+        badge: 'Collocations & Idioms',
+        level: 'Lưu loát tự nhiên (CEFR B2 - C1)',
+        durationMinutes: 15,
+        totalQuestions: 8,
+        participants: 3890,
+        description: 'Làm chủ các cụm từ kết hợp tự nhiên (Natural Collocations) và Phrasal Verbs nâng cao giúp bài viết và bài nói tự nhiên như người bản xứ.'
+      },
+      {
+        _id: '670000000000000000000051',
+        title: 'Ngữ Âm IPA, Quy Tắc Trọng Âm & Connected Speech (Phonetics Mastery)',
+        badge: 'Phonetics & Stress',
+        level: 'Ngữ âm chuẩn (Mọi cấp độ)',
+        durationMinutes: 15,
+        totalQuestions: 8,
+        participants: 4120,
+        description: 'Phân biệt các cặp nguyên âm dễ nhầm lẫn (/i:/ vs /ɪ/, /æ/ vs /e/), quy tắc nhấn trọng âm từ 2-4 âm tiết và hiện tượng nuốt âm/nối âm trong hội thoại thực tế.'
+      },
+      {
+        _id: '670000000000000000000052',
+        title: 'SAT / GRE Advanced Lexical Reasoning: Tư Duy Phản Biện & Từ Vựng Cực Khó',
+        badge: 'SAT/GRE Verbal 99th%',
+        level: 'Thành thạo bản ngữ (CEFR C2)',
+        durationMinutes: 25,
+        totalQuestions: 8,
+        participants: 1250,
+        description: 'Đề khảo sát tư duy ngữ nghĩa cao cấp, văn cảnh học thuật phức tạp và suy luận logic tương đương các kỳ thi tuyển sinh sau đại học tại Mỹ.'
       }
     ];
 
@@ -478,7 +538,7 @@ router.post('/questions/create', authenticateToken, async (req, res) => {
 
 // Helper chuan hoa examId (cho phep cac bo de 4a, 4b, 4c su dung chung ngan hang cau hoi MongoDB)
 function resolveMongoExamId(examId) {
-  if (examId === '670000000000000000000040') return new ObjectId('670000000000000000000040');
+  if (examId && ObjectId.isValid(examId)) return new ObjectId(examId);
   return new ObjectId('670000000000000000000040');
 }
 
@@ -486,7 +546,13 @@ const EXAM_TITLES_MAP = {
   '670000000000000000000040': 'Đánh Giá Năng Lực Tiếng Anh Quốc Tế (English Placement & IELTS/TOEIC Test)',
   '67000000000000000000004a': 'Đề Thi Thử TOEIC Part 5: Ngữ Pháp & Từ Vựng Thương Mại Tốc Độ Cao',
   '67000000000000000000004b': 'Đề Thi Thử IELTS Academic Reading & Lexical Resource Band 7.5+',
-  '67000000000000000000004c': 'Chuyên Đề Ngữ Pháp 12 Thì, Câu Điều Kiện, Mệnh Đề Quan Hệ & Đảo Ngữ'
+  '67000000000000000000004c': 'Chuyên Đề Ngữ Pháp 12 Thì, Câu Điều Kiện, Mệnh Đề Quan Hệ & Đảo Ngữ',
+  '67000000000000000000004d': 'IELTS Speaking & Listening: Academic Lexical Resource & Signposting Band 7.0+',
+  '67000000000000000000004e': 'Business English: Giao Tiếp, Thuyết Trình & Thư Tín Thương Mại Quốc Tế',
+  '67000000000000000000004f': 'VSTEP B2 - C1: Đọc Hiểu Học Thuật & Ngữ Pháp Ứng Dụng Sau Đại Học',
+  '670000000000000000000050': 'Cụm Từ Cố Định & Cụm Động Từ Bản Xứ (Collocations & Phrasal Verbs Mastery)',
+  '670000000000000000000051': 'Ngữ Âm IPA, Quy Tắc Trọng Âm & Connected Speech (Phonetics Mastery)',
+  '670000000000000000000052': 'SAT / GRE Advanced Lexical Reasoning: Tư Duy Phản Biện & Từ Vựng Cực Khó'
 };
 
 // 1. BAT DAU / KHOI PHUC PHIEN LAM BAI THI (REDIS TTL + MONGODB QUESTIONS)
@@ -561,7 +627,11 @@ router.post('/:id/start', authenticateToken, async (req, res) => {
         ttlLeftSeconds: ttlLeft,
         savedAnswers: answersData,
         bookmarkedIds,
-        questions: questions
+        // FIX LỖ HỔNG LỘ ĐÁP ÁN: Khử triệt để correctAnswer và explanation trước khi trả về Client
+        questions: questions.map(q => {
+          const { correctAnswer, explanation, ...rest } = q;
+          return rest;
+        })
       }
     });
   } catch (err) {
@@ -586,7 +656,8 @@ router.post('/:id/answer', authenticateToken, async (req, res) => {
 
     await safeRedis.hset(answersKey, questionId, selectedOption);
     if (ttl > 0) {
-      await safeRedis.expire(answersKey, ttl);
+      // BUFFER GRACE PERIOD (+120 GIÂY): Giữ answersKey sống lâu hơn attemptKey 2 phút phòng độ trễ mạng và auto-submit kịp đọc
+      await safeRedis.expire(answersKey, ttl + 120);
     }
 
     res.json({
@@ -601,13 +672,46 @@ router.post('/:id/answer', authenticateToken, async (req, res) => {
 
 // 3. NOP BAI THI, CHAM DIEM PHIA SERVER, LUU MONGO VA CAP NHAT LEADERBOARD REDIS
 router.post('/:id/submit', authenticateToken, async (req, res) => {
-  try {
-    const examId = req.params.id;
-    const studentId = req.user.username;
-    const db = getMongoDb();
+  const examId = req.params.id;
+  const studentId = req.user.username;
+  const lockKey = `lock:submit:${examId}:${studentId}`;
 
+  try {
+    // 1. ATOMIC REDIS LOCK (SET NX EX 15): Khóa phân tán chống nhiều request nộp bài cùng tích tắc
+    if (redisClient && redisClient.status === 'ready') {
+      const lockRes = await redisClient.set(lockKey, 'MANUAL_SUBMIT', 'EX', 15, 'NX').catch(() => null);
+      if (!lockRes) {
+        return res.status(409).json({ success: false, message: 'Bài thi đang được xử lý nộp, vui lòng chờ trong giây lát!' });
+      }
+    }
+
+    const db = getMongoDb();
     const attemptKey = `exam:${examId}:attempt:${studentId}`;
     const answersKey = `exam:${examId}:answers:${studentId}`;
+
+    // 2. IDEMPOTENCY CHECK: Nếu sinh viên đã có kết quả trong 60 giây gần nhất, trả ngay kết quả cũ
+    const existingResult = await db.collection('results').findOne({
+      examId: resolveMongoExamId(examId),
+      studentCode: studentId,
+      submittedAt: { $gt: new Date(Date.now() - 60000) }
+    });
+
+    if (existingResult) {
+      if (redisClient && redisClient.status === 'ready') {
+        await redisClient.del(lockKey).catch(() => {});
+      }
+      return res.json({
+        success: true,
+        message: 'Nộp bài thi thành công (Idempotent)',
+        data: {
+          examTitle: existingResult.examTitle,
+          score: existingResult.score,
+          correctCount: existingResult.correctCount,
+          totalCount: existingResult.totalCount,
+          detailedAnswers: existingResult.answers || []
+        }
+      });
+    }
 
     let userAnswers = await safeRedis.hgetall(answersKey);
     if (!userAnswers || Object.keys(userAnswers).length === 0) {
@@ -689,6 +793,12 @@ router.post('/:id/submit', authenticateToken, async (req, res) => {
     } catch (e) {}
 
     await safeRedis.del(attemptKey, answersKey);
+    if (redisClient && redisClient.status === 'ready') {
+      await redisClient.del(lockKey).catch(() => {});
+    }
+    if (redisClient && redisClient.status === 'ready') {
+      await redisClient.del(lockKey).catch(() => {});
+    }
 
     res.json({
       success: true,

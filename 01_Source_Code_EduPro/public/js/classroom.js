@@ -2,6 +2,14 @@
 // 2. CLASSROOM ENGINE: VIDEO PLAYER, RETENTION CURVE, NOTES & REVIEWS
 // ==============================================================================
 
+    function getValidToken() {
+      if (!currentToken || currentToken === 'null') {
+        currentToken = window.currentToken || localStorage.getItem('edupro_token') || null;
+        window.currentToken = currentToken;
+      }
+      return currentToken;
+    }
+
     // ==============================================================================
     // TÍNH NĂNG KIẾN TRÚC 2: KHUYẾN NGHỊ ĐỒ THỊ NEO4J COLLABORATIVE AI
     // ==============================================================================
@@ -11,11 +19,16 @@
       container.innerHTML = '<div class="col-span-3 text-center py-6 text-xs text-indigo-300"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Đang phân tích đồ thị Neo4j...</div>';
 
       try {
+        if (typeof fetchEnrolledCourses === 'function' && (!userEnrolledCourseIds || userEnrolledCourseIds.size === 0) && currentToken) {
+          await fetchEnrolledCourses();
+        }
         const res = await fetch('/api/graph/collaborative-recommendations?targetBand=IELTS 7.5+');
         const data = await res.json();
         if (data.success && data.data && data.data.length > 0) {
-          container.innerHTML = data.data.map(item => `
-            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/10 hover:border-indigo-400/50 hover:bg-white/15 transition-all text-left flex flex-col justify-between">
+          container.innerHTML = data.data.map(item => {
+            const isEnrolled = typeof isCourseEnrolled === 'function' ? isCourseEnrolled(item.courseId) : false;
+            return `
+            <div class="bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-white/10 hover:border-indigo-400/60 hover:bg-white/10 transition-all text-left flex flex-col justify-between shadow-lg">
               <div>
                 <div class="flex items-center justify-between mb-3">
                   <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
@@ -26,12 +39,20 @@
                 <h4 class="font-bold text-sm text-white mb-2 leading-snug">${item.title}</h4>
                 <p class="text-xs text-slate-300 leading-relaxed mb-4">${item.reason}</p>
               </div>
-              <button onclick="openClassroomModal('${item.courseId}')" class="w-full py-2 rounded-xl bg-white text-slate-900 font-bold text-xs hover:bg-indigo-50 transition-colors flex items-center justify-center gap-1.5">
-                <span>Vào học ngay</span>
-                <i class="fa-solid fa-arrow-right text-[10px]"></i>
-              </button>
+              ${isEnrolled ? `
+                <button onclick="openClassroomModal('${item.courseId}')" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                  <span>Vào học ngay</span>
+                  <i class="fa-solid fa-circle-play text-[11px]"></i>
+                </button>
+              ` : `
+                <button onclick="enrollCurrentCourse('${item.courseId}')" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md shadow-brand-500/20 hover:shadow-brand-500/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                  <i class="fa-solid fa-cart-plus text-[11px]"></i>
+                  <span>Đăng ký học ngay</span>
+                </button>
+              `}
             </div>
-          `).join('');
+          `;
+          }).join('');
         }
       } catch (e) {
         console.warn('Loi khi load collaborative recommendations:', e);
@@ -98,7 +119,22 @@
 
 
     async function enterClassroom(courseId) {
-      if (!currentToken) { openLoginModal(); return; }
+      if (!getValidToken()) { openLoginModal(); return; }
+
+      // KIỂM TRA QUYỀN TRUY CẬP: Bắt buộc học viên phải ĐÃ ĐĂNG KÝ khóa học mới được vào học
+      const isEnrolled = typeof isCourseEnrolled === 'function' ? isCourseEnrolled(courseId) : false;
+      const isPrivileged = currentUser && (currentUser.role === 'ADMIN' || currentUser.role === 'TEACHER');
+
+      if (!isEnrolled && !isPrivileged) {
+        showCustomAlert('⚠️ Bạn chưa đăng ký khóa học này! Vui lòng nhấn "Đăng ký" và hoàn tất thanh toán để vào lớp học.');
+        setTimeout(() => {
+          if (typeof enrollCurrentCourse === 'function') {
+            enrollCurrentCourse(courseId);
+          }
+        }, 600);
+        return;
+      }
+
       currentCourseId = courseId;
       currentClassroomCourseId = courseId;
 
@@ -212,6 +248,11 @@
     async function sendTelemetry(eventType, duration) {
       if (!currentToken) return;
       try {
+        const videoElem = document.querySelector('video');
+        const curTime = videoElem ? Math.round(videoElem.currentTime) : (window.__mockVideoTime = (window.__mockVideoTime || 0) + 10);
+        const sessId = window.__eduSessionId || (window.__eduSessionId = 'sess_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6));
+
+        // 1. Ghi nhan su kien xem video vao Cassandra
         await fetch(`${API_BASE}/courses/events/video`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
@@ -221,6 +262,26 @@
             lessonId: currentLessonId || '670000000000000000000021'
           })
         });
+
+        // 2. Gui heartbeat xac thuc thoi luong va phat hien tua nhanh bat thuong
+        const hbRes = await fetch(`${API_BASE}/telemetry/heartbeat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
+          body: JSON.stringify({
+            courseId: currentCourseId || '670000000000000000000010',
+            lessonId: currentLessonId || '670000000000000000000021',
+            videoCurrentTime: curTime,
+            durationSeconds: duration || 10,
+            sessionId: sessId
+          })
+        }).then(r => r.json()).catch(() => null);
+
+        if (hbRes && hbRes.isAnomalousFastForward) {
+          if (typeof showToast === 'function') {
+            showToast('⚠️ Cảnh báo: Bạn đang tua video quá nhanh! Thời gian tua sẽ không được tích lũy vào tiến độ.', 'warning');
+          }
+        }
+
         loadTelemetryLogs();
       } catch (err) {
         console.error('Lỗi telemetry:', err);
@@ -290,7 +351,7 @@
     }
 
     async function saveLessonNote() {
-      if (!currentToken) { openLoginModal(); return; }
+      if (!getValidToken()) { openLoginModal(); return; }
       const tsEl = document.getElementById('note-timestamp-input') || document.getElementById('lesson-note-timestamp');
       const contentEl = document.getElementById('note-content-input') || document.getElementById('lesson-note-input');
       const ts = tsEl ? tsEl.value.trim() : '05:20';
@@ -338,7 +399,7 @@
     }
 
     async function submitCourseReview() {
-      if (!currentToken) { openLoginModal(); return; }
+      if (!getValidToken()) { openLoginModal(); return; }
       const ratingEl = document.getElementById('review-rating-select') || document.getElementById('course-review-rating');
       const commentEl = document.getElementById('review-comment-input') || document.getElementById('course-review-comment');
       const rating = Number(ratingEl ? ratingEl.value : 5);
@@ -467,9 +528,14 @@ async function confirmUnenrollCourse() {
     });
     const j = await r.json();
     if (!r.ok || !j.success) throw new Error(j.message || 'Không thể hủy đăng ký');
+    if (typeof userEnrolledCourseIds !== 'undefined') {
+      userEnrolledCourseIds.delete(String(currentClassroomCourseId));
+      window.userEnrolledCourseIds = userEnrolledCourseIds;
+    }
     showToast(j.message, 'success');
     showSection('courses');
     loadCoursesCatalog();
+    if (typeof loadCollaborativeRecommendations === 'function') loadCollaborativeRecommendations();
   } catch (e) {
     showToast(e.message, 'error');
   }

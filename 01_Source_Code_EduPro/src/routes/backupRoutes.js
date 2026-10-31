@@ -3,6 +3,7 @@ const router = express.Router();
 const fs = require('fs');
 const path = require('path');
 const { getMongoDb, redisClient, cassandraClient, neo4jDriver } = require('../config/db');
+const { authenticateToken, authorizeRoles } = require('../middlewares/auth');
 
 const BACKUPS_ROOT = path.join(__dirname, '..', '..', 'backups');
 
@@ -12,8 +13,8 @@ function ensureBackupsDir() {
   }
 }
 
-// GET /api/backups - Lay danh sach tat ca cac ban sao luu 4 CSDL
-router.get('/', (req, res) => {
+// GET /api/backups - Lay danh sach tat ca cac ban sao luu 4 CSDL (CHỈ ADMIN)
+router.get('/', authenticateToken, authorizeRoles('ADMIN'), (req, res) => {
   try {
     ensureBackupsDir();
     const entries = fs.readdirSync(BACKUPS_ROOT, { withFileTypes: true });
@@ -66,8 +67,8 @@ router.get('/', (req, res) => {
   }
 });
 
-// POST /api/backups/create - Tao ban sao luu thoi gian thuc dong bo ca 4 CSDL
-router.post('/create', async (req, res) => {
+// POST /api/backups/create - Tao ban sao luu thoi gian thuc dong bo ca 4 CSDL (CHỈ ADMIN)
+router.post('/create', authenticateToken, authorizeRoles('ADMIN'), async (req, res) => {
   try {
     ensureBackupsDir();
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
@@ -177,8 +178,8 @@ router.post('/create', async (req, res) => {
   }
 });
 
-// POST /api/backups/:folder/restore - Phuc hoi tham hoa tu ban snapshot
-router.post('/:folder/restore', async (req, res) => {
+// POST /api/backups/:folder/restore - Phuc hoi tham hoa tu ban snapshot (CHỈ ADMIN)
+router.post('/:folder/restore', authenticateToken, authorizeRoles('ADMIN'), async (req, res) => {
   try {
     const { folder } = req.params;
     const targetDir = path.join(BACKUPS_ROOT, folder);
