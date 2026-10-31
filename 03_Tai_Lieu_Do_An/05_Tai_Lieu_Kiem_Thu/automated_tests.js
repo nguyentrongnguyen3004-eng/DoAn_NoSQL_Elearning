@@ -79,7 +79,8 @@ async function runTests() {
   // TC-02: Student Login (MongoDB)
   try {
     const res = await request('POST', '/api/auth/login', {
-      username: 'student_nguyen'
+      username: 'student_nguyen',
+      password: '123456'
     });
     if (res.status === 200 && res.data.data && res.data.data.token && res.data.data.user.role === 'STUDENT') {
       studentToken = res.data.data.token;
@@ -95,7 +96,8 @@ async function runTests() {
   // TC-03: Teacher Login & Role Verification
   try {
     const res = await request('POST', '/api/auth/login', {
-      username: 'instructor_alex'
+      username: 'instructor_alex',
+      password: '123456'
     });
     if (res.status === 200 && res.data.data && res.data.data.token && res.data.data.user.role === 'TEACHER') {
       teacherToken = res.data.data.token;
@@ -337,7 +339,9 @@ async function runTests() {
 
   // TC-19: Live 4-NoSQL Real-Time Telemetry & Resource Monitor
   try {
-    const telemRes = await request('GET', '/api/telemetry/live-metrics');
+    const adminLog = await request('POST', '/api/auth/login', { username: 'admin', password: '123456' });
+    const adminToken = adminLog.data?.data?.token || teacherToken;
+    const telemRes = await request('GET', '/api/telemetry/live-metrics', null, adminToken);
     if (telemRes.status === 200 && telemRes.data.success && telemRes.data.data) {
       const m = telemRes.data.data;
       console.log(`✅ TC-19 PASS: Giam sat Telemetry 4 CSDL thanh cong (Mongo: ${m.mongodb.totalDocs} docs, Redis: ${m.redis.usedMemory}, Cas: ${m.cassandra.totalEvents} events, Neo4j: ${m.neo4j.nodesCount} nodes, Host RAM: ${m.system.nodeMemoryMb}MB)`);
@@ -351,7 +355,9 @@ async function runTests() {
 
   // TC-20: Redis Sliding-Window Security Firewall & Blacklist
   try {
-    const fwRes = await request('GET', '/api/telemetry/security/firewall');
+    const adminLog = await request('POST', '/api/auth/login', { username: 'admin', password: '123456' });
+    const adminToken = adminLog.data?.data?.token || teacherToken;
+    const fwRes = await request('GET', '/api/telemetry/security/firewall', null, adminToken);
     if (fwRes.status === 200 && fwRes.data.success && fwRes.data.firewall) {
       console.log(`✅ TC-20 PASS: Kiem tra Tuong lua Redis Sliding Window Firewall thanh cong (${fwRes.data.firewall.activeRateLimit}, ${fwRes.data.firewall.blacklistedCount} IP bi cach ly)`);
       passed++;

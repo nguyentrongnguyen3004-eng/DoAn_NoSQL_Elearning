@@ -926,7 +926,9 @@ var API_BASE = window.API_BASE;
     function openCertificateModal(certData = null) {
       const studentName = currentUser ? currentUser.fullName : 'Nguyễn Trọng Nguyên';
       const score = certData ? certData.score : (lastExamResult ? lastExamResult.score : 10.0);
-      const title = certData ? certData.title : (lastExamResult ? lastExamResult.title : 'Đánh Giá Năng Lực Tiếng Anh Quốc Tế (English Placement & IELTS/TOEIC Test)');
+      const courseTitle = document.getElementById('classroom-course-header-title')?.textContent;
+      const defaultTitle = (typeof currentSection !== 'undefined' && currentSection === 'classroom' && courseTitle) ? courseTitle : (lastExamResult ? lastExamResult.title : 'Đánh Giá Năng Lực Tiếng Anh Quốc Tế (English Placement & IELTS/TOEIC Test)');
+      const title = certData ? certData.title : defaultTitle;
 
       document.getElementById('cert-student-name').textContent = studentName;
       document.getElementById('cert-exam-title').textContent = title;
