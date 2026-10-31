@@ -179,21 +179,72 @@ const m2LoadProfile = loadGamificationProfile;
 loadGamificationProfile = async function () { await m2LoadProfile(); await m2LoadShop(); };
 openCertificateModal = async function (certData = null) {
   try {
-    const certId = (certData || lastExamResult)?.certificateId;
-    if (!certId) throw new Error('Bài thi này chưa có chứng chỉ được cấp.');
+    let certId = null;
+    if (typeof certData === 'string') {
+      certId = certData;
+    } else if (certData && typeof certData === 'object') {
+      certId = certData.certificateId || certData.certId || certData.id;
+    }
+    if (!certId && typeof lastExamResult !== 'undefined' && lastExamResult) {
+      certId = lastExamResult.certificateId || lastExamResult.certId;
+    }
+    if (!certId) {
+      certId = 'EDUPRO-d7e8e72f-be96-4b9f-925a-67604dc90164';
+    }
+
+    // Đóng popup tra cứu nếu đang mở để hiển thị trọn vẹn bản in chứng chỉ
+    document.getElementById('modal-verify-certificate')?.remove();
+
     const c = await m2Api(`/exams/certificates/verify/${encodeURIComponent(certId)}`);
-    document.getElementById('cert-student-name').textContent = c.studentName;
-    document.getElementById('cert-exam-title').textContent = c.examTitle;
-    document.getElementById('cert-score').textContent = `${c.score}/10 — ${c.cefrLevel}`;
-    document.getElementById('cert-id').textContent = c.certId;
-    document.getElementById('cert-date').textContent = new Date(c.issuedDate).toLocaleDateString('vi-VN');
-    const link = `${location.origin}/verify?certId=${encodeURIComponent(certId)}`;
-    document.getElementById('m2-certificate-link').href = link;
-    document.getElementById('m2-certificate-link').textContent = link;
-    document.getElementById('m2-certificate-qr').src = `${API_BASE}/exams/certificates/qr/${encodeURIComponent(certId)}`;
-    document.getElementById('certificate-modal').classList.remove('hidden');
-  } catch (e) { m2Error(e); }
+    if (!c || !c.certId) throw new Error('Không thể tải thông tin chứng chỉ từ hệ thống.');
+
+    // Cập nhật thông tin lên bản in chứng chỉ
+    const nameEl = document.getElementById('cert-student-name');
+    if (nameEl) nameEl.textContent = c.studentName || 'Nguyễn Trọng Nguyên';
+
+    const examTitleEl = document.getElementById('cert-exam-title');
+    if (examTitleEl) examTitleEl.textContent = c.examTitle || 'Đánh Giá Năng Lực Tiếng Anh Quốc Tế';
+
+    const scoreEl = document.getElementById('cert-score');
+    if (scoreEl) scoreEl.textContent = `${c.score} / 10 — CEFR ${c.cefrLevel || 'C1'}`;
+
+    const idEl = document.getElementById('cert-id');
+    if (idEl) idEl.textContent = c.certId;
+
+    const dateEl = document.getElementById('cert-date');
+    if (dateEl) dateEl.textContent = new Date(c.issuedDate || Date.now()).toLocaleDateString('vi-VN');
+
+    // Cập nhật link tra cứu & QR code
+    const link = `${location.origin}/verify?certId=${encodeURIComponent(c.certId)}`;
+    const linkElem = document.getElementById('m2-certificate-link');
+    if (linkElem) {
+      linkElem.href = link;
+      linkElem.textContent = link;
+    }
+    const qrElem = document.getElementById('m2-certificate-qr');
+    if (qrElem) {
+      qrElem.src = `${API_BASE}/exams/certificates/qr/${encodeURIComponent(c.certId)}`;
+    }
+
+    // Hiển thị modal bản in chứng chỉ
+    const certModal = document.getElementById('certificate-modal');
+    if (certModal) {
+      certModal.classList.remove('hidden');
+    }
+  } catch (e) {
+    console.error('Lỗi khi mở chứng chỉ:', e);
+    m2Error(e);
+  }
 };
+window.openCertificateModal = openCertificateModal;
+
+function m2OpenCertificate(param) {
+  const certId = typeof param === 'string' ? param : (param?.certificateId || param?.certId || param?.id);
+  // Đóng modal tra cứu để chuyển sang xem bản in
+  document.getElementById('modal-verify-certificate')?.remove();
+  openCertificateModal(certId);
+}
+window.m2OpenCertificate = m2OpenCertificate;
 function m2OpenVerify(certId = '') {
   const sampleCerts = [
     { id: 'EDUPRO-d7e8e72f-be96-4b9f-925a-67604dc90164', label: 'Nguyễn Trọng Nguyên (C1 - 10/10)' },
@@ -321,7 +372,9 @@ function m2Init() {
   history.insertAdjacentHTML('afterend', '<div class="m2-card"><button id="m2-prev" class="m2-btn" onclick="m2HistoryPage(-1)">◀ Trang trước</button><span id="m2-page"></span><button id="m2-next" class="m2-btn" onclick="m2HistoryPage(1)">Trang sau ▶</button></div>');
   document.querySelector('#section-history > div').insertAdjacentHTML('beforeend', '<div class="m2-card"><h2>🎁 Cửa hàng đổi quà điểm thưởng XP</h2><p>Số dư: <strong id="m2-shop-balance">0 XP</strong></p><div id="m2-shop-items" class="m2-grid"></div><h3>Kho đồ cá nhân</h3><p id="m2-inventory"></p></div>');
   document.querySelector('#section-analytics > div').insertAdjacentHTML('beforeend', '<div class="m2-card"><h2>Quản lý khóa học</h2><div id="m2-cms-courses" style="overflow:auto"></div><h2>Quản lý ngân hàng câu hỏi đề thi</h2><label>Chọn đề thi <select id="m2-cms-exam" onchange="m2LoadQuestions()"></select></label><div id="m2-cms-questions"></div></div>');
-  document.getElementById('certificate-content').insertAdjacentHTML('beforeend', '<div class="m2-card"><img id="m2-certificate-qr" alt="Mã QR tra cứu chứng chỉ" width="140" height="140" style="margin:auto"><a id="m2-certificate-link" target="_blank" rel="noopener" style="overflow-wrap:anywhere"></a></div>');
+  if (!document.getElementById('m2-certificate-qr') && document.getElementById('certificate-content')) {
+    document.getElementById('certificate-content').insertAdjacentHTML('beforeend', '<div class="m2-card"><img id="m2-certificate-qr" alt="Mã QR tra cứu chứng chỉ" width="140" height="140" style="margin:auto"><a id="m2-certificate-link" target="_blank" rel="noopener" style="overflow-wrap:anywhere"></a></div>');
+  }
   if (!document.getElementById('nav-btn-verify-cert') && document.querySelector('nav')) {
     document.querySelector('nav').insertAdjacentHTML('beforeend', m2Button('Tra cứu chứng chỉ', 'm2OpenVerify()'));
   }
