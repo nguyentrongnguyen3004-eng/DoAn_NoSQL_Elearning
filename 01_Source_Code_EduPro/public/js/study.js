@@ -2,8 +2,19 @@
 // 3. STUDY ENGINE: FLASHCARDS 3D, DICTATION, WRITING AI, EXAM & TIER 1-4 LABS
 // ==============================================================================
 
+    function getValidToken() {
+      if (!currentToken || currentToken === 'null') {
+        currentToken = window.currentToken || localStorage.getItem('edupro_token') || null;
+        window.currentToken = currentToken;
+      }
+      return currentToken;
+    }
+
     async function startExam(silent = false) {
-      if (!currentToken) { openLoginModal(); return; }
+      const activeToken = window.currentToken || (typeof currentToken !== 'undefined' ? currentToken : null) || localStorage.getItem('edupro_token');
+      if (!activeToken) { openLoginModal(); return; }
+      currentToken = activeToken;
+      window.currentToken = activeToken;
 
       // Reset Anti-Cheat State for new/reloaded exam session
       isExamDisqualified = false;
@@ -397,11 +408,29 @@
         if (json.success && json.data) {
           allFlashcards = json.data;
           updateFlashcardProgress(json.masteredCount || 0, json.totalCount || allFlashcards.length);
+          updateFilterButtons(json.categories || {});
           renderFlashcardsGrid();
         }
       } catch (err) {
         console.error('Lỗi tải Flashcards:', err);
       }
+    }
+
+    function updateFilterButtons(cats) {
+      const allCount = cats.ALL || allFlashcards.length;
+      const ieltsCount = cats['IELTS Band 8.0'] || allFlashcards.filter(c => c.category === 'IELTS Band 8.0').length;
+      const toeicCount = cats['TOEIC Business'] || allFlashcards.filter(c => c.category === 'TOEIC Business').length;
+      const idiomsCount = cats['Phrasal Verbs & Idioms'] || allFlashcards.filter(c => c.category === 'Phrasal Verbs & Idioms').length;
+
+      const btnAll = document.getElementById('fc-btn-all');
+      const btnIelts = document.getElementById('fc-btn-ielts');
+      const btnToeic = document.getElementById('fc-btn-toeic');
+      const btnIdioms = document.getElementById('fc-btn-idioms');
+
+      if (btnAll) btnAll.textContent = `Tất cả (${allCount})`;
+      if (btnIelts) btnIelts.textContent = `IELTS Band 8.0 (${ieltsCount})`;
+      if (btnToeic) btnToeic.textContent = `TOEIC Business (${toeicCount})`;
+      if (btnIdioms) btnIdioms.textContent = `Phrasal Verbs & Idioms (${idiomsCount})`;
     }
 
     function updateFlashcardProgress(masteredCount, totalCount) {
@@ -494,7 +523,7 @@
     }
 
     async function toggleFlashcardMaster(cardId) {
-      if (!currentToken) { openLoginModal(); return; }
+      if (!getValidToken()) { openLoginModal(); return; }
       try {
         const cardObj = allFlashcards.find(c => c.id === cardId);
         const res = await fetch(`${API_BASE}/courses/flashcards/master`, {
@@ -562,7 +591,7 @@
 
     async function checkDictationAnswer() {
       if (!currentDictationItem) return;
-      if (!currentToken) { openLoginModal(); return; }
+      if (!getValidToken()) { openLoginModal(); return; }
       const userText = document.getElementById('dictation-user-input').value.trim();
       if (!userText) {
         alert('Vui lòng nhập nội dung bạn nghe được trước khi chấm điểm.');
@@ -624,7 +653,7 @@
     }
 
     async function evaluateIeltsWriting() {
-      if (!currentToken) { openLoginModal(); return; }
+      if (!getValidToken()) { openLoginModal(); return; }
       const topicEl = document.getElementById('writing-topic-select') || document.getElementById('writing-prompt-select');
       const topic = topicEl ? topicEl.value : 'IELTS Task 2';
       const essayText = document.getElementById('writing-essay-input').value.trim();
@@ -727,7 +756,7 @@
     }
 
     async function submitSpeakingEvaluation(targetSentence, spokenSentence) {
-      if (!currentToken) { openLoginModal(); return; }
+      if (!getValidToken()) { openLoginModal(); return; }
       try {
         const res = await fetch(`${API_BASE}/exams/speaking/evaluate`, {
           method: 'POST',
@@ -764,12 +793,12 @@
     // ==============================================================
     window.isExamActive = false;
 
-    const EXAM_METADATA = {
+        const EXAM_METADATA = {
       '670000000000000000000040': {
         code: 'Đề số 1 • Placement Test',
         title: 'Đánh Giá Năng Lực Quốc Tế (English Placement & IELTS/TOEIC Test)',
         durationMinutes: 30,
-        questionsCount: 10,
+        questionsCount: 8,
         level: 'A1 - C2 Toàn Diện (CEFR)',
         badgeColor: 'text-brand-600 bg-brand-50 border-brand-200 dark:bg-brand-950/40 dark:text-indigo-400',
         description: 'Bài khảo sát toàn diện đánh giá ngữ pháp, từ vựng và năng lực tư duy học thuật. Điểm số bài thi sẽ tự động phân loại trình độ và đồng bộ vào Cây kỹ năng tri thức (Knowledge Graph).'
@@ -778,7 +807,7 @@
         code: 'Đề số 2 • ETS TOEIC 850+',
         title: 'ETS TOEIC 850+ Part 5 Ngữ Pháp & Từ Vựng Chuyên Sâu',
         durationMinutes: 15,
-        questionsCount: 10,
+        questionsCount: 8,
         level: 'Intermediate - Advanced (TOEIC 750-990)',
         badgeColor: 'text-amber-600 bg-amber-50 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400',
         description: 'Chuyên đề rèn luyện phản xạ hoàn thành câu ngắn Part 5 theo chuẩn format ETS, tập trung bẫy từ loại, liên từ chỉ quan hệ logic và thành ngữ kinh doanh quốc tế.'
@@ -787,7 +816,7 @@
         code: 'Đề số 3 • IELTS Academic',
         title: 'IELTS Academic Reading & Lexical Band 7.5+',
         durationMinutes: 25,
-        questionsCount: 10,
+        questionsCount: 8,
         level: 'High Intermediate - Advanced (IELTS 6.5 - 8.0+)',
         badgeColor: 'text-emerald-600 bg-emerald-50 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400',
         description: 'Thử thách kỹ năng đọc quét thông tin, nhận diện bẫy suy luận ngữ cảnh và kho từ vựng học thuật thuộc danh mục Academic Word List (AWL).'
@@ -796,10 +825,64 @@
         code: 'Đề số 4 • Core Grammar',
         title: 'Chuyên Đề 12 Thì & Mệnh Đề Điều Kiện (Core Grammar Mastery)',
         durationMinutes: 20,
-        questionsCount: 10,
+        questionsCount: 8,
         level: 'Foundational Grammar (A2 - B2)',
         badgeColor: 'text-purple-600 bg-purple-50 border-purple-200 dark:bg-purple-950/40 dark:text-purple-400',
         description: 'Đánh giá độ chuẩn xác về hệ thống 12 thì cơ bản & nâng cao, thể bị động đặc biệt, câu điều kiện loại 0, 1, 2, 3 và đảo ngữ điều kiện.'
+      },
+      '67000000000000000000004d': {
+        code: 'Đề số 5 • IELTS Lexicon 7.0+',
+        title: 'IELTS Speaking & Listening: Academic Lexical Resource & Signposting Band 7.0+',
+        durationMinutes: 20,
+        questionsCount: 8,
+        level: 'Trung cao cấp (CEFR B2 - C1)',
+        badgeColor: 'text-cyan-600 bg-cyan-50 border-cyan-200 dark:bg-cyan-950/40 dark:text-cyan-400',
+        description: 'Chuyên sâu về từ vựng học thuật chủ đề Speaking Part 1, 2, 3 và từ định hướng tư duy (Signpost Words) trong bài thi Listening Section 3 & 4.'
+      },
+      '67000000000000000000004e': {
+        code: 'Đề số 6 • Business English',
+        title: 'Business English: Giao Tiếp, Thuyết Trình & Thư Tín Thương Mại Quốc Tế',
+        durationMinutes: 20,
+        questionsCount: 8,
+        level: 'Chuyên nghiệp (CEFR B2 - C1)',
+        badgeColor: 'text-blue-600 bg-blue-50 border-blue-200 dark:bg-blue-950/40 dark:text-blue-400',
+        description: 'Rèn luyện văn phong đàm phán, email thương mại, xử lý xung đột dự án và thuật ngữ quản trị doanh nghiệp đa quốc gia.'
+      },
+      '67000000000000000000004f': {
+        code: 'Đề số 7 • VSTEP B2 - C1',
+        title: 'VSTEP B2 - C1: Đọc Hiểu Học Thuật & Ngữ Pháp Ứng Dụng Sau Đại Học',
+        durationMinutes: 25,
+        questionsCount: 8,
+        level: 'Bậc 4 - Bậc 5 Khung 6 Bậc VN',
+        badgeColor: 'text-teal-600 bg-teal-50 border-teal-200 dark:bg-teal-950/40 dark:text-teal-400',
+        description: 'Đề luyện thi định hướng chứng chỉ VSTEP chuẩn Bộ GD&ĐT dành cho học viên thạc sĩ, tiến sĩ và giảng viên đại học.'
+      },
+      '670000000000000000000050': {
+        code: 'Đề số 8 • Collocations & Idioms',
+        title: 'Cụm Từ Cố Định & Cụm Động Từ Bản Xứ (Collocations & Phrasal Verbs Mastery)',
+        durationMinutes: 15,
+        questionsCount: 8,
+        level: 'Lưu loát tự nhiên (CEFR B2 - C1)',
+        badgeColor: 'text-violet-600 bg-violet-50 border-violet-200 dark:bg-violet-950/40 dark:text-violet-400',
+        description: 'Làm chủ các cụm từ kết hợp tự nhiên (Natural Collocations) và Phrasal Verbs nâng cao giúp bài viết và bài nói tự nhiên như người bản xứ.'
+      },
+      '670000000000000000000051': {
+        code: 'Đề số 9 • Phonetics & Stress',
+        title: 'Ngữ Âm IPA, Quy Tắc Trọng Âm & Connected Speech (Phonetics Mastery)',
+        durationMinutes: 15,
+        questionsCount: 8,
+        level: 'Ngữ âm chuẩn (Mọi cấp độ)',
+        badgeColor: 'text-amber-700 bg-amber-50 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300',
+        description: 'Phân biệt các cặp nguyên âm dễ nhầm lẫn (/i:/ vs /ɪ/, /æ/ vs /e/), quy tắc nhấn trọng âm từ 2-4 âm tiết và hiện tượng nuốt âm/nối âm trong hội thoại thực tế.'
+      },
+      '670000000000000000000052': {
+        code: 'Đề số 10 • SAT / GRE Verbal',
+        title: 'SAT / GRE Advanced Lexical Reasoning: Tư Duy Phản Biện & Từ Vựng Cực Khó',
+        durationMinutes: 25,
+        questionsCount: 8,
+        level: 'Thành thạo bản ngữ (CEFR C2)',
+        badgeColor: 'text-rose-600 bg-rose-50 border-rose-200 dark:bg-rose-950/40 dark:text-rose-400',
+        description: 'Đề khảo sát tư duy ngữ nghĩa cao cấp, văn cảnh học thuật phức tạp và suy luận logic tương đương các kỳ thi tuyển sinh sau đại học tại Mỹ.'
       }
     };
 
@@ -830,7 +913,8 @@
       const container = document.getElementById('exam-questions-box');
       if (!container) return;
 
-      const isLogged = !!currentToken;
+      const activeToken = window.currentToken || (typeof currentToken !== 'undefined' ? currentToken : null) || localStorage.getItem('edupro_token');
+      const isLogged = !!activeToken;
 
       container.innerHTML = `
         <div id="exam-lobby-card" class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-10 border border-slate-200/80 dark:border-slate-800 shadow-sm relative overflow-hidden">
@@ -927,7 +1011,7 @@
                 <span>BẮT ĐẦU LÀM BÀI THI</span>
               </button>
             ` : `
-              <button onclick="openLoginModal()" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl font-black text-sm text-white bg-brand-600 hover:bg-brand-700 shadow-xl shadow-brand-500/25 transition-all flex items-center justify-center gap-2.5 cursor-pointer">
+              <button onclick="handleExamStartOrLogin()" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl font-black text-sm text-white bg-brand-600 hover:bg-brand-700 shadow-xl shadow-brand-500/25 transition-all flex items-center justify-center gap-2.5 cursor-pointer">
                 <i class="fa-solid fa-right-to-bracket text-xs"></i>
                 <span>ĐĂNG NHẬP ĐỂ BẮT ĐẦU</span>
               </button>
@@ -937,11 +1021,27 @@
       `;
     }
 
+    function handleExamStartOrLogin() {
+      const activeToken = window.currentToken || (typeof currentToken !== 'undefined' ? currentToken : null) || localStorage.getItem('edupro_token');
+      if (activeToken) {
+        currentToken = activeToken;
+        window.currentToken = activeToken;
+        if (typeof syncUserUI === 'function') syncUserUI();
+        confirmStartExam();
+      } else {
+        openLoginModal();
+      }
+    }
+    window.handleExamStartOrLogin = handleExamStartOrLogin;
+
     async function confirmStartExam() {
-      if (!currentToken) {
+      const activeToken = window.currentToken || (typeof currentToken !== 'undefined' ? currentToken : null) || localStorage.getItem('edupro_token');
+      if (!activeToken) {
         openLoginModal();
         return;
       }
+      currentToken = activeToken;
+      window.currentToken = activeToken;
       const btn = document.getElementById('btn-start-exam-now');
       if (btn) {
         btn.disabled = true;
@@ -979,7 +1079,7 @@
     }
 
     async function toggleQuestionBookmark(questionId) {
-      if (!currentToken) { openLoginModal(); return; }
+      if (!getValidToken()) { openLoginModal(); return; }
       try {
         const res = await fetch(`${API_BASE}/exams/bookmarks/toggle`, {
           method: 'POST',
@@ -2696,7 +2796,7 @@ function closeAddFlashcardModal() {
 
 async function addNewCustomFlashcard(e) {
   if (e && e.preventDefault) e.preventDefault();
-  if (!currentToken) { openLoginModal(); return; }
+  if (!getValidToken()) { openLoginModal(); return; }
   const word = document.getElementById('vocab-word').value.trim();
   const phonetic = document.getElementById('vocab-phonetic').value.trim();
   const meaning = document.getElementById('vocab-meaning').value.trim();
@@ -2777,7 +2877,7 @@ function toggleVocabAutoplay() {
 }
 
 async function exportVocabCsv() {
-  if (!currentToken) { openLoginModal(); return; }
+  if (!getValidToken()) { openLoginModal(); return; }
   try {
     const res = await fetch(`${API_BASE}/courses/flashcards/export`, {
       headers: { Authorization: `Bearer ${currentToken}` }

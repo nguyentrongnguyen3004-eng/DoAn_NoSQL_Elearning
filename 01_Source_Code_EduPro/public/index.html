@@ -43,11 +43,15 @@
             brand: {
               50: '#eef2ff',
               100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
+              400: '#818cf8',
               500: '#6366f1',
               600: '#4f46e5',
               700: '#4338ca',
               800: '#3730a3',
               900: '#312e81',
+              950: '#0f172a',
             }
           }
         }
@@ -115,68 +119,68 @@
     }
   </style>
 </head>
-<body class="bg-[#f8fafc] dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col font-sans transition-colors duration-200">
+<body class="bg-[#f8fafc] dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col font-sans transition-colors duration-200 overflow-x-hidden w-full max-w-full">
 
   <!-- ============================================================== -->
   <!-- 1. NAVIGATION BAR CHUẨN THƯƠNG MẠI (DARK/LIGHT + LOGO)          -->
   <!-- ============================================================== -->
-  <nav class="sticky top-0 z-40 glass-nav border-b border-slate-200/80 dark:border-slate-800/80 transition-all">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16 sm:h-[70px] gap-2 lg:gap-3">
+  <nav class="sticky top-0 z-40 glass-nav border-b border-slate-200/80 dark:border-slate-800/80 transition-all w-full">
+    <div class="w-full max-w-[1720px] mx-auto px-3 sm:px-5 lg:px-6 xl:px-8">
+      <div class="flex items-center justify-between h-16 sm:h-[70px] gap-1.5 sm:gap-2 xl:gap-3">
         
         <!-- Logo & Thương hiệu -->
-        <div class="flex items-center gap-2.5 xl:gap-4 shrink-0">
-          <a href="#" onclick="showSection('courses')" class="flex items-center gap-2.5 group">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-brand-500/25 group-hover:scale-105 transition-transform">
-              <i class="fa-solid fa-graduation-cap text-base sm:text-lg"></i>
+        <div class="flex items-center gap-2 xl:gap-3 shrink-0">
+          <a href="#" onclick="showSection('courses')" class="flex items-center gap-2 group">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 xl:w-10 xl:h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-brand-500/25 group-hover:scale-105 transition-transform">
+              <i class="fa-solid fa-graduation-cap text-sm sm:text-base xl:text-lg"></i>
             </div>
             <div class="flex items-center gap-1.5">
-              <span class="text-lg sm:text-xl font-black tracking-tight text-slate-900 dark:text-white">EduPro</span>
+              <span class="text-base sm:text-lg xl:text-xl font-black tracking-tight text-slate-900 dark:text-white">EduPro</span>
               <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-brand-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800">English</span>
             </div>
           </a>
 
           <!-- Menu Danh mục (Desktop) -->
-          <div class="hidden lg:flex items-center gap-0.5 xl:gap-1">
-            <button onclick="showSection('courses')" id="nav-btn-courses" class="nav-item-btn whitespace-nowrap px-2.5 py-1.5 rounded-xl text-xs font-bold text-brand-600 dark:text-indigo-400 bg-brand-50 dark:bg-brand-900/30 transition-all">
+          <div class="hidden xl:flex items-center gap-0.5 xl:gap-1">
+            <button onclick="showSection('courses')" id="nav-btn-courses" class="nav-item-btn whitespace-nowrap px-2 xl:px-2.5 py-1.5 rounded-xl text-[11px] xl:text-xs font-bold text-brand-600 dark:text-indigo-400 bg-brand-50 dark:bg-brand-900/30 transition-all">
               <i class="fa-solid fa-compass mr-1"></i> Khóa học
             </button>
-            <button onclick="showSection('vocab')" id="nav-btn-vocab" class="nav-item-btn whitespace-nowrap px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+            <button onclick="showSection('vocab')" id="nav-btn-vocab" class="nav-item-btn whitespace-nowrap px-2 xl:px-2.5 py-1.5 rounded-xl text-[11px] xl:text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
               <i class="fa-solid fa-layer-group mr-1 text-amber-500"></i> Từ vựng
             </button>
-            <button onclick="showSection('writing')" id="nav-btn-writing" class="nav-item-btn whitespace-nowrap px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+            <button onclick="showSection('writing')" id="nav-btn-writing" class="nav-item-btn whitespace-nowrap px-2 xl:px-2.5 py-1.5 rounded-xl text-[11px] xl:text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
               <i class="fa-solid fa-pen-nib mr-1 text-purple-500"></i> Kỹ năng AI
             </button>
-            <button onclick="showSection('exam')" id="nav-btn-exam" class="nav-item-btn whitespace-nowrap px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+            <button onclick="showSection('exam')" id="nav-btn-exam" class="nav-item-btn whitespace-nowrap px-2 xl:px-2.5 py-1.5 rounded-xl text-[11px] xl:text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
               <i class="fa-solid fa-award mr-1 text-rose-500"></i> Phòng thi
             </button>
-            <button onclick="showSection('graph')" id="nav-btn-graph" class="nav-item-btn whitespace-nowrap px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+            <button onclick="showSection('graph')" id="nav-btn-graph" class="nav-item-btn whitespace-nowrap px-2 xl:px-2.5 py-1.5 rounded-xl text-[11px] xl:text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
               <i class="fa-solid fa-network-wired mr-1 text-emerald-500"></i> Lộ trình
             </button>
-            <button onclick="showSection('history')" id="nav-btn-history" class="nav-item-btn whitespace-nowrap px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+            <button onclick="showSection('history')" id="nav-btn-history" class="nav-item-btn whitespace-nowrap px-2 xl:px-2.5 py-1.5 rounded-xl text-[11px] xl:text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
               <i class="fa-solid fa-fire mr-1 text-orange-500"></i> Hồ sơ
             </button>
-            <button onclick="m2OpenVerify()" id="nav-btn-verify-cert" title="Tra cứu tính hợp lệ của chứng chỉ công khai (Task 2.7)" class="nav-item-btn whitespace-nowrap px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex items-center gap-1">
+            <button onclick="m2OpenVerify()" id="nav-btn-verify-cert" title="Tra cứu tính hợp lệ của chứng chỉ công khai (Task 2.7)" class="nav-item-btn whitespace-nowrap px-2 xl:px-2.5 py-1.5 rounded-xl text-[11px] xl:text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex items-center gap-1">
               <i class="fa-solid fa-certificate mr-1 text-amber-500"></i> Tra cứu
             </button>
-            <button onclick="showSection('analytics')" id="nav-btn-analytics" class="nav-item-btn hidden whitespace-nowrap px-2.5 py-1.5 rounded-xl text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-all">
+            <button onclick="showSection('analytics')" id="nav-btn-analytics" class="nav-item-btn hidden whitespace-nowrap px-2 xl:px-2.5 py-1.5 rounded-xl text-[11px] xl:text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-all">
               <i class="fa-solid fa-sliders mr-1"></i> Quản trị
             </button>
           </div>
         </div>
 
         <!-- Thanh tìm kiếm nhanh & User Controls -->
-        <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
+        <div class="flex items-center gap-1.5 sm:gap-2 xl:gap-2.5 shrink-0">
           
-          <!-- Nút Giám sát 4 CSDL Telemetry (Dạng pill thanh lịch) -->
-          <button onclick="openSystemTelemetryModal()" id="nav-btn-telemetry" class="whitespace-nowrap px-2.5 py-1.5 rounded-xl text-xs font-bold text-sky-700 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 hover:bg-sky-100 dark:hover:bg-sky-900/50 border border-sky-200/60 dark:border-sky-800/60 transition-all flex items-center gap-1.5" title="Bảng điều khiển Giám sát 4 NoSQL, Tường lửa & Sao lưu">
+          <!-- Nút Giám sát 4 CSDL Telemetry (Chỉ hiển thị cho Quản trị viên Admin) -->
+          <button onclick="openSystemTelemetryModal()" id="nav-btn-telemetry" class="hidden whitespace-nowrap px-2 xl:px-2.5 py-1.5 rounded-xl text-[11px] xl:text-xs font-bold text-sky-700 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 hover:bg-sky-100 dark:hover:bg-sky-900/50 border border-sky-200/60 dark:border-sky-800/60 transition-all flex items-center gap-1.5" title="Bảng điều khiển Giám sát 4 NoSQL, Tường lửa & Sao lưu (Chỉ Admin)">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <i class="fa-solid fa-server text-sky-500"></i>
-            <span class="hidden xl:inline">4 CSDL</span>
+            <span class="hidden sm:inline">4 CSDL</span>
           </button>
 
           <!-- Search input thời gian thực (Hiển thị từ màn hình 2xl) -->
-          <div class="hidden 2xl:flex items-center relative w-36 2xl:w-44 shrink-0">
+          <div class="hidden 2xl:flex items-center relative w-32 2xl:w-40 shrink-0">
             <i class="fa-solid fa-magnifying-glass absolute left-3 text-slate-400 text-xs"></i>
             <input type="text" id="global-search-input" oninput="handleInstantSearch(this.value)" placeholder="Tìm khóa học..." class="w-full pl-8 pr-3 py-1.5 bg-slate-100/90 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl text-xs focus:bg-white dark:focus:bg-slate-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/15 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-800 dark:text-slate-200">
           </div>
@@ -226,14 +230,14 @@
             </button>
           </div>
 
-          <div id="auth-logged" class="hidden flex items-center gap-2 sm:gap-2.5 shrink-0">
-            <div class="flex items-center gap-2 pl-2 sm:border-l sm:border-slate-200 dark:border-slate-800">
+          <div id="auth-logged" class="hidden flex items-center gap-1.5 sm:gap-2 xl:gap-2.5 shrink-0">
+            <div class="flex items-center gap-2 pl-1.5 sm:pl-2 sm:border-l sm:border-slate-200 dark:border-slate-800">
               <div class="relative shrink-0">
                 <img id="nav-user-avatar" src="" alt="Avatar" class="w-8 h-8 rounded-full object-cover ring-2 ring-brand-500/20 shadow-sm">
                 <span class="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900"></span>
               </div>
               <div class="hidden sm:block text-left">
-                <div class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight truncate max-w-[110px] xl:max-w-[130px]" id="nav-user-name">Người dùng</div>
+                <div class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight truncate max-w-[120px] xl:max-w-[160px] 2xl:max-w-[200px]" id="nav-user-name">Người dùng</div>
                 <div class="flex items-center gap-1.5 mt-0.5 leading-none">
                   <span id="m2-nav-xp" class="text-[10px] font-extrabold text-amber-600 dark:text-amber-400"></span>
                   <span class="text-[10px] text-slate-300 dark:text-slate-600">•</span>
@@ -247,7 +251,7 @@
           </div>
 
           <!-- NÚT HAMBURGER MOBILE MENU -->
-          <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="lg:hidden w-8 h-8 sm:w-9 sm:h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-900 text-slate-700 dark:text-slate-200 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-800 transition-all focus:outline-none" aria-label="Toggle menu">
+          <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="xl:hidden w-8 h-8 sm:w-9 sm:h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-900 text-slate-700 dark:text-slate-200 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-800 transition-all focus:outline-none" aria-label="Toggle menu">
             <i id="mobile-menu-icon" class="fa-solid fa-bars text-sm sm:text-base"></i>
           </button>
 
@@ -257,7 +261,7 @@
     </div>
 
     <!-- MOBILE MENU DRAWER / PANEL -->
-    <div id="mobile-menu-drawer" class="hidden md:hidden border-t border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl px-4 py-4 space-y-2 shadow-2xl transition-all">
+    <div id="mobile-menu-drawer" class="hidden xl:hidden border-t border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl px-4 py-4 space-y-2 shadow-2xl transition-all">
       <!-- Search trên mobile -->
       <div class="relative w-full mb-3">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
@@ -319,6 +323,13 @@
           <i class="fa-solid fa-sliders text-sm"></i>
         </div>
         <span>Quản trị Hệ Thống & CMS</span>
+      </button>
+
+      <button onclick="openSystemTelemetryModal(); toggleMobileMenu()" id="mobile-nav-btn-telemetry" class="hidden w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-sky-700 dark:text-sky-300 hover:bg-sky-50 dark:hover:bg-sky-950/40 transition-all text-left">
+        <div class="w-8 h-8 rounded-lg bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 flex items-center justify-center">
+          <i class="fa-solid fa-server text-sm"></i>
+        </div>
+        <span>Giám Sát 4 CSDL NoSQL</span>
       </button>
     </div>
   </nav>
@@ -458,8 +469,9 @@
     
     <!-- TÍNH NĂNG KIẾN TRÚC MỚI: KHÓA HỌC ĐỀ XUẤT THEO ĐỒ THỊ NEO4J COLLABORATIVE AI -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
-      <div class="bg-gradient-to-r from-indigo-950/95 via-slate-900/95 to-brand-950/95 rounded-3xl p-6 sm:p-8 border border-indigo-500/30 shadow-xl text-white relative overflow-hidden">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+      <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-8 border border-indigo-500/30 shadow-xl text-white relative overflow-hidden">
+        <div class="absolute -right-12 -top-12 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <div>
             <div class="flex items-center gap-2 mb-2">
               <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -470,11 +482,11 @@
               Thuật toán phân tích đồ thị cộng tác (Co-enrollment & CEFR Shortest Path) nhận diện các khóa học có mức độ liên kết cao nhất với mục tiêu học tập của bạn.
             </p>
           </div>
-          <button onclick="loadCollaborativeRecommendations()" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-xs font-bold transition-all flex items-center gap-2 shrink-0">
+          <button onclick="loadCollaborativeRecommendations()" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-xs font-bold transition-all flex items-center gap-2 shrink-0 text-white">
             <i class="fa-solid fa-arrows-rotate"></i> Cập nhật đề xuất
           </button>
         </div>
-        <div id="collaborative-recommendations-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div id="collaborative-recommendations-grid" class="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-4">
           <!-- Nạp động từ API Neo4j -->
         </div>
       </div>
@@ -536,17 +548,17 @@
             </div>
             <div>
               <div class="text-[11px] font-bold uppercase text-amber-600 dark:text-amber-400">Tiến độ từ vựng</div>
-              <div class="text-lg font-black text-slate-900 dark:text-white" id="vocab-mastered-counter">Đã thuộc: 2 / 12 từ</div>
+              <div class="text-lg font-black text-slate-900 dark:text-white" id="vocab-mastered-counter">Đã thuộc: 0 / 60 từ</div>
             </div>
           </div>
         </div>
 
         <!-- Bộ lọc chủ đề từ vựng -->
         <div class="flex flex-wrap gap-2 mb-6">
-          <button onclick="filterFlashcards('ALL', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white shadow-sm transition-all">Tất cả (12)</button>
-          <button onclick="filterFlashcards('IELTS Band 8.0', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-all">IELTS Band 8.0</button>
-          <button onclick="filterFlashcards('TOEIC Business', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-all">TOEIC Business</button>
-          <button onclick="filterFlashcards('Phrasal Verbs & Idioms', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-all">Phrasal Verbs & Idioms</button>
+          <button id="fc-btn-all" onclick="filterFlashcards('ALL', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white shadow-sm transition-all">Tất cả (60)</button>
+          <button id="fc-btn-ielts" onclick="filterFlashcards('IELTS Band 8.0', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-all">IELTS Band 8.0 (20)</button>
+          <button id="fc-btn-toeic" onclick="filterFlashcards('TOEIC Business', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-all">TOEIC Business (20)</button>
+          <button id="fc-btn-idioms" onclick="filterFlashcards('Phrasal Verbs & Idioms', this)" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-all">Phrasal Verbs & Idioms (20)</button>
         </div>
 
         <!-- HỆ THỐNG ÔN TẬP NGẮT QUÃNG THÔNG MINH (SRS ANKI MODE - REDIS ZSET TIME-QUEUE) -->
@@ -1252,31 +1264,55 @@
   <section id="section-exam" class="main-section hidden flex-grow py-8 sm:py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-      <!-- Bộ chọn 4 Đề thi Tiếng Anh theo cấp độ + Chế độ Luyện tập -->
+      <!-- Bộ chọn 10 Đề thi Tiếng Anh theo cấp độ + Chế độ Luyện tập -->
       <div class="mb-6">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-3">
-          <span class="text-xs font-bold uppercase tracking-wider text-brand-600 dark:text-indigo-400"><i class="fa-solid fa-folder-open mr-1"></i> Ngân hàng 4 Bộ đề thi Tiếng Anh chuẩn quốc tế</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-600 dark:text-indigo-400"><i class="fa-solid fa-folder-open mr-1"></i> Ngân hàng 10 Bộ đề thi Tiếng Anh chuẩn quốc tế</span>
           <label class="inline-flex items-center gap-2 cursor-pointer bg-white dark:bg-slate-900 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300">
             <input type="checkbox" id="toggle-practice-mode" onchange="togglePracticeMode(this.checked)" class="rounded text-brand-600 focus:ring-brand-500">
             <span>Chế độ Luyện tập (Hiện đáp án & giải thích ngay khi chọn)</span>
           </label>
         </div>
-        <div id="exam-catalog-selector" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <button onclick="selectExamFromCatalog('670000000000000000000040', this)" class="exam-cat-card p-3.5 rounded-2xl border-2 border-brand-600 bg-brand-50/50 dark:bg-brand-950/30 text-left transition-all">
-            <div class="text-[10px] font-extrabold uppercase text-brand-600 dark:text-indigo-400">Đề số 1 • Placement Test</div>
-            <div class="text-xs font-bold text-slate-900 dark:text-white mt-0.5 line-clamp-1">Đánh Giá Năng Lực Quốc Tế (A1-C2)</div>
+        <div id="exam-catalog-selector" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <button onclick="selectExamFromCatalog('670000000000000000000040', this)" class="exam-cat-card p-3 rounded-2xl border-2 border-brand-600 bg-brand-50/50 dark:bg-brand-950/30 text-left transition-all">
+            <div class="text-[10px] font-extrabold uppercase text-brand-600 dark:text-indigo-400">Đề số 1 • Placement</div>
+            <div class="text-xs font-bold text-slate-900 dark:text-white mt-0.5 line-clamp-1">Placement Test (A1-C2)</div>
           </button>
-          <button onclick="selectExamFromCatalog('67000000000000000000004a', this)" class="exam-cat-card p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-brand-500 text-left transition-all">
-            <div class="text-[10px] font-extrabold uppercase text-amber-600">Đề số 2 • ETS TOEIC 850+</div>
-            <div class="text-xs font-bold text-slate-900 dark:text-white mt-0.5 line-clamp-1">TOEIC Part 5 Ngữ Pháp & Từ Vựng</div>
+          <button onclick="selectExamFromCatalog('67000000000000000000004a', this)" class="exam-cat-card p-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-brand-500 text-left transition-all">
+            <div class="text-[10px] font-extrabold uppercase text-amber-600 dark:text-amber-400">Đề số 2 • ETS TOEIC</div>
+            <div class="text-xs font-bold text-slate-900 dark:text-white mt-0.5 line-clamp-1">TOEIC Part 5 (850+)</div>
           </button>
-          <button onclick="selectExamFromCatalog('67000000000000000000004b', this)" class="exam-cat-card p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-brand-500 text-left transition-all">
-            <div class="text-[10px] font-extrabold uppercase text-emerald-600">Đề số 3 • IELTS Academic</div>
-            <div class="text-xs font-bold text-slate-900 dark:text-white mt-0.5 line-clamp-1">IELTS Reading & Lexical Band 7.5+</div>
+          <button onclick="selectExamFromCatalog('67000000000000000000004b', this)" class="exam-cat-card p-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-brand-500 text-left transition-all">
+            <div class="text-[10px] font-extrabold uppercase text-emerald-600 dark:text-emerald-400">Đề số 3 • IELTS Academic</div>
+            <div class="text-xs font-bold text-slate-900 dark:text-white mt-0.5 line-clamp-1">Reading & Lexical (7.5+)</div>
           </button>
-          <button onclick="selectExamFromCatalog('67000000000000000000004c', this)" class="exam-cat-card p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-brand-500 text-left transition-all">
-            <div class="text-[10px] font-extrabold uppercase text-purple-600">Đề số 4 • Core Grammar</div>
-            <div class="text-xs font-bold text-slate-900 dark:text-white mt-0.5 line-clamp-1">Chuyên Đề 12 Thì & Câu Điều Kiện</div>
+          <button onclick="selectExamFromCatalog('67000000000000000000004c', this)" class="exam-cat-card p-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-brand-500 text-left transition-all">
+            <div class="text-[10px] font-extrabold uppercase text-purple-600 dark:text-purple-400">Đề số 4 • Core Grammar</div>
+            <div class="text-xs font-bold text-slate-900 dark:text-white mt-0.5 line-clamp-1">12 Thì & Câu Điều Kiện</div>
+          </button>
+          <button onclick="selectExamFromCatalog('67000000000000000000004d', this)" class="exam-cat-card p-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-brand-500 text-left transition-all">
+            <div class="text-[10px] font-extrabold uppercase text-cyan-600 dark:text-cyan-400">Đề số 5 • IELTS Lexicon</div>
+            <div class="text-xs font-bold text-slate-900 dark:text-white mt-0.5 line-clamp-1">Speaking & Listening (7.0+)</div>
+          </button>
+          <button onclick="selectExamFromCatalog('67000000000000000000004e', this)" class="exam-cat-card p-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-brand-500 text-left transition-all">
+            <div class="text-[10px] font-extrabold uppercase text-blue-600 dark:text-blue-400">Đề số 6 • Business</div>
+            <div class="text-xs font-bold text-slate-900 dark:text-white mt-0.5 line-clamp-1">Thương Mại & Thư Tín B2-C1</div>
+          </button>
+          <button onclick="selectExamFromCatalog('67000000000000000000004f', this)" class="exam-cat-card p-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-brand-500 text-left transition-all">
+            <div class="text-[10px] font-extrabold uppercase text-teal-600 dark:text-teal-400">Đề số 7 • VSTEP B2-C1</div>
+            <div class="text-xs font-bold text-slate-900 dark:text-white mt-0.5 line-clamp-1">Đọc Hiểu & Ngữ Pháp Sau ĐH</div>
+          </button>
+          <button onclick="selectExamFromCatalog('670000000000000000000050', this)" class="exam-cat-card p-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-brand-500 text-left transition-all">
+            <div class="text-[10px] font-extrabold uppercase text-violet-600 dark:text-violet-400">Đề số 8 • Collocations</div>
+            <div class="text-xs font-bold text-slate-900 dark:text-white mt-0.5 line-clamp-1">Phrasal Verbs & Idioms</div>
+          </button>
+          <button onclick="selectExamFromCatalog('670000000000000000000051', this)" class="exam-cat-card p-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-brand-500 text-left transition-all">
+            <div class="text-[10px] font-extrabold uppercase text-amber-700 dark:text-amber-300">Đề số 9 • Ngữ Âm IPA</div>
+            <div class="text-xs font-bold text-slate-900 dark:text-white mt-0.5 line-clamp-1">Trọng Âm & Connected Speech</div>
+          </button>
+          <button onclick="selectExamFromCatalog('670000000000000000000052', this)" class="exam-cat-card p-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-brand-500 text-left transition-all">
+            <div class="text-[10px] font-extrabold uppercase text-rose-600 dark:text-rose-400">Đề số 10 • SAT / GRE</div>
+            <div class="text-xs font-bold text-slate-900 dark:text-white mt-0.5 line-clamp-1">Verbal Reasoning 99th%</div>
           </button>
         </div>
       </div>
@@ -3144,11 +3180,11 @@
   <!-- ============================================================== -->
   <!-- MODULAR JAVASCRIPT ARCHITECTURE (SEPARATION OF CONCERNS)       -->
   <!-- ============================================================== -->
-  <script src="/js/core.js?v=2.0.0"></script>
-  <script src="/js/classroom.js?v=2.0.0"></script>
-  <script src="/js/study.js?v=2.0.0"></script>
-  <script src="/js/telemetry.js?v=2.0.0"></script>
-  <script src="/js/copilot.js?v=2.0.0"></script>
+  <script src="/js/core.js?v=2.7.0"></script>
+  <script src="/js/classroom.js?v=2.7.0"></script>
+  <script src="/js/study.js?v=2.7.0"></script>
+  <script src="/js/telemetry.js?v=2.7.0"></script>
+  <script src="/js/copilot.js?v=2.7.0"></script>
   <script src="/member2.js"></script>
 
   <!-- MODAL: CHINH SUA HO SO HOC VIEN (TASK 1.1) -->

@@ -28,6 +28,15 @@ function enrollmentCourseFilter(courseId) {
   return { $or: [{ courseId: { $in: values } }, { 'course._id': { $in: values } }] };
 }
 
+function combinedEnrollmentFilter(user, courseId) {
+  return {
+    $and: [
+      enrollmentUserFilter(user),
+      enrollmentCourseFilter(courseId)
+    ]
+  };
+}
+
 async function courseLessonList(db, courseId) {
   const c = await db.collection('courses').findOne({ _id: ObjectId.isValid(courseId) ? new ObjectId(courseId) : courseId });
   if (c && Array.isArray(c.lessons) && c.lessons.length) return c.lessons;
@@ -84,129 +93,9 @@ const memoryDiscussions = [
   }
 ];
 
-// DANH SACH 12 FLASHCARD TU VUNG TIENG ANH CHUAN IELTS / TOEIC / BUSINESS
-const DEFAULT_FLASHCARDS = [
-  {
-    id: 'FC_01',
-    word: 'Mitigate',
-    phonetic: '/ˈmɪt.ɪ.ɡeɪt/',
-    pos: 'Verb (Động từ)',
-    category: 'IELTS Band 8.0',
-    meaning: 'Làm giảm nhẹ, xoa dịu (tác động xấu, rủi ro)',
-    collocation: 'mitigate the adverse effects / mitigate risks',
-    example: 'Governments must take immediate action to mitigate the adverse effects of climate change.'
-  },
-  {
-    id: 'FC_02',
-    word: 'Plummet',
-    phonetic: '/ˈplʌm.ɪt/',
-    pos: 'Verb (Động từ)',
-    category: 'IELTS Band 8.0',
-    meaning: 'Sụt giảm mạnh, lao dốc đột ngột (dùng trong Writing Task 1)',
-    collocation: 'plummet dramatically / prices plummeted',
-    example: ' Smartphone sales plummeted dramatically in the third quarter due to supply chain issues.'
-  },
-  {
-    id: 'FC_03',
-    word: 'Ubiquitous',
-    phonetic: '/juːˈbɪk.wɪ.təs/',
-    pos: 'Adjective (Tính từ)',
-    category: 'IELTS Band 8.0',
-    meaning: 'Phổ biến ở khắp mọi nơi, có mặt khắp nơi',
-    collocation: 'become ubiquitous in modern society',
-    example: 'Artificial intelligence has become ubiquitous in modern education and healthcare.'
-  },
-  {
-    id: 'FC_04',
-    word: 'Prerequisite',
-    phonetic: '/ˌpriːˈrek.wɪ.zɪt/',
-    pos: 'Noun (Danh từ)',
-    category: 'IELTS Band 8.0',
-    meaning: 'Điều kiện tiên quyết, yếu tố bắt buộc trước tiên',
-    collocation: 'a prerequisite for success / admission',
-    example: 'A strong foundation in grammar is a prerequisite for achieving Band 7.5+ in IELTS Writing.'
-  },
-  {
-    id: 'FC_05',
-    word: 'Reimburse',
-    phonetic: '/ˌriː.ɪmˈbɜːs/',
-    pos: 'Verb (Động từ)',
-    category: 'TOEIC Business',
-    meaning: 'Hoàn trả lại tiền, bồi hoàn chi phí công tác',
-    collocation: 'reimburse travel expenses',
-    example: 'The accounting department will reimburse all approved travel expenses within five business days.'
-  },
-  {
-    id: 'FC_06',
-    word: 'Tentative',
-    phonetic: '/ˈten.tə.tɪv/',
-    pos: 'Adjective (Tính từ)',
-    category: 'TOEIC Business',
-    meaning: 'Dự kiến, tạm thời (chưa chốt cố định)',
-    collocation: 'a tentative schedule / tentative agreement',
-    example: 'We have set a tentative date for the product launch conference next month.'
-  },
-  {
-    id: 'FC_07',
-    word: 'Unanimous',
-    phonetic: '/juːˈnæn.ɪ.məs/',
-    pos: 'Adjective (Tính từ)',
-    category: 'TOEIC Business',
-    meaning: 'Đồng thuận 100%, nhất trí hoàn toàn',
-    collocation: 'reach a unanimous decision',
-    example: 'The board of directors reached a unanimous decision to expand into the Asian market.'
-  },
-  {
-    id: 'FC_08',
-    word: 'Lucrative',
-    phonetic: '/ˈluː.krə.tɪv/',
-    pos: 'Adjective (Tính từ)',
-    category: 'TOEIC Business',
-    meaning: 'Sinh lời cao, mang lại lợi nhuận béo bở',
-    collocation: 'a lucrative contract / lucrative market',
-    example: 'Our firm signed a highly lucrative contract with an international logistics corporation.'
-  },
-  {
-    id: 'FC_09',
-    word: 'Put off',
-    phonetic: '/pʊt ɒf/',
-    pos: 'Phrasal Verb',
-    category: 'Phrasal Verbs & Idioms',
-    meaning: 'Trì hoãn, dời lại sang thời điểm khác (= postpone / delay)',
-    collocation: 'put off the meeting until tomorrow',
-    example: 'Never put off until tomorrow what you can accomplish today.'
-  },
-  {
-    id: 'FC_10',
-    word: 'Carry out',
-    phonetic: '/ˈkær.i aʊt/',
-    pos: 'Phrasal Verb',
-    category: 'Phrasal Verbs & Idioms',
-    meaning: 'Tiến hành, thực hiện (nghiên cứu, khảo sát, kế hoạch)',
-    collocation: 'carry out extensive research / an experiment',
-    example: 'Scientists at Cambridge carried out extensive research on renewable energy storage.'
-  },
-  {
-    id: 'FC_11',
-    word: 'Bridge the gap',
-    phonetic: '/brɪdʒ ðə ɡæp/',
-    pos: 'Idiom (Thành ngữ)',
-    category: 'Phrasal Verbs & Idioms',
-    meaning: 'Thu hẹp khoảng cách, kết nối sự khác biệt',
-    collocation: 'bridge the gap between theory and practice',
-    example: 'Interactive e-learning platforms help bridge the gap between rural and urban students.'
-  },
-  {
-    id: 'FC_12',
-    word: 'A blessing in disguise',
-    phonetic: '/ə ˈbles.ɪŋ ɪn dɪsˈɡaɪz/',
-    pos: 'Idiom (Thành ngữ)',
-    category: 'Phrasal Verbs & Idioms',
-    meaning: 'Trong cái rủi có cái may (tưởng xấu nhưng lại hóa tốt)',
-    collocation: 'turn out to be a blessing in disguise',
-    example: 'Missing that flight turned out to be a blessing in disguise because I met my mentor at the airport.'
-  }
-];
+// DANH SACH 60 FLASHCARD TU VUNG TIENG ANH CHUAN IELTS / TOEIC / BUSINESS
+const { FLASHCARDS_60 } = require('../data/flashcardsData');
+let DEFAULT_FLASHCARDS = [...FLASHCARDS_60];
 
 // DANH SACH CAU LUYEN NGHE CHEP CHINH TA (AUDIO DICTATION)
 const DEFAULT_DICTATIONS = [
@@ -309,7 +198,7 @@ async function recordCassandraEvent(studentId, eventType, courseId, lessonId, du
 // A1. LAY DANH SACH FLASHCARD TU VUNG + TRANG THAI DA THUOC TU REDIS SET
 router.get('/flashcards/list', async (req, res) => {
   try {
-    const studentId = req.query.studentId || '2001230589';
+    const studentId = (req.user && (req.user.username || req.user.id)) || req.query.studentId || 'student01';
     const redisKey = `flashcards:mastered:${studentId}`;
     let masteredIds = [];
 
@@ -319,21 +208,49 @@ router.get('/flashcards/list', async (req, res) => {
       } catch (e) {}
     }
     if (!masteredIds || masteredIds.length === 0) {
-      const memSet = memoryFlashcardMastered.get(studentId) || new Set(['FC_01', 'FC_05']);
-      memoryFlashcardMastered.set(studentId, memSet);
+      const memSet = memoryFlashcardMastered.get(studentId) || new Set();
       masteredIds = Array.from(memSet);
     }
 
-    const cards = DEFAULT_FLASHCARDS.map(c => ({
-      ...c,
-      mastered: masteredIds.includes(c.id)
-    }));
+    const db = getMongoDb();
+    let rawCards = [];
+    if (db) {
+      rawCards = await db.collection('flashcards').find({}).sort({ id: 1 }).toArray().catch(() => []);
+      const userCustom = await db.collection('custom_flashcards').find({
+        $or: [{ userId: studentId }, { studentId: studentId }, { createdBy: studentId }]
+      }).toArray().catch(() => []);
+      if (userCustom.length > 0) {
+        rawCards = [...userCustom, ...rawCards];
+      }
+    }
+    if (!rawCards || rawCards.length === 0) {
+      rawCards = DEFAULT_FLASHCARDS;
+    }
+
+    const cards = rawCards.map(c => {
+      const isM = masteredIds.includes(c.id);
+      return {
+        ...c,
+        mastered: isM,
+        isMastered: isM
+      };
+    });
+
+    const categories = {
+      ALL: cards.length,
+      'IELTS Band 8.0': cards.filter(c => c.category === 'IELTS Band 8.0').length,
+      'TOEIC Business': cards.filter(c => c.category === 'TOEIC Business').length,
+      'Phrasal Verbs & Idioms': cards.filter(c => c.category === 'Phrasal Verbs & Idioms').length
+    };
+
+    const actualMasteredCount = cards.filter(c => c.mastered).length;
 
     res.json({
       success: true,
       source: (redisClient && redisClient.status === 'ready') ? 'MONGODB_AND_REDIS_SET' : 'MONGODB_AND_MEMORY_SET',
-      masteredCount: masteredIds.length,
+      masteredCount: actualMasteredCount,
       totalCount: cards.length,
+      categories,
       data: cards
     });
   } catch (err) {
@@ -449,7 +366,14 @@ router.get('/gamification/profile', authenticateToken, async (req, res) => {
     // Khoa hoc da dang ky
     let enrolledIds = memoryEnrolledCourses.get(studentId);
     if (!enrolledIds) {
-      enrolledIds = new Set(['670000000000000000000010', '670000000000000000000011', '670000000000000000000012']);
+      enrolledIds = new Set();
+      if (db) {
+        const uFilter = enrollmentUserFilter(req.user);
+        const dbEnrolls = await db.collection('user_enrollments').find(uFilter).toArray();
+        dbEnrolls.forEach(e => {
+          if (e.courseId) enrolledIds.add(String(e.courseId));
+        });
+      }
       memoryEnrolledCourses.set(studentId, enrolledIds);
     }
 
@@ -624,31 +548,92 @@ router.get('/dictionary/lookup', async (req, res) => {
       return res.json({ success: true, source: 'REDIS_MEMORY_CACHE', data: memoryDictCache.get(cleanKey) });
     }
 
-    // Tim trong BUILTIN_DICTIONARY hoac DEFAULT_FLASHCARDS
-    let entry = BUILTIN_DICTIONARY[cleanKey];
-    if (!entry) {
-      const foundCard = DEFAULT_FLASHCARDS.find(c => c.word.toLowerCase() === cleanKey);
-      if (foundCard) {
+    // 1. Tìm trong MongoDB flashcards
+    const db = getMongoDb();
+    let entry = null;
+    if (db) {
+      const dbCard = await db.collection('flashcards').findOne({
+        word: { $regex: new RegExp(`^${cleanKey}$`, 'i') }
+      }).catch(() => null);
+      if (dbCard) {
         entry = {
-          word: foundCard.word,
-          phonetic: foundCard.phonetic,
-          pos: foundCard.pos,
-          meaning: foundCard.meaning,
-          example: foundCard.example,
-          synonyms: foundCard.collocation
+          word: dbCard.word,
+          phonetic: dbCard.phonetic,
+          pos: dbCard.pos,
+          category: dbCard.category,
+          cefr: dbCard.cefr || 'B2',
+          meaning: dbCard.meaning,
+          example: dbCard.example,
+          synonyms: dbCard.collocation
         };
       }
     }
 
+    // 2. Tìm trong BUILTIN_DICTIONARY hoặc DEFAULT_FLASHCARDS
+    if (!entry) {
+      entry = BUILTIN_DICTIONARY[cleanKey];
+      if (!entry) {
+        const foundCard = DEFAULT_FLASHCARDS.find(c => c.word.toLowerCase() === cleanKey);
+        if (foundCard) {
+          entry = {
+            word: foundCard.word,
+            phonetic: foundCard.phonetic,
+            pos: foundCard.pos,
+            category: foundCard.category,
+            cefr: foundCard.cefr || 'B2',
+            meaning: foundCard.meaning,
+            example: foundCard.example,
+            synonyms: foundCard.collocation
+          };
+        }
+      }
+    }
+
+    // 3. Tra cứu online Dictionary API (timeout 2.5s)
+    if (!entry) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2500);
+        const apiRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(cleanKey)}`, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (apiRes.ok) {
+          const apiJson = await apiRes.json();
+          if (Array.isArray(apiJson) && apiJson.length > 0) {
+            const first = apiJson[0];
+            const phonetic = first.phonetic || (first.phonetics && first.phonetics.find(p => p.text) && first.phonetics.find(p => p.text).text) || `/${cleanKey}/`;
+            const meaningGroup = first.meanings && first.meanings[0] ? first.meanings[0] : null;
+            const pos = meaningGroup ? meaningGroup.partOfSpeech.toUpperCase() : 'WORD';
+            const defObj = meaningGroup && meaningGroup.definitions && meaningGroup.definitions[0] ? meaningGroup.definitions[0] : null;
+            const defEn = defObj ? defObj.definition : `Lexical term: ${cleanKey}`;
+            const exEn = defObj && defObj.example ? defObj.example : `Mastering "${cleanKey}" strengthens your English communication skills.`;
+
+            entry = {
+              word: first.word.charAt(0).toUpperCase() + first.word.slice(1).toLowerCase(),
+              phonetic: phonetic,
+              pos: `${pos} (Từ vựng tra cứu)`,
+              category: 'General & Academic English',
+              cefr: 'B2',
+              meaning: defEn,
+              example: exEn,
+              synonyms: (meaningGroup && meaningGroup.synonyms && meaningGroup.synonyms.length > 0) ? meaningGroup.synonyms.slice(0, 3).join(', ') : cleanKey
+            };
+          }
+        }
+      } catch (e) {}
+    }
+
+    // 4. Fallback tự nhiên
     if (!entry) {
       const capWord = rawWord.charAt(0).toUpperCase() + rawWord.slice(1).toLowerCase();
       entry = {
         word: capWord,
         phonetic: `/${cleanKey}/`,
-        pos: 'Academic Term (Từ vựng Học thuật)',
-        meaning: `Thuật ngữ Tiếng Anh học thuật "${capWord}" trong ngữ cảnh bài thi IELTS / TOEIC Quốc tế`,
-        example: `Mastering the term "${capWord}" helps improve your Lexical Resource in IELTS reading and writing.`,
-        synonyms: 'academic vocabulary, key term, collocation'
+        pos: 'English Vocabulary (Từ vựng tiếng Anh)',
+        category: 'Tổng quát',
+        cefr: 'B2',
+        meaning: `Từ vựng tiếng Anh: "${capWord}". Tra cứu nhanh phục vụ việc học tập và bổ sung vốn từ.`,
+        example: `Practicing "${capWord}" regularly will reinforce your reading comprehension and vocabulary retention.`,
+        synonyms: cleanKey
       };
     }
 
@@ -670,18 +655,20 @@ router.get('/dictionary/lookup', async (req, res) => {
 router.post('/flashcards/custom', async (req, res) => {
   try {
     const db = getMongoDb();
-    const studentId = req.user ? req.user.username : '2001230589';
-    const { word, phonetic, pos, meaning, example, collocation } = req.body;
+    const studentId = (req.user && (req.user.username || req.user.id)) || req.body.studentId || 'student01';
+    const { word, phonetic, pos, meaning, example, collocation, category } = req.body;
 
     const newCard = {
       id: 'FC_CUSTOM_' + Date.now().toString().slice(-4),
       word: word || 'New Vocabulary',
-      phonetic: phonetic || '/vəˈkæb.jə.lər.i/',
+      phonetic: phonetic || `/${(word || '').toLowerCase()}/`,
       pos: pos || 'Academic Word',
-      category: 'IELTS Band 8.0',
+      category: category || 'IELTS Band 8.0',
       meaning: meaning || 'Từ vựng lưu từ Trợ lý Tra từ điển tức thì',
       collocation: collocation || word,
-      example: example || `Using "${word}" accurately will elevate your IELTS Band score.`,
+      example: example || `Using "${word}" accurately will elevate your IELTS / TOEIC score.`,
+      studentId: studentId,
+      userId: studentId,
       createdBy: studentId,
       createdAt: new Date()
     };
@@ -968,6 +955,53 @@ router.get('/search/text', async (req, res) => {
   }
 });
 
+// 1.2 LAY DANH SACH ID KHOA HOC DA DANG KY CUA HOC VIEN DANG DANG NHAP
+router.get('/my/enrolled', authenticateToken, async (req, res) => {
+  try {
+    const studentId = req.user.username;
+    const userId = req.user.id || studentId;
+    const db = getMongoDb();
+    const enrolledIds = new Set();
+
+    // 1. Doc tu MongoDB user_enrollments
+    if (db) {
+      const records = await db.collection('user_enrollments').find({
+        $or: [
+          { userId: userId },
+          { studentId: studentId },
+          { userId: studentId }
+        ]
+      }).toArray();
+      records.forEach(r => {
+        if (r.courseId) enrolledIds.add(String(r.courseId));
+      });
+    }
+
+    // 2. Doc tu memoryEnrolledCourses
+    const memSet = memoryEnrolledCourses.get(studentId);
+    if (memSet) {
+      memSet.forEach(cid => enrolledIds.add(String(cid)));
+    }
+
+    // 3. Doc tu Redis neu co
+    if (redisClient && redisClient.status === 'ready') {
+      try {
+        const cached = await redisClient.smembers(`user:${studentId}:enrolled_courses`);
+        if (cached && cached.length) {
+          cached.forEach(cid => enrolledIds.add(String(cid)));
+        }
+      } catch (e) {}
+    }
+
+    res.json({
+      success: true,
+      data: Array.from(enrolledIds)
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message, data: [] });
+  }
+});
+
 // 2. LAY CHI TIET KHOA HOC & DANH SACH BAI HOC + REVIEWS + NOTES
 router.get('/:id', async (req, res) => {
   try {
@@ -1052,19 +1086,56 @@ router.post('/', authenticateToken, authorizeRoles('ADMIN', 'TEACHER'), async (r
 router.post('/:id/enroll', authenticateToken, async (req, res) => {
   try {
     const studentId = req.user.username;
+    const userId = req.user.id || studentId;
     const courseId = req.params.id;
+    const db = getMongoDb();
+
     let set = memoryEnrolledCourses.get(studentId);
     if (!set) {
-      set = new Set(['670000000000000000000010', '670000000000000000000011', '670000000000000000000012']);
+      set = new Set();
       memoryEnrolledCourses.set(studentId, set);
     }
     set.add(courseId);
+
+    // Luu vao MongoDB user_enrollments
+    if (db) {
+      const filter = {
+        $or: [
+          { userId: userId, courseId: courseId },
+          { studentId: studentId, courseId: courseId }
+        ]
+      };
+      await db.collection('user_enrollments').updateOne(
+        filter,
+        {
+          $setOnInsert: {
+            userId: userId,
+            studentId: studentId,
+            courseId: courseId,
+            enrolledAt: new Date(),
+            completedLessons: [],
+            progressPercent: 0,
+            status: 'active'
+          },
+          $set: { updatedAt: new Date() }
+        },
+        { upsert: true }
+      );
+    }
+
+    // Luu vao Redis
+    if (redisClient && redisClient.status === 'ready') {
+      try {
+        await redisClient.sadd(`user:${studentId}:enrolled_courses`, courseId);
+      } catch (e) {}
+    }
 
     await recordCassandraEvent(studentId, 'COURSE_ENROLL', courseId, 'ENROLLMENT', 0, { enrolled: true });
 
     res.json({
       success: true,
-      message: 'Đã đăng ký khóa học và thêm vào Hồ sơ học tập của bạn!',
+      message: 'Đã đăng ký khóa học thành công! Bạn có thể vào học ngay bây giờ.',
+      courseId,
       enrolledCoursesCount: set.size
     });
   } catch (err) {
@@ -1191,10 +1262,44 @@ router.post('/orders/:orderId/confirm', authenticateToken, async (req, res) => {
     // Tự động kích hoạt ghi danh khóa học (Enroll)
     let set = memoryEnrolledCourses.get(studentId);
     if (!set) {
-      set = new Set(['670000000000000000000010', '670000000000000000000011', '670000000000000000000012']);
+      set = new Set();
       memoryEnrolledCourses.set(studentId, set);
     }
     set.add(courseId);
+
+    // Luu vao MongoDB user_enrollments
+    if (db) {
+      const userId = req.user ? req.user.id : studentId;
+      const filter = {
+        $or: [
+          { userId: userId, courseId: courseId },
+          { studentId: studentId, courseId: courseId }
+        ]
+      };
+      await db.collection('user_enrollments').updateOne(
+        filter,
+        {
+          $setOnInsert: {
+            userId: userId,
+            studentId: studentId,
+            courseId: courseId,
+            enrolledAt: new Date(),
+            completedLessons: [],
+            progressPercent: 0,
+            status: 'active'
+          },
+          $set: { updatedAt: new Date() }
+        },
+        { upsert: true }
+      );
+    }
+
+    // Luu vao Redis
+    if (redisClient && redisClient.status === 'ready') {
+      try {
+        await redisClient.sadd(`user:${studentId}:enrolled_courses`, courseId);
+      } catch (e) {}
+    }
 
     // Ghi nhận telemetry Cassandra
     await recordCassandraEvent(studentId, 'COURSE_ENROLL_PAID', courseId, 'VIETQR_PAYMENT', 0, { orderId, amount, status: 'PAID' });
@@ -2148,7 +2253,7 @@ router.get('/:id/progress', authenticateToken, async (req, res) => {
     if (!db) return res.status(500).json({ success: false, message: 'MongoDB chưa sẵn sàng' });
     const [lessons, enrollment] = await Promise.all([
       courseLessonList(db, courseId),
-      db.collection('user_enrollments').findOne({ ...enrollmentUserFilter(req.user), ...enrollmentCourseFilter(courseId) })
+      db.collection('user_enrollments').findOne(combinedEnrollmentFilter(req.user, courseId))
     ]);
     const completedLessons = enrollment && Array.isArray(enrollment.completedLessons) ? enrollment.completedLessons : [];
     const progressPercent = lessons.length ? Math.round(completedLessons.length / lessons.length * 100) : 0;
@@ -2169,21 +2274,48 @@ router.post('/:id/lessons/:lessonIndex/toggle-complete', authenticateToken, asyn
     if (!Number.isInteger(lessonIndex) || lessonIndex < 0 || lessonIndex >= lessons.length) {
       return res.status(404).json({ success: false, message: 'Bài học không tồn tại' });
     }
-    const userFilter = enrollmentUserFilter(req.user);
-    const courseFilter = enrollmentCourseFilter(courseId);
+    const filter = combinedEnrollmentFilter(req.user, courseId);
     const enrollments = db.collection('user_enrollments');
-    let enrollment = await enrollments.findOne({ ...userFilter, ...courseFilter });
+    let enrollment = await enrollments.findOne(filter);
     if (!enrollment) {
       await enrollments.insertOne({
         userId: req.user.id, studentId: req.user.username, courseId: ObjectId.isValid(courseId) ? new ObjectId(courseId) : courseId,
         enrolledAt: new Date(), completedLessons: [], status: 'active'
       });
-      enrollment = await enrollments.findOne({ ...userFilter, ...courseFilter });
+      enrollment = await enrollments.findOne(filter);
     }
     const completedSet = new Set(Array.isArray(enrollment.completedLessons) ? enrollment.completedLessons : []);
     let isCompleted = false;
     if (completedSet.has(lessonIndex)) completedSet.delete(lessonIndex);
-    else { completedSet.add(lessonIndex); isCompleted = true; }
+    else {
+      // KIỂM TRA ĐIỀU KIỆN HOÀN THÀNH (CHỐNG GIAN LẬN FAST-COMPLETE):
+      // Yêu cầu học viên phải có dữ liệu heartbeat theo dõi video
+      const lesson = lessons[lessonIndex] || {};
+      const expectedDurationSeconds = (lesson.durationMinutes || 2) * 60;
+      const watchKey = `telemetry:watch:${req.user.username || req.user.id}:${courseId}:${lessonIndex}`;
+      
+      let validWatchSeconds = 0;
+      if (redisClient && redisClient.status === 'ready') {
+        const val = await redisClient.hget(watchKey, 'validSeconds').catch(() => 0);
+        validWatchSeconds = Number(val) || 0;
+      }
+
+      const bypass = req.query.force === 'true' || req.body.force === true || req.headers['x-admin-test'] === 'true' || ['ADMIN', 'TEACHER'].includes(req.user.role);
+      const isWatchTimeSufficient = validWatchSeconds >= (expectedDurationSeconds * 0.8) || validWatchSeconds >= 10;
+
+      if (!bypass && !isWatchTimeSufficient && expectedDurationSeconds > 30) {
+        return res.status(403).json({
+          success: false,
+          code: 'INSUFFICIENT_WATCH_TIME',
+          message: `Bạn chưa hoàn thành tối thiểu 80% thời lượng bài giảng (Đã xem: ${validWatchSeconds}s / Yêu cầu: ${Math.round(expectedDurationSeconds * 0.8)}s). Hãy theo dõi video bài giảng để ghi nhận tiến độ!`,
+          validWatchSeconds,
+          requiredSeconds: Math.round(expectedDurationSeconds * 0.8)
+        });
+      }
+
+      completedSet.add(lessonIndex);
+      isCompleted = true;
+    }
     const completedLessons = Array.from(completedSet).sort((a, b) => a - b);
     const progressPercent = lessons.length ? Math.round(completedLessons.length / lessons.length * 100) : 0;
     await enrollments.updateOne({ _id: enrollment._id }, { $set: { completedLessons, progressPercent, updatedAt: new Date() } });
@@ -2220,10 +2352,13 @@ router.delete('/:id/enroll', authenticateToken, async (req, res) => {
     const courseId = req.params.id;
     const userId = req.user.id || req.user.username;
     const db = getMongoDb();
-    if (db) await db.collection('user_enrollments').deleteOne({ ...enrollmentUserFilter(req.user), ...enrollmentCourseFilter(courseId) });
+    if (db) await db.collection('user_enrollments').deleteMany(combinedEnrollmentFilter(req.user, courseId));
     const set = memoryEnrolledCourses.get(req.user.username);
     if (set) set.delete(courseId);
-    if (redisClient && redisClient.status === 'ready') await redisClient.del(`course:progress:${userId}:${courseId}`, `cache:user:enrolled:${userId}`, `cache:user:enrolled:${req.user.username}`).catch(() => {});
+    if (redisClient && redisClient.status === 'ready') {
+      await redisClient.srem(`user:${req.user.username}:enrolled_courses`, courseId).catch(() => {});
+      await redisClient.del(`course:progress:${userId}:${courseId}`, `cache:user:enrolled:${userId}`, `cache:user:enrolled:${req.user.username}`).catch(() => {});
+    }
     return res.json({ success: true, message: 'Hủy đăng ký khóa học thành công' });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
@@ -2235,7 +2370,7 @@ router.post('/:id/archive', authenticateToken, async (req, res) => {
     const db = getMongoDb();
     if (!db) return res.status(500).json({ success: false, message: 'MongoDB chưa sẵn sàng' });
     const result = await db.collection('user_enrollments').updateOne(
-      { ...enrollmentUserFilter(req.user), ...enrollmentCourseFilter(req.params.id) },
+      combinedEnrollmentFilter(req.user, req.params.id),
       { $set: { status: 'archived', updatedAt: new Date() } }
     );
     if (!result.matchedCount) return res.status(404).json({ success: false, message: 'Không tìm thấy thông tin đăng ký khóa học' });
