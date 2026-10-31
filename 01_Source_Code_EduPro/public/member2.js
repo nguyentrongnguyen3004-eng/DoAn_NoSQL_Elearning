@@ -44,7 +44,7 @@ startExam = async function () {
     document.getElementById('exam-page-title').textContent = data.examTitle;
     document.getElementById('anti-cheat-status-badge').textContent = `Vi phạm: ${data.violations}/3`;
     document.getElementById('anti-cheat-modal-count').textContent = `${data.violations}/3`;
-    document.getElementById('btn-demo-violation').disabled = false;
+    const demoBtn = document.getElementById('btn-demo-violation'); if (demoBtn) demoBtn.disabled = false;
     document.getElementById('exam-result-card').classList.add('hidden');
     renderExamQuestions(); runTimer(data.ttlLeftSeconds); await loadLeaderboard();
 

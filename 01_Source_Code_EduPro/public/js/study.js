@@ -50,6 +50,7 @@
           userAnswers = savedAnswers || {};
           window.isExamActive = true;
 
+          initAntiCheatMonitoring();
           renderExamQuestions();
           runTimer(ttlLeftSeconds);
           loadLeaderboard();
@@ -2211,19 +2212,37 @@ In conclusion, modern advertising has devolved from benign commercial notificati
       }
     }
 
-    // --- TÍNH NĂNG 2: GIÁM SÁT GIAN LẬN THI TRỰC TUYẾN (ANTI-CHEAT FOCUS TRACKER) ---
+    // --- TÍNH NĂNG 2: GIÁM SÁT GIAN LẬN THI TRỰC TUYẾN (ANTI-CHEAT REAL-TIME FOCUS TRACKER) ---
     var antiCheatListenerInitialized = false;
+    var lastAntiCheatViolationAt = 0;
 
     function initAntiCheatMonitoring() {
       if (antiCheatListenerInitialized) return;
       antiCheatListenerInitialized = true;
 
-      document.addEventListener('visibilitychange', () => {
+      function triggerRealViolation(reason) {
         const examSection = document.getElementById('section-exam');
-        if (examSection && !examSection.classList.contains('hidden') && document.hidden) {
-          if (!window.isExamActive || (typeof m2 !== 'undefined' && !m2.active) || isExamDisqualified) return;
-          logAntiCheatViolation('TAB_SWITCH_OR_MINIMIZE');
+        if (!examSection || examSection.classList.contains('hidden')) return;
+        if (!window.isExamActive || (typeof m2 !== 'undefined' && !m2.active) || isExamDisqualified) return;
+
+        // Debounce / Throttle: Tránh 1 lần chuyển tab bị kích hoạt 2 lần do cả blur lẫn visibilitychange
+        const now = Date.now();
+        if (now - lastAntiCheatViolationAt < 2500) return;
+        lastAntiCheatViolationAt = now;
+
+        logAntiCheatViolation(reason);
+      }
+
+      // 1. Bắt sự kiện chuyển Tab hoặc thu nhỏ trình duyệt
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          triggerRealViolation('TAB_SWITCH_OR_MINIMIZE');
         }
+      });
+
+      // 2. Bắt sự kiện rời cửa sổ (Alt + Tab, mở cửa sổ khác, rời màn hình làm bài)
+      window.addEventListener('blur', () => {
+        triggerRealViolation('WINDOW_FOCUS_LOST');
       });
     }
 
@@ -2276,14 +2295,12 @@ In conclusion, modern advertising has devolved from benign commercial notificati
             document.querySelectorAll('#exam-questions-box input').forEach(input => {
               input.disabled = true;
             });
-            const demoBtn = document.getElementById('btn-demo-violation');
-            if (demoBtn) demoBtn.disabled = true;
 
             clearInterval(examCountdown);
             submitExam(true);
           } else {
             if (modalTitle) modalTitle.innerText = 'Cảnh Báo Vi Phạm Quy Chế Thi';
-            if (modalDesc) modalDesc.innerText = 'Bạn vừa chuyển tab hoặc rời màn hình làm bài thi. Hành vi này đã được ghi nhận vào nhật ký kiểm toán hệ thống.';
+            if (modalDesc) modalDesc.innerText = 'Bạn vừa chuyển tab hoặc rời màn hình làm bài thi. Hành vi này đã được ghi nhận vào nhật ký kiểm toán hệ thống (Cassandra & Redis).';
             if (btnText) btnText.innerText = 'Tôi Đã Hiểu & Quay Lại Làm Bài Ngay';
             if (btnIcon) btnIcon.className = 'fa-solid fa-rotate-left text-xs';
             if (modalBtn) modalBtn.className = 'w-full py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-lg shadow-rose-600/30 transition-all flex items-center justify-center gap-2';
@@ -2293,11 +2310,6 @@ In conclusion, modern advertising has devolved from benign commercial notificati
           if (modal) modal.classList.remove('hidden');
         }
       } catch (e) {}
-    }
-
-    function simulateTabSwitchViolation() {
-      if (isExamDisqualified) return;
-      logAntiCheatViolation('DEMO_TAB_SWITCH_VIOLATION');
     }
 
     function closeAntiCheatModal() {
