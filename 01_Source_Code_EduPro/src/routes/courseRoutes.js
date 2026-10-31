@@ -2280,18 +2280,47 @@ router.get('/pomodoro/presence', async (req, res) => {
 
 router.post('/pomodoro/finish-session', async (req, res) => {
   try {
-    const studentId = req.user ? req.user.username : '2001230589';
-    await recordCassandraEvent(studentId, 'POMODORO_SESSION_COMPLETE', 'LOFI_STUDY_ROOM', 'POMODORO_25MIN', 1500, {
-      focusedMinutes: 25,
+    const durationMinutes = Math.max(1, Math.min(180, Number(req.body.durationMinutes) || 25));
+    const xpEarned = Math.min(400, Math.max(10, Math.round(durationMinutes * 4)));
+
+    // Extract studentId from authorization header or req.user
+    let studentId = '2001230589';
+    let userObj = req.user;
+    const authHeader = req.headers['authorization'];
+    if (authHeader && !userObj) {
+      try {
+        const token = authHeader.split(' ')[1];
+        const jwt = require('jsonwebtoken');
+        const JWT_SECRET = process.env.JWT_SECRET || 'nosql_elearning_super_secret_jwt_key_2026';
+        userObj = jwt.verify(token, JWT_SECRET);
+      } catch (jErr) {}
+    }
+    if (userObj) {
+      studentId = userObj.username || userObj.studentId || userObj.id || studentId;
+    }
+
+    // Ghi sự kiện Time-Series vào Apache Cassandra
+    await recordCassandraEvent(studentId, 'POMODORO_SESSION_COMPLETE', 'LOFI_STUDY_ROOM', `POMODORO_${durationMinutes}MIN`, durationMinutes * 60, {
+      focusedMinutes: durationMinutes,
+      xpEarned: xpEarned,
       soundscape: 'Lofi Chill Beats'
     });
+
+    // Cộng XP trực tiếp vào tài khoản MongoDB nếu có
+    try {
+      const db = getMongoDb();
+      await db.collection('users').updateOne(
+        { $or: [{ username: studentId }, { studentId: studentId }] },
+        { $inc: { xp: xpEarned } }
+      );
+    } catch (uErr) {}
 
     res.json({
       success: true,
       source: 'CASSANDRA_DEEP_WORK_LOG',
-      message: 'Chúc mừng bạn đã hoàn thành phiên Pomodoro 25 phút tập trung! (+100 XP)',
-      xpEarned: 100,
-      focusedMinutes: 25
+      message: `Chúc mừng bạn đã hoàn thành phiên Pomodoro ${durationMinutes} phút tập trung! (+${xpEarned} XP)`,
+      xpEarned: xpEarned,
+      focusedMinutes: durationMinutes
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

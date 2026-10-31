@@ -27,7 +27,97 @@
       } catch (e) {}
     }
 
-    function setPomodoroMode(minutes, mode) {
+    let currentCustomPomoType = 'focus';
+
+    function openCustomPomodoroModal() {
+      const modal = document.getElementById('modal-custom-pomodoro');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      
+      const currMin = Math.round(window.tier4Pomodoro.totalSeconds / 60) || 30;
+      setCustomPomodoroMinutes(currMin);
+      
+      const isBreak = window.tier4Pomodoro.mode === 'short' || window.tier4Pomodoro.mode === 'long' || window.tier4Pomodoro.mode === 'custom_break';
+      selectCustomPomoType(isBreak ? 'break' : 'focus');
+    }
+
+    function closeCustomPomodoroModal() {
+      const modal = document.getElementById('modal-custom-pomodoro');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function selectCustomPomoType(type) {
+      currentCustomPomoType = type;
+      const btnFocus = document.getElementById('custom-pomo-type-focus');
+      const btnBreak = document.getElementById('custom-pomo-type-break');
+      const hint = document.getElementById('custom-pomo-xp-hint');
+      const inp = document.getElementById('input-custom-pomo-minutes');
+      const val = parseInt(inp ? inp.value : 30) || 30;
+
+      if (type === 'focus') {
+        if (btnFocus) {
+          btnFocus.className = 'p-3.5 rounded-2xl border-2 border-indigo-500 bg-indigo-500/20 text-left transition-all flex items-start gap-3';
+        }
+        if (btnBreak) {
+          btnBreak.className = 'p-3.5 rounded-2xl border-2 border-white/10 bg-white/5 hover:border-white/20 text-left transition-all flex items-start gap-3';
+        }
+        if (hint) hint.innerText = `Ước tính: +${Math.min(400, Math.max(10, val * 4))} XP (4 XP/phút)`;
+      } else {
+        if (btnFocus) {
+          btnFocus.className = 'p-3.5 rounded-2xl border-2 border-white/10 bg-white/5 hover:border-white/20 text-left transition-all flex items-start gap-3';
+        }
+        if (btnBreak) {
+          btnBreak.className = 'p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-500/20 text-left transition-all flex items-start gap-3';
+        }
+        if (hint) hint.innerText = 'Chế độ nghỉ ngơi thư giãn mắt (không tính XP)';
+      }
+    }
+
+    function setCustomPomodoroMinutes(min) {
+      const inp = document.getElementById('input-custom-pomo-minutes');
+      if (inp) inp.value = min;
+      onCustomPomoInputChange(min);
+      
+      document.querySelectorAll('.custom-pomo-chip').forEach(chip => {
+        if (chip.innerText.trim() === `${min}m`) {
+          chip.className = 'custom-pomo-chip py-1.5 rounded-xl border-2 border-indigo-500 bg-indigo-500/20 text-indigo-300 text-xs font-bold transition-all';
+        } else {
+          chip.className = 'custom-pomo-chip py-1.5 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-xs font-bold transition-all';
+        }
+      });
+    }
+
+    function onCustomPomoInputChange(val) {
+      const num = parseInt(val) || 0;
+      const hint = document.getElementById('custom-pomo-xp-hint');
+      if (hint) {
+        if (currentCustomPomoType === 'focus') {
+          const xp = Math.min(400, Math.max(10, Math.round(num * 4)));
+          hint.innerText = `Ước tính: +${xp} XP (4 XP/phút)`;
+        } else {
+          hint.innerText = 'Chế độ nghỉ ngơi thư giãn mắt (không tính XP)';
+        }
+      }
+    }
+
+    function applyCustomPomodoroSettings() {
+      const inp = document.getElementById('input-custom-pomo-minutes');
+      let min = parseInt(inp ? inp.value : 30);
+      if (isNaN(min) || min < 1) min = 1;
+      if (min > 120) min = 120;
+
+      const isFocus = currentCustomPomoType === 'focus';
+      setPomodoroMode(min, isFocus ? 'custom_focus' : 'custom_break', `${min}m Tùy chỉnh`);
+      closeCustomPomodoroModal();
+      
+      const xpEst = Math.min(400, Math.max(10, min * 4));
+      const msg = isFocus 
+        ? `⏱️ Đã thiết lập Pomodoro: ${min} phút Tập trung (+${xpEst} XP khi hoàn thành)!`
+        : `☕ Đã thiết lập Pomodoro: ${min} phút Nghỉ ngơi!`;
+      if (typeof showToast === 'function') showToast(msg, 'success');
+    }
+
+    function setPomodoroMode(minutes, mode, customLabel) {
       if (window.tier4Pomodoro.timer) {
         clearInterval(window.tier4Pomodoro.timer);
         window.tier4Pomodoro.timer = null;
@@ -37,24 +127,48 @@
       window.tier4Pomodoro.totalSeconds = minutes * 60;
       window.tier4Pomodoro.secondsLeft = minutes * 60;
 
-      ['focus', 'short', 'long'].forEach(m => {
+      ['focus', 'short', 'long', 'custom'].forEach(m => {
         const btn = document.getElementById(`pomo-mode-${m}`);
         if (!btn) return;
-        if (m === mode) {
-          btn.className = 'px-3 py-1 rounded-lg bg-indigo-600 text-white transition-all';
+        const isActive = (m === 'focus' && mode === 'focus') ||
+                         (m === 'short' && mode === 'short') ||
+                         (m === 'long' && mode === 'long') ||
+                         (m === 'custom' && (mode.startsWith('custom') || mode === 'custom'));
+        if (isActive) {
+          btn.className = 'px-3 py-1 rounded-lg bg-indigo-600 text-white transition-all shadow-md';
         } else {
-          btn.className = 'px-3 py-1 rounded-lg text-slate-300 hover:text-white transition-all';
+          btn.className = 'px-3 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-all';
         }
       });
 
+      const customLblEl = document.getElementById('pomo-mode-custom-label');
+      if (customLblEl) {
+        if (mode.startsWith('custom') || mode === 'custom') {
+          customLblEl.innerText = `${minutes}m Tùy chỉnh`;
+        } else {
+          customLblEl.innerText = 'Tùy chỉnh';
+        }
+      }
+
+      const isFocus = mode === 'focus' || mode === 'custom_focus';
       const toggleLabel = document.getElementById('pomodoro-toggle-label');
       const toggleIcon = document.getElementById('pomodoro-toggle-icon');
-      if (toggleLabel) toggleLabel.innerText = 'Bắt đầu tập trung';
+      if (toggleLabel) toggleLabel.innerText = isFocus ? 'Bắt đầu tập trung' : 'Bắt đầu nghỉ ngơi';
       if (toggleIcon) toggleIcon.className = 'fa-solid fa-play';
 
       const floatingStatus = document.getElementById('floating-pomo-status');
       if (floatingStatus) {
-        floatingStatus.innerText = mode === 'focus' ? 'Focus Mode' : 'Break Time';
+        floatingStatus.innerText = isFocus ? 'Focus Mode' : 'Break Time';
+      }
+
+      const descEl = document.getElementById('pomodoro-desc-text');
+      if (descEl) {
+        if (isFocus) {
+          const xp = Math.min(400, Math.max(10, Math.round(minutes * 4)));
+          descEl.innerText = `Phiên tập trung: ${minutes} phút • Nhận +${xp} XP khi hoàn thành`;
+        } else {
+          descEl.innerText = `Phiên nghỉ ngơi: ${minutes} phút • Thư giãn & hồi phục năng lượng`;
+        }
       }
 
       updatePomodoroDisplay();
@@ -97,9 +211,11 @@
       }
       window.tier4Pomodoro.isRunning = false;
       window.tier4Pomodoro.secondsLeft = window.tier4Pomodoro.totalSeconds;
+      
+      const isFocus = window.tier4Pomodoro.mode === 'focus' || window.tier4Pomodoro.mode === 'custom_focus';
       const toggleLabel = document.getElementById('pomodoro-toggle-label');
       const toggleIcon = document.getElementById('pomodoro-toggle-icon');
-      if (toggleLabel) toggleLabel.innerText = 'Bắt đầu tập trung';
+      if (toggleLabel) toggleLabel.innerText = isFocus ? 'Bắt đầu tập trung' : 'Bắt đầu nghỉ ngơi';
       if (toggleIcon) toggleIcon.className = 'fa-solid fa-play';
       updatePomodoroDisplay();
     }
@@ -124,21 +240,40 @@
       if (toggleLabel) toggleLabel.innerText = 'Bắt đầu lại';
       if (toggleIcon) toggleIcon.className = 'fa-solid fa-rotate-right';
 
-      try {
-        const res = await fetch(`${API_BASE}/courses/pomodoro/finish-session`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ durationMinutes: 25 })
-        });
-        const json = await res.json();
-        if (json.success) {
-          showToast('🍅 Hoàn thành xuất sắc phiên tập trung 25 phút (+100 XP tích lũy)!', 'success');
-        }
-      } catch (e) {
-        showToast('🍅 Hoàn thành phiên Pomodoro 25 phút! (+100 XP)', 'success');
-      }
+      const completedMinutes = Math.max(1, Math.round(window.tier4Pomodoro.totalSeconds / 60));
+      const isFocus = window.tier4Pomodoro.mode === 'focus' || window.tier4Pomodoro.mode === 'custom_focus';
 
-      setPomodoroMode(5, 'short');
+      if (isFocus) {
+        try {
+          const token = localStorage.getItem('token') || localStorage.getItem('edupro_token');
+          const headers = { 'Content-Type': 'application/json' };
+          if (token) headers['Authorization'] = `Bearer ${token}`;
+
+          const res = await fetch(`${API_BASE}/courses/pomodoro/finish-session`, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({ durationMinutes: completedMinutes })
+          });
+          const json = await res.json();
+          const xp = json.xpEarned || Math.min(400, Math.max(10, completedMinutes * 4));
+          showToast(`🍅 Hoàn thành xuất sắc phiên tập trung ${completedMinutes} phút (+${xp} XP tích lũy)!`, 'success');
+          if (typeof refreshUserProfileData === 'function') refreshUserProfileData();
+        } catch (e) {
+          showToast(`🍅 Hoàn thành phiên tập trung ${completedMinutes} phút (+${completedMinutes * 4} XP)!`, 'success');
+        }
+
+        const breakMin = completedMinutes >= 45 ? 15 : 5;
+        const breakMode = completedMinutes >= 45 ? 'long' : 'short';
+        setTimeout(() => {
+          setPomodoroMode(breakMin, breakMode);
+          showToast(`☕ Chuyển sang phiên nghỉ ngơi ${breakMin} phút. Hãy uống nước và thư giãn nhé!`, 'info');
+        }, 1500);
+      } else {
+        showToast(`☕ Đã hết ${completedMinutes} phút nghỉ ngơi. Hãy sẵn sàng cho phiên tập trung mới!`, 'info');
+        setTimeout(() => {
+          setPomodoroMode(25, 'focus');
+        }, 1500);
+      }
     }
 
     function toggleLofiAudio() {
@@ -520,4 +655,4 @@
       document.addEventListener('DOMContentLoaded', bootstrapApplication);
     } else {
       bootstrapApplication();
-    }
+    }
