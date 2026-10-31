@@ -238,7 +238,13 @@ var API_BASE = window.API_BASE;
       if (sectionId === 'vocab') { loadFlashcards(); loadDictations(); loadWordArenaLeaderboard(); loadSrsDueQueue(); loadCollocationMindmap('problem'); loadClozeExercise(); loadAccentSamples(); loadVisualGrammarCards(); }
       if (sectionId === 'writing') { updateEssayWordCount(); loadPvPSpeakingLeaderboard();
       loadStudyBuddies(); }
-      if (sectionId === 'exam') { startExam(); loadBookmarkedQuestions(); initAntiCheatMonitoring(); }
+      if (sectionId === 'exam') {
+        if (!window.isExamActive) {
+          showExamLobby();
+        }
+        loadBookmarkedQuestions();
+        loadLeaderboard();
+      }
       if (sectionId === 'graph') { initKnowledgeGraph(); generateAdaptiveRoadmap(); loadSkillTreeData(); }
       if (sectionId === 'history') { loadUserHistory(); loadGamificationProfile(); loadCassandraHeatmap(); loadWeaknessDiagnosticData(); loadRegionalClubs(); }
       if (sectionId === 'analytics') { loadAnalyticsData(); check4DatabasesHealth(); loadAdminUsersList(); }

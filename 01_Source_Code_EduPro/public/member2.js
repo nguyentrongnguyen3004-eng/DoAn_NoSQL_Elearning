@@ -40,7 +40,7 @@ startExam = async function () {
     const { data } = await m2Api(`/exams/${EXAM_ID}/start`, 'POST');
     loadedQuestions = data.questions; userAnswers = data.savedAnswers || {}; isExamDisqualified = false;
     m2.flags = new Set(JSON.parse(sessionStorage.getItem(`exam-flags:${data.attempt.attemptId}`) || '[]'));
-    m2.attemptId = data.attempt.attemptId; m2.active = true;
+    m2.attemptId = data.attempt.attemptId; m2.active = true; window.isExamActive = true;
     document.getElementById('exam-page-title').textContent = data.examTitle;
     document.getElementById('anti-cheat-status-badge').textContent = `Vi phạm: ${data.violations}/3`;
     document.getElementById('anti-cheat-modal-count').textContent = `${data.violations}/3`;
@@ -49,6 +49,7 @@ startExam = async function () {
     renderExamQuestions(); runTimer(data.ttlLeftSeconds); await loadLeaderboard();
 
   } catch (e) {
+    window.isExamActive = false; m2.active = false;
     document.getElementById('exam-questions-box').innerHTML = `<div class="m2-card">${esc(e.message)} ${m2Button('Làm lại đề thi', 'retakeCurrentExam()')}</div>`;
     m2Error(e);
   }
@@ -93,21 +94,41 @@ submitExam = async function (force = false) {
   if (m2.submitting || (!m2.active && !isExamDisqualified)) return;
   if (!force && !confirm(m2.flags.size ? `Bạn còn ${m2.flags.size} câu hỏi đã đặt cờ chưa kiểm tra lại. Bạn có chắc chắn muốn nộp bài ngay?` : 'Bạn có chắc chắn muốn nộp bài?')) return;
   m2.submitting = true;
+
+  // UI/UX: Disable tất cả các nút nộp bài ngay lập tức để chặn Double-Click từ tầng giao diện
+  const submitBtns = document.querySelectorAll("button[onclick*='submitExam']");
+  submitBtns.forEach(btn => {
+    btn.disabled = true;
+    btn.dataset.origHtml = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang nộp bài...';
+    btn.classList.add('opacity-75', 'cursor-not-allowed');
+  });
+
   try {
     await m2.saving;
     if (m2.failedAnswers.size && !force) throw new Error('Có đáp án chưa lưu được. Chọn lại đáp án trước khi nộp.');
     const { data } = await m2Api(`/exams/${EXAM_ID}/submit`, 'POST');
-    m2.active = false; clearInterval(examCountdown); isExamDisqualified = data.isDisqualified;
+    m2.active = false; window.isExamActive = false; clearInterval(examCountdown); isExamDisqualified = data.isDisqualified;
     lastExamResult = { ...data, title: data.examTitle };
     document.getElementById('res-score-number').textContent = data.score;
     document.getElementById('res-correct-fraction').textContent = `${data.correctCount}/${data.totalCount}`;
     document.getElementById('res-verdict').textContent = data.isDisqualified ? 'ĐÌNH CHỈ THI - 0 ĐIỂM' : data.score >= 5 ? 'ĐẠT TIÊU CHUẨN' : 'CẦN LUYỆN TẬP';
     document.getElementById('btn-view-certificate').classList.toggle('hidden', !data.certificateId);
-    document.getElementById('res-details-container').innerHTML = m2ReviewHtml(data.answers);
+    // Lấy dữ liệu giải thích và đáp án đúng từ response của submit (data.answers), không phụ thuộc loadedQuestions
+    document.getElementById('res-details-container').innerHTML = m2ReviewHtml(data.answers || data.detailedAnswers || []);
     document.getElementById('exam-result-card').classList.remove('hidden');
     sessionStorage.removeItem(`exam-flags:${m2.attemptId}`);
     await loadUserHistory(); await loadLeaderboard();
-  } catch (e) { m2Error(e); } finally { m2.submitting = false; }
+  } catch (e) { 
+    m2Error(e); 
+  } finally { 
+    m2.submitting = false; 
+    submitBtns.forEach(btn => {
+      btn.disabled = false;
+      if (btn.dataset.origHtml) btn.innerHTML = btn.dataset.origHtml;
+      btn.classList.remove('opacity-75', 'cursor-not-allowed');
+    });
+  }
 };
 const m2LogViolation = logAntiCheatViolation;
 logAntiCheatViolation = async function (reason) { if (m2.active && !m2.submitting && !m2.logging) { m2.logging = true; try { await m2LogViolation(reason); } finally { m2.logging = false; } } };

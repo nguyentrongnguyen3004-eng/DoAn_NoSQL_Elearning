@@ -37,6 +37,7 @@
           document.getElementById('exam-page-title').textContent = examTitle;
           loadedQuestions = questions;
           userAnswers = savedAnswers || {};
+          window.isExamActive = true;
 
           renderExamQuestions();
           runTimer(ttlLeftSeconds);
@@ -166,6 +167,8 @@
 
         const json = await res.json();
         if (json.success) {
+          window.isExamActive = false;
+          if (typeof m2 !== 'undefined') m2.active = false;
           const { score, correctCount, totalCount, detailedAnswers } = json.data;
           const displayScore = isExamDisqualified ? 0 : score;
           const displayCorrect = isExamDisqualified ? 0 : correctCount;
@@ -757,17 +760,216 @@
     }
 
     // ==============================================================
-    // 18. CỤM TÍNH NĂNG BỔ SUNG 3: MULTI-EXAM, PRACTICE MODE & BOOKMARKS
+    // 18. CỤM TÍNH NĂNG BỔ SUNG 3: MULTI-EXAM, LOBBY, PRACTICE MODE & BOOKMARKS
     // ==============================================================
+    window.isExamActive = false;
+
+    const EXAM_METADATA = {
+      '670000000000000000000040': {
+        code: 'Đề số 1 • Placement Test',
+        title: 'Đánh Giá Năng Lực Quốc Tế (English Placement & IELTS/TOEIC Test)',
+        durationMinutes: 30,
+        questionsCount: 10,
+        level: 'A1 - C2 Toàn Diện (CEFR)',
+        badgeColor: 'text-brand-600 bg-brand-50 border-brand-200 dark:bg-brand-950/40 dark:text-indigo-400',
+        description: 'Bài khảo sát toàn diện đánh giá ngữ pháp, từ vựng và năng lực tư duy học thuật. Điểm số bài thi sẽ tự động phân loại trình độ và đồng bộ vào Cây kỹ năng tri thức (Knowledge Graph).'
+      },
+      '67000000000000000000004a': {
+        code: 'Đề số 2 • ETS TOEIC 850+',
+        title: 'ETS TOEIC 850+ Part 5 Ngữ Pháp & Từ Vựng Chuyên Sâu',
+        durationMinutes: 15,
+        questionsCount: 10,
+        level: 'Intermediate - Advanced (TOEIC 750-990)',
+        badgeColor: 'text-amber-600 bg-amber-50 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400',
+        description: 'Chuyên đề rèn luyện phản xạ hoàn thành câu ngắn Part 5 theo chuẩn format ETS, tập trung bẫy từ loại, liên từ chỉ quan hệ logic và thành ngữ kinh doanh quốc tế.'
+      },
+      '67000000000000000000004b': {
+        code: 'Đề số 3 • IELTS Academic',
+        title: 'IELTS Academic Reading & Lexical Band 7.5+',
+        durationMinutes: 25,
+        questionsCount: 10,
+        level: 'High Intermediate - Advanced (IELTS 6.5 - 8.0+)',
+        badgeColor: 'text-emerald-600 bg-emerald-50 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400',
+        description: 'Thử thách kỹ năng đọc quét thông tin, nhận diện bẫy suy luận ngữ cảnh và kho từ vựng học thuật thuộc danh mục Academic Word List (AWL).'
+      },
+      '67000000000000000000004c': {
+        code: 'Đề số 4 • Core Grammar',
+        title: 'Chuyên Đề 12 Thì & Mệnh Đề Điều Kiện (Core Grammar Mastery)',
+        durationMinutes: 20,
+        questionsCount: 10,
+        level: 'Foundational Grammar (A2 - B2)',
+        badgeColor: 'text-purple-600 bg-purple-50 border-purple-200 dark:bg-purple-950/40 dark:text-purple-400',
+        description: 'Đánh giá độ chuẩn xác về hệ thống 12 thì cơ bản & nâng cao, thể bị động đặc biệt, câu điều kiện loại 0, 1, 2, 3 và đảo ngữ điều kiện.'
+      }
+    };
+
+    function showExamLobby() {
+      window.isExamActive = false;
+      if (typeof m2 !== 'undefined') m2.active = false;
+      clearInterval(examCountdown);
+
+      const meta = EXAM_METADATA[EXAM_ID] || EXAM_METADATA['670000000000000000000040'];
+
+      const titleEl = document.getElementById('exam-page-title');
+      if (titleEl) titleEl.textContent = meta.title;
+
+      const timerEl = document.getElementById('exam-timer-display');
+      if (timerEl) timerEl.textContent = `${String(meta.durationMinutes).padStart(2, '0')}:00`;
+
+      const acBadge = document.getElementById('anti-cheat-status-badge');
+      if (acBadge) {
+        acBadge.textContent = 'CHỜ BẮT ĐẦU (0/3)';
+        acBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-black bg-slate-700/60 text-slate-300 border border-slate-600';
+      }
+
+      document.getElementById('m2-question-nav')?.remove();
+      
+      const resCard = document.getElementById('exam-result-card');
+      if (resCard) resCard.classList.add('hidden');
+
+      const container = document.getElementById('exam-questions-box');
+      if (!container) return;
+
+      const isLogged = !!currentToken;
+
+      container.innerHTML = `
+        <div id="exam-lobby-card" class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-10 border border-slate-200/80 dark:border-slate-800 shadow-sm relative overflow-hidden">
+          <div class="absolute -top-24 -right-24 w-72 h-72 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-6 border-b border-slate-100 dark:border-slate-800">
+            <div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${meta.badgeColor} mb-2">
+                <i class="fa-solid fa-graduation-cap"></i> ${meta.code}
+              </span>
+              <h3 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-tight">
+                ${meta.title}
+              </h3>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
+                ${meta.description}
+              </p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-8">
+            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center text-lg shrink-0">
+                <i class="fa-solid fa-stopwatch"></i>
+              </div>
+              <div>
+                <div class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400">Thời gian</div>
+                <div class="text-sm font-extrabold text-slate-900 dark:text-white">${meta.durationMinutes} Phút</div>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-lg shrink-0">
+                <i class="fa-solid fa-list-check"></i>
+              </div>
+              <div>
+                <div class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400">Số câu hỏi</div>
+                <div class="text-sm font-extrabold text-slate-900 dark:text-white">${meta.questionsCount} Câu Trắc Nghiệm</div>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-lg shrink-0">
+                <i class="fa-solid fa-database"></i>
+              </div>
+              <div>
+                <div class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400">Lưu tự động</div>
+                <div class="text-sm font-extrabold text-emerald-600 dark:text-emerald-400">Redis Hash Realtime</div>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-rose-500/15 text-rose-600 dark:text-rose-400 flex items-center justify-center text-lg shrink-0">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <div>
+                <div class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400">Chống gian lận</div>
+                <div class="text-sm font-extrabold text-rose-600 dark:text-rose-400">Giám sát Tab (Tối đa 3)</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-8 p-5 rounded-2xl bg-indigo-50/50 dark:bg-slate-800/40 border border-indigo-100 dark:border-slate-700/60">
+            <h4 class="font-bold text-xs uppercase tracking-wider text-indigo-900 dark:text-indigo-300 mb-3 flex items-center gap-2">
+              <i class="fa-solid fa-circle-info text-brand-600"></i> Hướng dẫn & Quy chế làm bài thi:
+            </h4>
+            <ul class="space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+              <li class="flex items-start gap-2.5">
+                <i class="fa-solid fa-circle-check text-emerald-500 mt-1 shrink-0 text-xs"></i>
+                <span><strong>Đồng hồ đếm ngược:</strong> Chỉ chính thức bắt đầu tính giờ khi bạn bấm nút <strong>"Bắt đầu làm bài thi"</strong> bên dưới.</span>
+              </li>
+              <li class="flex items-start gap-2.5">
+                <i class="fa-solid fa-circle-check text-emerald-500 mt-1 shrink-0 text-xs"></i>
+                <span><strong>Cơ chế tự động lưu:</strong> Mỗi lựa chọn đáp án được đồng bộ tức thì vào <strong>Redis Hash</strong> kèm TTL và dự phòng MongoDB, không lo mất bài khi gián đoạn mạng.</span>
+              </li>
+              <li class="flex items-start gap-2.5">
+                <i class="fa-solid fa-circle-exclamation text-amber-500 mt-1 shrink-0 text-xs"></i>
+                <span><strong>Quy định nghiêm ngặt:</strong> Không chuyển tab, đổi cửa sổ hoặc thu nhỏ trình duyệt trong lúc làm bài. Rời màn hình quá 3 lần sẽ bị khóa bài (0 điểm).</span>
+              </li>
+              <li class="flex items-start gap-2.5">
+                <i class="fa-solid fa-flag text-indigo-500 mt-1 shrink-0 text-xs"></i>
+                <span><strong>Đặt cờ câu hỏi (Flag):</strong> Bạn có thể gắn cờ các câu khó để xem lại nhanh qua thanh số điều hướng trước khi nộp bài.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+            <div class="text-xs text-slate-600 dark:text-slate-400 flex items-center gap-2">
+              <i class="fa-solid fa-clock text-brand-500"></i>
+              <span>Bạn đã sẵn sàng? Hãy chuẩn bị tâm lý và bấm bắt đầu để tính giờ.</span>
+            </div>
+            ${isLogged ? `
+              <button id="btn-start-exam-now" onclick="confirmStartExam()" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl font-black text-sm text-white bg-gradient-to-r from-brand-600 via-indigo-600 to-indigo-700 hover:from-brand-700 hover:to-indigo-800 shadow-xl shadow-brand-500/25 hover:shadow-brand-500/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer">
+                <i class="fa-solid fa-play text-xs"></i>
+                <span>BẮT ĐẦU LÀM BÀI THI</span>
+              </button>
+            ` : `
+              <button onclick="openLoginModal()" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl font-black text-sm text-white bg-brand-600 hover:bg-brand-700 shadow-xl shadow-brand-500/25 transition-all flex items-center justify-center gap-2.5 cursor-pointer">
+                <i class="fa-solid fa-right-to-bracket text-xs"></i>
+                <span>ĐĂNG NHẬP ĐỂ BẮT ĐẦU</span>
+              </button>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    async function confirmStartExam() {
+      if (!currentToken) {
+        openLoginModal();
+        return;
+      }
+      const btn = document.getElementById('btn-start-exam-now');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> <span>Đang khởi tạo bài thi...</span>';
+      }
+      window.isExamActive = true;
+      if (typeof m2 !== 'undefined') m2.active = true;
+      initAntiCheatMonitoring();
+      await startExam();
+    }
+
     function selectExamFromCatalog(examId, btnElem) {
+      if (window.isExamActive && (typeof m2 === 'undefined' || m2.active)) {
+        if (!confirm('Bạn đang trong một phiên làm bài thi. Rời sang đề khác sẽ không xóa kết quả hiện tại nhưng đồng hồ của đề thi này vẫn tiếp tục tính. Bạn có chắc muốn xem đề khác?')) {
+          return;
+        }
+        window.isExamActive = false;
+        if (typeof m2 !== 'undefined') m2.active = false;
+        clearInterval(examCountdown);
+      }
       EXAM_ID = examId;
       document.querySelectorAll('.exam-cat-card, .exam-catalog-btn').forEach(card => {
-        card.className = 'exam-cat-card p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-left hover:border-brand-400 transition-all';
+        card.className = 'exam-cat-card p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-brand-500 text-left transition-all';
       });
       if (btnElem) {
-        btnElem.className = 'exam-cat-card p-4 rounded-2xl border-2 border-brand-600 bg-brand-50/60 dark:bg-brand-950/30 text-left transition-all';
+        btnElem.className = 'exam-cat-card p-3.5 rounded-2xl border-2 border-brand-600 bg-brand-50/50 dark:bg-brand-950/30 text-left transition-all';
       }
-      startExam();
+      showExamLobby();
     }
 
     function togglePracticeMode(checked) {
@@ -1380,6 +1582,7 @@
       document.addEventListener('visibilitychange', () => {
         const examSection = document.getElementById('section-exam');
         if (examSection && !examSection.classList.contains('hidden') && document.hidden) {
+          if (!window.isExamActive || (typeof m2 !== 'undefined' && !m2.active) || isExamDisqualified) return;
           logAntiCheatViolation('TAB_SWITCH_OR_MINIMIZE');
         }
       });
