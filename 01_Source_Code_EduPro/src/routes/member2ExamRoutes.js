@@ -43,6 +43,16 @@ async function mirrorAttempt(req, a) {
     const ttl = Math.max(60, Math.ceil((new Date(a.expiresAt) - Date.now()) / 1000));
     await redisClient.set(cheatKey(req, a.examId), String(a.violations), 'EX', ttl + 86400);
     await redisClient.set(`exam:${a.examId}:attempt:${req.user.username}`, JSON.stringify({ attemptId: a.attemptId, status: a.status }), 'EX', ttl);
+    if (a.answers && Object.keys(a.answers).length > 0) {
+      const keyUser = `exam:${a.examId}:answers:${req.user.username}`;
+      const keyId = `exam:${a.examId}:answers:${req.user.id}`;
+      for (const [qid, opt] of Object.entries(a.answers)) {
+        await redisClient.hset(keyUser, qid, opt);
+        await redisClient.hset(keyId, qid, opt);
+      }
+      await redisClient.expire(keyUser, ttl + 120);
+      await redisClient.expire(keyId, ttl + 120);
+    }
   } catch (e) { console.warn('Redis exam cache unavailable:', e.message); }
 }
 async function newAttempt(req, exam) {
@@ -105,7 +115,23 @@ router.post('/:id/answer', authenticateToken, wrap(async (req, res) => {
   if (!q || !q.options.some(o => o.key === req.body.selectedOption)) fail(400, 'Câu hỏi hoặc đáp án không thuộc đề thi.');
   const result = await db().collection('exam_attempts').updateOne({ _id: a._id, attemptId: a.attemptId, status: 'in_progress', violations: { $lt: 3 }, expiresAt: { $gt: new Date() } }, { $set: { [`answers.${questionId}`]: req.body.selectedOption } });
   if (!result.matchedCount) fail(409, 'Phiên thi đã bị khóa.');
-  res.json({ success: true });
+
+  // GHI NHẬN TỨC THÌ ĐÁP ÁN VÀO REDIS HASH CÓ TTL (ĐỒNG BỘ ĐA MÔ HÌNH NOSQL)
+  if (redisClient.status === 'ready') {
+    try {
+      const ttl = Math.max(60, Math.ceil((new Date(a.expiresAt) - Date.now()) / 1000));
+      const keyUser = `exam:${req.params.id}:answers:${req.user.username}`;
+      const keyId = `exam:${req.params.id}:answers:${req.user.id}`;
+      await redisClient.hset(keyUser, questionId, req.body.selectedOption);
+      await redisClient.expire(keyUser, ttl + 120);
+      await redisClient.hset(keyId, questionId, req.body.selectedOption);
+      await redisClient.expire(keyId, ttl + 120);
+    } catch (e) {
+      console.warn('Redis answers hash sync error:', e.message);
+    }
+  }
+
+  res.json({ success: true, message: 'Đã lưu đáp án vào MongoDB và Redis Hash' });
 }));
 function certHash(c) { return createHash('sha256').update(JSON.stringify([c._id, c.studentName, c.examTitle, c.score, c.cefrLevel, new Date(c.issuedDate).toISOString()])).digest('hex'); }
 async function finalize(req, a) {
